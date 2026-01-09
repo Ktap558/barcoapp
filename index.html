@@ -3,14 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BarcoApp | Logística</title>
+    <title>BarcoApp | Oficial</title>
     
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon-192.png">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -29,140 +23,175 @@
             --text-dim: #94a3b8;
             --glass: rgba(255, 255, 255, 0.05);
             --gradient: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
-            --gradient-green: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
         }
 
-        * { transition: all 0.25s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); height: 100%; overflow-x: hidden; }
+        * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
-        /* ALERTA GLOBAL */
-        #global-alert { display: none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        /* Estilo dos Inputs Profissionais */
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
+        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; font-size: 0.9rem; }
+        .input-premium:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(34, 211, 238, 0.2); }
 
-        /* BANNER DE ANÚNCIO */
-        #promo-banner { display: none; margin: 15px 20px; border-radius: 15px; overflow: hidden; border: 1px solid var(--glass); line-height: 0; }
-        #promo-banner img { width: 100%; height: auto; object-fit: cover; }
+        /* Feed e Cards */
+        .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 150px; }
+        .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
+        .boat-img { width: 100%; height: 110px; object-fit: cover; }
+        .price-tag { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; }
+        
+        /* Modal de Detalhes */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 20000; padding: 20px; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-dark); width: 100%; max-width: 400px; border-radius: 25px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; border: 1px solid var(--glass); }
+        .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--glass); }
+        .detail-label { color: var(--text-dim); font-size: 0.8rem; }
+        .detail-value { font-weight: 700; font-size: 0.85rem; color: var(--text-white); }
 
-        .top-nav { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
-        .btn-back-minimal { background: none; border: none; color: var(--text-dim); font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; }
-
-        #screen-welcome { height: 100vh; background: radial-gradient(circle at top right, #1e293b, #0f172a); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        .hero-title { font-size: 2.8rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; font-size: 1rem; }
-
-        .user-stats-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass); border-radius: 20px; padding: 20px; margin: 0 20px 20px; }
-        .thermometer-container { width: 100%; height: 8px; background: #020617; border-radius: 10px; margin: 8px 0 18px; position: relative; overflow: hidden; }
-        .thermometer-bar { height: 100%; width: 0%; background: var(--gradient); border-radius: 10px; }
-        .thermometer-bar.green { background: var(--gradient-green); }
-
-        .calendar-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
-        .day-card { background: var(--card-dark); height: 70px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; border: 1px solid var(--glass); cursor: pointer; }
-        .day-card.full-width { grid-column: span 2; height: 55px; border: 1px dashed var(--accent-purple); color: var(--accent-purple); }
-
-        .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 160px; }
-        .boat-card { background: var(--card-dark); border-radius: 15px; overflow: hidden; border: 1px solid var(--glass); position: relative; cursor: pointer; }
-        .boat-img { width: 100%; height: 100px; object-fit: cover; }
-        .price-badge { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.8); color: var(--accent-green); padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; }
-        .boat-info { padding: 10px; }
-        .boat-name { font-size: 0.85rem; font-weight: 800; color: var(--accent-cyan); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
+        /* Reaproveitando seus estilos base para não quebrar nada */
+        #global-alert { display: none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 10001; }
+        #promo-banner { display: none; margin: 15px 20px; border-radius: 15px; overflow: hidden; }
+        #promo-banner img { width: 100%; height: auto; }
+        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; }
         .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
-        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-
-        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); margin-bottom: 10px; background: #0f172a; color: white; outline: none; }
-        #screen-register { display:none; padding: 20px; padding-bottom: 100px; }
+        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
     </style>
 </head>
 <body>
 
-    <div id="global-alert">
-        <i class="fas fa-exclamation-triangle"></i> <span id="alert-text"></span>
-    </div>
+    <div id="global-alert"><i class="fas fa-bullhorn"></i> <span id="alert-text"></span></div>
 
-    <section id="screen-welcome">
-        <h1 class="hero-title">BarcoApp</h1>
-        <p style="color: var(--text-dim); padding: 0 40px; margin-bottom: 30px;">Acumule likes, convide amigos e desbloqueie prêmios exclusivos!</p>
-        <div style="background: var(--card-dark); padding: 25px; border-radius: 24px; width: 90%; max-width: 380px; border: 1px solid var(--glass);">
-            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome">
-            <input type="tel" id="user-phone" class="input-premium" placeholder="Seu WhatsApp (apenas números)">
-            <button class="btn-main" onclick="launchApp()">ENTRAR NO APP</button>
+    <section id="screen-welcome" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center;">
+        <h1 style="font-size:3rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;">BarcoApp</h1>
+        <p style="color:var(--text-dim); margin-bottom:40px;">Sua escala naval completa na palma da mão.</p>
+        <div style="width:100%; max-width:350px;">
+            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome Completo" style="margin-bottom:15px;">
+            <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp (DDD + Número)" style="margin-bottom:20px;">
+            <button class="btn-main" onclick="launchApp()">ACESSAR SISTEMA</button>
         </div>
     </section>
 
     <section id="screen-main" style="display:none;">
-        <div class="top-nav">
-            <div style="font-weight: 800; font-size: 1.2rem;">Olá, <span id="display-user" style="color:var(--accent-cyan)"></span>! ⚓</div>
-            <i class="fas fa-ship" style="color: var(--accent-cyan)"></i>
+        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:800; font-size:1.2rem;">⚓ Olá, <span id="display-user" style="color:var(--accent-cyan)"></span></span>
+            <i class="fas fa-bell" style="color:var(--text-dim)"></i>
         </div>
 
         <div id="promo-banner">
-            <a id="ad-link" href="#" target="_blank">
-                <img id="ad-img" src="" alt="Anúncio">
-            </a>
+            <a id="ad-link" href="#" target="_blank"><img id="ad-img" src=""></a>
         </div>
 
-        <div class="user-stats-card">
-            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-dim); margin-bottom:5px;">
-                <span>LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b> / 1.000</span>
-                <span id="percent-label" style="color:var(--accent-cyan)">0%</span>
+        <div style="background:var(--glass); margin:20px; padding:20px; border-radius:20px; border:1px solid var(--glass);">
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-dim);">
+                <span>LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
+                <span id="percent-label">0%</span>
             </div>
-            <div class="thermometer-container"><div id="thermometer-bar" class="thermometer-bar"></div></div>
-
-            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-dim); margin-bottom:5px;">
-                <span>AMIGOS: <b id="total-invites-count" style="color:var(--accent-green)">0</b> / 100</span>
-                <span id="invite-label" style="color:var(--accent-green)">0%</span>
-            </div>
-            <div class="thermometer-container"><div id="invite-bar" class="thermometer-bar green"></div></div>
+            <div style="width:100%; height:6px; background:#000; border-radius:10px; margin:8px 0;"><div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px;"></div></div>
         </div>
 
-        <div class="calendar-nav">
-            <div class="day-card" onclick="changePage('Segunda')">SEGUNDA</div>
-            <div class="day-card" onclick="changePage('Terça')">TERÇA</div>
-            <div class="day-card" onclick="changePage('Quarta')">QUARTA</div>
-            <div class="day-card" onclick="changePage('Quinta')">QUINTA</div>
-            <div class="day-card" onclick="changePage('Sexta')">SEXTA</div>
-            <div class="day-card" onclick="changePage('Sábado')">SÁBADO</div>
-            <div class="day-card full-width" onclick="changePage('Domingo')">DOMINGO</div>
+        <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:12px; padding:0 20px;">
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Segunda')">Segunda</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Terça')">Terça</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Quarta')">Quarta</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Quinta')">Quinta</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Sexta')">Sexta</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Sábado')">Sábado</button>
+            <button class="input-premium" style="background:var(--card-dark); grid-column:span 2; border:1px dashed var(--accent-purple); color:var(--accent-purple)" onclick="changePage('Domingo')">Domingo Especial</button>
         </div>
 
         <div class="fab-container">
-            <button class="fab" style="background:var(--gradient-green)" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
+            <button class="fab" style="background:var(--accent-green)" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
             <button class="fab" style="background:var(--gradient)" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
         </div>
     </section>
 
     <section id="screen-day-detail" style="display:none;">
-        <div class="top-nav">
-            <button class="btn-back-minimal" onclick="navigate('screen-main')"><i class="fas fa-chevron-left"></i> Voltar</button>
-            <span id="day-title" style="font-weight: 800; color: var(--accent-cyan); text-transform: uppercase;"></span>
+        <div style="padding:20px; display:flex; align-items:center; gap:15px;">
+            <button onclick="navigate('screen-main')" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fas fa-arrow-left"></i></button>
+            <h2 id="day-title" style="margin:0; text-transform:uppercase; color:var(--accent-cyan)"></h2>
         </div>
         <div class="feed" id="boat-feed"></div>
     </section>
 
-    <section id="screen-register">
-        <div class="top-nav">
-            <button class="btn-back-minimal" onclick="navigate('screen-main')"><i class="fas fa-chevron-left"></i> Cancelar</button>
-            <span style="font-weight: 800; color: var(--accent-cyan);">NOVO BARCO</span>
+    <section id="screen-register" style="display:none; padding:20px; padding-bottom:100px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <button onclick="navigate('screen-main')" style="background:none; border:none; color:var(--text-dim);"><i class="fas fa-times"></i> Fechar</button>
+            <span style="font-weight:800; color:var(--accent-cyan)">REGISTRAR VIAGEM</span>
         </div>
-        <div style="max-width: 500px; margin: auto;">
-             <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
-             <div onclick="document.getElementById('file-input').click()" style="width:100%; height:150px; background:var(--card-dark); border-radius:15px; border:2px dashed var(--glass); display:flex; align-items:center; justify-content:center; margin-bottom:15px; overflow:hidden;">
+
+        <div style="max-width:500px; margin:auto;">
+            <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
+            <div onclick="document.getElementById('file-input').click()" id="photo-drop" style="width:100%; height:180px; background:var(--card-dark); border-radius:20px; border:2px dashed var(--glass); display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; margin-bottom:20px;">
                 <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
-                <span id="label-foto" style="font-weight: 800; font-size: 0.7rem; color: var(--text-dim);">+ ADICIONAR FOTO</span>
+                <i class="fas fa-camera" id="camera-icon" style="font-size:2rem; color:var(--accent-cyan); margin-bottom:10px;"></i>
+                <span id="label-foto" style="font-size:0.7rem; font-weight:700; color:var(--text-dim);">FOTO DA EMBARCAÇÃO</span>
             </div>
-            <input type="text" id="in-name" class="input-premium" placeholder="Nome do Barco">
-            <div style="display:flex; gap:10px;">
-                <input type="date" id="in-date" class="input-premium">
-                <input type="time" id="in-time" class="input-premium">
+
+            <label class="form-label">Nome da Embarcação</label>
+            <input type="text" id="in-name" class="input-premium" placeholder="Ex: N/M Comandante Souza">
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div>
+                    <label class="form-label">Cidade de Origem</label>
+                    <input type="text" id="in-origin" class="input-premium" placeholder="Saindo de...">
+                </div>
+                <div>
+                    <label class="form-label">Cidade de Destino</label>
+                    <input type="text" id="in-destiny" class="input-premium" placeholder="Destino à...">
+                </div>
             </div>
-            <input type="text" id="in-origin" class="input-premium" placeholder="Origem">
-            <input type="text" id="in-destiny" class="input-premium" placeholder="Destino">
-            <input type="number" id="in-price-p" class="input-premium" placeholder="Preço Passagem R$">
-            <input type="tel" id="in-tel-1" class="input-premium" placeholder="WhatsApp Contato">
-            <button class="btn-main" onclick="publish()">PUBLICAR NA ESCALA</button>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div>
+                    <label class="form-label">Data de Partida</label>
+                    <input type="date" id="in-date" class="input-premium">
+                </div>
+                <div>
+                    <label class="form-label">Horário</label>
+                    <input type="time" id="in-time" class="input-premium">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div>
+                    <label class="form-label">Valor Passagem (R$)</label>
+                    <input type="number" id="in-price-p" class="input-premium" placeholder="0,00">
+                </div>
+                <div>
+                    <label class="form-label">Valor Camarote (R$)</label>
+                    <input type="number" id="in-price-c" class="input-premium" placeholder="0,00">
+                </div>
+            </div>
+
+            <label class="form-label">Telefones de Contato (2 Números)</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="tel" id="in-tel-1" class="input-premium" placeholder="WhatsApp 1">
+                <input type="tel" id="in-tel-2" class="input-premium" placeholder="WhatsApp 2">
+            </div>
+
+            <button class="btn-main" onclick="publish()" style="margin-top:30px; box-shadow: 0 10px 20px rgba(34, 211, 238, 0.3);">PUBLICAR NA ESCALA</button>
         </div>
     </section>
 
+    <div id="boat-modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="modal-img" src="" style="width:100%; height:200px; object-fit:cover; border-radius:15px; margin-bottom:20px;">
+            <h2 id="modal-name" style="margin:0; color:var(--accent-cyan)"></h2>
+            <p id="modal-route" style="color:var(--text-dim); font-size:0.8rem; margin-top:5px; margin-bottom:20px;"></p>
+            
+            <div class="detail-row"><span class="detail-label">Data e Hora</span><span class="detail-value" id="modal-datetime"></span></div>
+            <div class="detail-row"><span class="detail-label">Passagem</span><span class="detail-value" style="color:var(--accent-green)" id="modal-price-p"></span></div>
+            <div class="detail-row"><span class="detail-label">Camarote</span><span class="detail-value" style="color:var(--accent-yellow)" id="modal-price-c"></span></div>
+            <div class="detail-row"><span class="detail-label">Contato 1</span><span class="detail-value" id="modal-tel1"></span></div>
+            <div class="detail-row" style="border:none;"><span class="detail-label">Contato 2</span><span class="detail-value" id="modal-tel2"></span></div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+                <button id="btn-wa1" class="btn-main" style="background:#25d366; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> Zap 1</button>
+                <button id="btn-wa2" class="btn-main" style="background:#128c7e; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> Zap 2</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // CONFIGURAÇÃO FIREBASE (IGUAL)
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -188,24 +217,20 @@
         function launchApp() {
             const n = document.getElementById('user-name').value;
             const p = document.getElementById('user-phone').value.replace(/\D/g,'');
-            if(n.length < 3 || p.length < 8) return alert("Dados inválidos!");
+            if(n.length < 3 || p.length < 8) return alert("Preencha nome e WhatsApp!");
 
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
-
-            // ATUALIZAÇÃO SOLICITADA: Salva o usuário na lista de cadastrados
+            
+            // Grava na lista de usuários (para o seu novo painel ver)
             rtdb.ref('usuarios_cadastrados/' + p).set({
-                nome: n,
-                whatsapp: p,
-                dataCadastro: new Date().toLocaleDateString('pt-BR')
+                nome: n, whatsapp: p, dataCadastro: new Date().toLocaleDateString('pt-BR')
             });
 
-            // Lógica de Indicação
+            // Indicação
             const urlParams = new URLSearchParams(window.location.search);
             const ref = urlParams.get('ref');
-            if(ref && ref !== p) {
-                rtdb.ref(`indicacoes/${ref}/${p}`).set(true);
-            }
+            if(ref && ref !== p) rtdb.ref(`indicacoes/${ref}/${p}`).set(true);
 
             startApp();
         }
@@ -218,55 +243,35 @@
             updateStats();
         }
 
+        // Funções de Escuta (Iguais para manter sincronia com o Painel)
         function listenAlerts() {
-            rtdb.ref('config/alerta').on('value', snap => {
+            rtdb.ref('config/alerta').on('value', s => {
                 const div = document.getElementById('global-alert');
-                if(snap.exists() && snap.val().active) {
+                if(s.exists() && s.val().active) {
                     div.style.display = 'block';
-                    document.getElementById('alert-text').innerText = snap.val().text;
-                } else {
-                    div.style.display = 'none';
-                }
+                    document.getElementById('alert-text').innerText = s.val().text;
+                } else { div.style.display = 'none'; }
             });
         }
 
         function listenAds() {
-            rtdb.ref('config/anuncio').on('value', snap => {
-                const data = snap.val();
-                const banner = document.getElementById('promo-banner');
-                if(data && data.active && data.img) {
-                    banner.style.display = 'block';
-                    document.getElementById('ad-img').src = data.img;
-                    document.getElementById('ad-link').href = data.link || "#";
-                } else {
-                    banner.style.display = 'none';
-                }
+            rtdb.ref('config/anuncio').on('value', s => {
+                const d = s.val();
+                if(d && d.active) {
+                    document.getElementById('promo-banner').style.display = 'block';
+                    document.getElementById('ad-img').src = d.img;
+                    document.getElementById('ad-link').href = d.link;
+                } else { document.getElementById('promo-banner').style.display = 'none'; }
             });
         }
 
         function updateStats() {
-            rtdb.ref('barcos').on('value', snap => {
-                let likes = 0;
-                const data = snap.val();
-                if(data) {
-                    Object.values(data).forEach(day => {
-                        Object.values(day).forEach(b => { 
-                            if(b.registeredBy === currentUser.phone) likes += (b.likes || 0); 
-                        });
-                    });
-                }
-                const p = Math.min((likes/1000)*100, 100);
-                document.getElementById('total-likes-count').innerText = likes;
-                document.getElementById('thermometer-bar').style.width = p + '%';
-                document.getElementById('percent-label').innerText = Math.floor(p) + '%';
-            });
-
-            rtdb.ref('indicacoes/' + currentUser.phone).on('value', snap => {
-                const total = snap.exists() ? Object.keys(snap.val()).length : 0;
-                const p = Math.min((total/100)*100, 100);
-                document.getElementById('total-invites-count').innerText = total;
-                document.getElementById('invite-bar').style.width = p + '%';
-                document.getElementById('invite-label').innerText = Math.floor(p) + '%';
+            rtdb.ref('barcos').on('value', s => {
+                let l = 0; const d = s.val();
+                if(d) Object.values(d).forEach(dia => Object.values(dia).forEach(b => { if(b.registeredBy === currentUser.phone) l += (b.likes||0); }));
+                const p = Math.min((l/1000)*100, 100);
+                document.getElementById('total-likes-count').innerText = l;
+                document.getElementById('thermometer-bar').style.width = p+'%';
             });
         }
 
@@ -279,35 +284,50 @@
 
         function loadFeed() {
             const feed = document.getElementById('boat-feed');
-            rtdb.ref('barcos/' + currentDayPage).on('value', snap => {
+            rtdb.ref('barcos/' + currentDayPage).on('value', s => {
                 feed.innerHTML = "";
-                const data = snap.val();
-                if(!data) {
-                    feed.innerHTML = `<div style="grid-column:span 2; text-align:center; padding:50px; color:var(--text-dim)">Sem barcos hoje.</div>`;
-                    return;
-                }
+                const data = s.val();
+                if(!data) { feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:40px; color:var(--text-dim)'>Nenhuma embarcação hoje.</p>"; return; }
                 Object.keys(data).forEach(key => {
                     const b = data[key];
-                    // Recuperamos a função de clique no card para abrir o WhatsApp (Informações)
                     feed.innerHTML += `
-                        <div class="boat-card" onclick="openContact('${b.tel1}', '${b.name}')">
-                            ${b.price_p ? `<div class="price-badge">R$ ${b.price_p}</div>` : ''}
-                            <img src="${b.img || 'https://via.placeholder.com/150/0f172a/ffffff?text=⚓'}" class="boat-img">
-                            <div class="boat-info">
-                                <span class="boat-name">${b.name}</span>
-                                <small style="color:var(--text-dim); font-size:0.6rem;">${b.time}h | ${b.origin} -> ${b.destiny || 'Destino'}</small>
+                        <div class="boat-card" onclick="openDetails('${key}')">
+                            <div class="price-tag">R$ ${b.price_p}</div>
+                            <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
+                            <div style="padding:10px;">
+                                <span style="font-weight:800; font-size:0.75rem; color:var(--accent-cyan); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.name}</span>
+                                <small style="font-size:0.6rem; color:var(--text-dim);"><i class="far fa-clock"></i> ${b.time}h | ${b.origin}</small>
+                                <button onclick="event.stopPropagation(); vote('${key}', '${b.id}')" style="width:100%; margin-top:8px; border:none; background:var(--glass); color:white; padding:5px; border-radius:5px; font-size:0.7rem;">❤️ ${b.likes||0}</button>
                             </div>
-                            <button style="width:100%; padding:10px; background:var(--glass); border:none; color:white; font-size:0.75rem; font-weight:700;" onclick="event.stopPropagation(); vote('${key}', '${b.id}')">❤️ ${b.likes||0}</button>
                         </div>`;
                 });
             });
         }
 
-        function openContact(tel, boat) {
-            if(!tel) return alert("Contato não disponível");
-            const text = encodeURIComponent(`Olá! Vi o barco *${boat}* no App e gostaria de informações.`);
-            window.open(`https://wa.me/55${tel.replace(/\D/g,'')}?text=${text}`);
+        // FUNÇÃO DE DETALHES PROFISSIONAL
+        function openDetails(key) {
+            rtdb.ref(`barcos/${currentDayPage}/${key}`).once('value', s => {
+                const b = s.val();
+                document.getElementById('modal-img').src = b.img;
+                document.getElementById('modal-name').innerText = b.name;
+                document.getElementById('modal-route').innerText = `ROTA: ${b.origin} ➔ ${b.destiny}`;
+                document.getElementById('modal-datetime').innerText = `${b.date} às ${b.time}h`;
+                document.getElementById('modal-price-p').innerText = `R$ ${b.price_p}`;
+                document.getElementById('modal-price-c').innerText = b.price_c ? `R$ ${b.price_c}` : 'N/A';
+                document.getElementById('modal-tel1').innerText = b.tel1;
+                document.getElementById('modal-tel2').innerText = b.tel2 || '---';
+
+                document.getElementById('btn-wa1').onclick = () => window.open(`https://wa.me/55${b.tel1.replace(/\D/g,'')}`);
+                if(b.tel2) {
+                    document.getElementById('btn-wa2').style.display = 'block';
+                    document.getElementById('btn-wa2').onclick = () => window.open(`https://wa.me/55${b.tel2.replace(/\D/g,'')}`);
+                } else { document.getElementById('btn-wa2').style.display = 'none'; }
+
+                document.getElementById('boat-modal').style.display = 'flex';
+            });
         }
+
+        function closeModal(e) { document.getElementById('boat-modal').style.display = 'none'; }
 
         function vote(key, id) {
             if(localStorage.getItem('voted_'+id)) return alert("Já curtiu!");
@@ -322,6 +342,7 @@
                     currentImg = e.target.result;
                     document.getElementById('preview-img').src = currentImg;
                     document.getElementById('preview-img').style.display = 'block';
+                    document.getElementById('camera-icon').style.display = 'none';
                     document.getElementById('label-foto').style.display = 'none';
                 };
                 reader.readAsDataURL(input.files[0]);
@@ -330,40 +351,41 @@
 
         function publish() {
             const name = document.getElementById('in-name').value;
-            const dateVal = document.getElementById('in-date').value;
-            const timeVal = document.getElementById('in-time').value;
             const origin = document.getElementById('in-origin').value;
             const destiny = document.getElementById('in-destiny').value;
-            const price = document.getElementById('in-price-p').value;
-            const tel = document.getElementById('in-tel-1').value;
+            const date = document.getElementById('in-date').value;
+            const time = document.getElementById('in-time').value;
+            const p_p = document.getElementById('in-price-p').value;
+            const p_c = document.getElementById('in-price-c').value;
+            const tel1 = document.getElementById('in-tel-1').value;
+            const tel2 = document.getElementById('in-tel-2').value;
 
-            if(!name || !dateVal || !tel) return alert("Nome, Data e WhatsApp são obrigatórios!");
+            if(!name || !origin || !destiny || !date || !tel1) return alert("Por favor, preencha todos os campos obrigatórios.");
 
             const boat = {
                 id: Date.now().toString(),
-                name, time: timeVal, date: dateVal,
-                origin: origin,
-                destiny: destiny,
-                price_p: price,
-                tel1: tel,
-                img: currentImg, likes: 0, registeredBy: currentUser.phone
+                name, origin, destiny, date, time, 
+                price_p: p_p, price_c: p_c,
+                tel1, tel2, img: currentImg, 
+                likes: 0, registeredBy: currentUser.phone
             };
 
-            const dayName = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][new Date(dateVal + "T00:00:00").getDay()];
+            const dayName = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][new Date(date + "T00:00:00").getDay()];
             
             rtdb.ref('barcos/' + dayName).push(boat).then(() => {
-                alert("🚢 Publicado com sucesso!");
+                alert("🚢 Viagem publicada com sucesso!");
                 navigate('screen-main');
-                currentImg = "";
+                // Limpar campos
+                document.querySelectorAll('.input-premium').forEach(i => i.value = "");
                 document.getElementById('preview-img').style.display = 'none';
+                document.getElementById('camera-icon').style.display = 'block';
                 document.getElementById('label-foto').style.display = 'block';
             });
         }
 
         function shareApp() {
             const link = window.location.origin + window.location.pathname + '?ref=' + currentUser.phone;
-            const text = encodeURIComponent("🚢 Veja a escala de barcos aqui: " + link);
-            window.open("https://wa.me/?text=" + text);
+            window.open("https://wa.me/?text=" + encodeURIComponent("🚢 Confira a escala de barcos aqui: " + link));
         }
 
         window.onload = () => { if(currentUser) startApp(); };
