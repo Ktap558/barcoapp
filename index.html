@@ -49,34 +49,50 @@
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; font-size: 1rem; box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3); }
 
         /* HEADER */
-        .header { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); padding: 40px 20px; border-radius: 0 0 35px 35px; border-bottom: 1px solid var(--glass); }
+        .header { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); padding: 40px 20px 20px; border-radius: 0 0 35px 35px; border-bottom: 1px solid var(--glass); }
         
-        /* MENU 2 COLUNAS (DIAS) */
+        /* TERMÔMETRO */
+        .user-stats-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass); border-radius: 20px; padding: 20px; margin: 20px; }
+        .thermometer-container { width: 100%; height: 14px; background: #0f172a; border-radius: 10px; margin: 10px 0; border: 1px solid var(--glass); overflow: hidden; position: relative; }
+        .thermometer-bar { 
+            height: 100%; width: 0%; background: var(--gradient); 
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.5); border-radius: 10px; 
+            transition: width 1.5s cubic-bezier(0.1, 0, 0.3, 1); position: relative; 
+        }
+        .thermometer-bar::after {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shine 2s infinite;
+        }
+        @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stat-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; text-align: center; border: 1px solid var(--glass); }
+        .stat-val { display: block; font-weight: 800; color: var(--accent-cyan); font-size: 1.1rem; }
+        .stat-lab { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; }
+
+        /* MENU DIAS */
         .calendar-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
         .day-card { background: var(--card-dark); height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; border: 1px solid var(--glass); cursor: pointer; color: var(--text-white); }
         .day-card:active { transform: scale(0.95); background: var(--glass); }
         .day-card.active { background: var(--gradient); border: none; }
         .day-card.full-width { grid-column: span 2; height: 60px; border: 1px dashed var(--accent-purple); }
 
-        /* FEED PÁGINA DE BARCOS */
+        /* FEED */
         #screen-day-detail { display: none; }
         .back-bar { padding: 20px; color: var(--accent-cyan); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-
-        /* FEED */
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; padding-bottom: 100px; }
-        .boat-card { background: var(--card-dark); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--glass); display: flex; flex-direction: column; }
+        .boat-card { background: var(--card-dark); border-radius: 18px; overflow: hidden; border: 1px solid var(--glass); display: flex; flex-direction: column; }
         .boat-img { width: 100%; height: 110px; object-fit: cover; filter: brightness(0.9); }
         .boat-info { padding: 12px; flex: 1; }
         .boat-info .b-name { font-size: 0.85rem; color: var(--accent-cyan); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
         .boat-info .b-origin { font-size: 0.75rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
         .boat-info .b-time { font-size: 0.7rem; color: var(--accent-purple); font-weight: 600; }
-
         .vote-area { display: flex; border-top: 1px solid var(--glass); padding: 8px; }
         .btn-vote { flex: 1; padding: 10px; border-radius: 10px; border: none; background: rgba(255,255,255,0.03); cursor: pointer; font-size: 0.75rem; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-vote.liked { color: #f43f5e; }
 
         /* REGISTRO */
-        #screen-register { display: none; background: var(--bg-dark); min-height: 100vh; padding: 25px; }
+        #screen-register { display: none; background: var(--bg-dark); min-height: 100vh; padding: 25px; padding-bottom: 50px; }
         .fab { position: fixed; bottom: 30px; right: 25px; width: 64px; height: 64px; background: var(--gradient); color: white; border-radius: 50%; border: none; font-size: 1.5rem; box-shadow: 0 10px 30px rgba(168, 85, 247, 0.5); z-index: 100; }
         
         /* MODAL */
@@ -105,6 +121,26 @@
             <div style="font-weight: 800; font-size: 1.6rem;"><span id="display-user"></span> ⚓</div>
         </div>
 
+        <div class="user-stats-card">
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; font-weight:800;">
+                <span style="color: var(--text-dim);">PROGRESSO ATÉ 1.000 LIKES</span>
+                <span id="percent-label" style="color:var(--accent-cyan)">0%</span>
+            </div>
+            <div class="thermometer-container">
+                <div id="thermometer-bar" class="thermometer-bar"></div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span id="total-likes-count" class="stat-val">0</span>
+                    <span class="stat-lab">Meus Likes</span>
+                </div>
+                <div class="stat-box">
+                    <span id="total-posts-count" class="stat-val">0</span>
+                    <span class="stat-lab">Postagens</span>
+                </div>
+            </div>
+        </div>
+
         <div class="calendar-nav">
             <div class="day-card" onclick="changePage('Segunda', this)">SEGUNDA</div>
             <div class="day-card" onclick="changePage('Terça', this)">TERÇA</div>
@@ -115,11 +151,6 @@
             <div class="day-card full-width" onclick="changePage('Domingo', this)">DOMINGO</div>
         </div>
 
-        <div id="ad-area" class="ad-banner-container">
-            <a id="ad-link" href="#" target="_blank" class="ad-anchor">
-                <img id="ad-img" src="" class="ad-img">
-            </a>
-        </div>
         <button class="fab" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
     </section>
 
@@ -142,6 +173,7 @@
         <div style="display: grid; gap: 10px;">
             <input type="text" id="in-name" class="input-premium" placeholder="Nome do Barco">
             <input type="text" id="in-origin" class="input-premium" placeholder="Cidade de Saída">
+            <input type="tel" id="in-owner-phone" class="input-premium" placeholder="WhatsApp do Proprietário">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <input type="date" id="in-date" class="input-premium">
                 <input type="time" id="in-time" class="input-premium">
@@ -164,7 +196,6 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO FIREBASE (MANTIDA IGUAL)
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -198,7 +229,31 @@
         function startApp() {
             document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
             navigate('screen-main');
-            listenAds();
+            calculateUserStats();
+        }
+
+        function calculateUserStats() {
+            let totalLikes = 0, totalPosts = 0;
+            rtdb.ref('barcos').once('value', (snap) => {
+                const data = snap.val();
+                if(data) {
+                    Object.values(data).forEach(day => {
+                        Object.values(day).forEach(boat => {
+                            if(boat.registeredBy === currentUser.phone) {
+                                totalPosts++; 
+                                totalLikes += (boat.likes || 0);
+                            }
+                        });
+                    });
+                }
+                const pct = Math.min((totalLikes / 1000) * 100, 100);
+                document.getElementById('total-likes-count').innerText = totalLikes;
+                document.getElementById('total-posts-count').innerText = totalPosts;
+                setTimeout(() => {
+                    document.getElementById('thermometer-bar').style.width = pct + '%';
+                    document.getElementById('percent-label').innerText = Math.floor(pct) + '%';
+                }, 300);
+            });
         }
 
         function changePage(day, el) {
@@ -232,23 +287,30 @@
 
         function publish() {
             const name = document.getElementById('in-name').value;
+            const origin = document.getElementById('in-origin').value;
+            const ownerPhone = document.getElementById('in-owner-phone').value;
             const dateVal = document.getElementById('in-date').value;
-            if(!name || !dateVal) return alert("Preencha Nome e Data!");
+            
+            if(!name || !origin || !ownerPhone || !dateVal) return alert("Preencha todos os campos obrigatórios!");
+
             const dt = new Date(dateVal + "T00:00:00");
             const daysOfWeek = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
             const dayName = daysOfWeek[dt.getDay()];
+
             const boat = {
                 id: Date.now(),
-                author: currentUser.name,
-                authorPhone: currentUser.phone,
+                authorName: currentUser.name,
+                registeredBy: currentUser.phone,
+                ownerPhone: ownerPhone,
                 name: name,
-                origin: document.getElementById('in-origin').value || "Não informado",
+                origin: origin,
                 time: document.getElementById('in-time').value || "--:--",
                 img: currentImg || 'https://via.placeholder.com/400x200?text=BarcoApp',
                 likes: 0
             };
+
             rtdb.ref('barcos/' + dayName).push(boat).then(() => {
-                alert("Publicado!");
+                alert("Publicado com sucesso!");
                 location.reload();
             });
         }
@@ -287,6 +349,7 @@
             if(localStorage.getItem('voted_' + id)) return;
             rtdb.ref(`barcos/${currentPage}/${key}/likes`).transaction(l => (l || 0) + 1);
             localStorage.setItem('voted_' + id, "true");
+            setTimeout(calculateUserStats, 500);
         }
 
         function showBoat(key) {
@@ -295,24 +358,16 @@
                 document.getElementById('m-name').innerText = b.name;
                 document.getElementById('m-img').src = b.img;
                 document.getElementById('m-origin').innerText = "📍 " + b.origin;
-                document.getElementById('m-info').innerHTML = `Logística por: ${b.author}<br>Saída confirmada: ${b.time}h`;
-                document.getElementById('m-btn-zap').onclick = () => window.open(`https://wa.me/55${b.authorPhone.replace(/\D/g, '')}`);
+                document.getElementById('m-info').innerHTML = `Logística por: ${b.authorName}<br>Saída confirmada: ${b.time}h`;
+                
+                const cleanPhone = b.ownerPhone.replace(/\D/g, '');
+                document.getElementById('m-btn-zap').onclick = () => window.open(`https://wa.me/55${cleanPhone}`);
+                
                 document.getElementById('modal-details').style.display = 'block';
             });
         }
 
         function closeModal() { document.getElementById('modal-details').style.display = 'none'; }
-
-        function listenAds() {
-            rtdb.ref('config/anuncio').on('value', (s) => {
-                const ad = s.val();
-                if(ad && ad.active) {
-                    document.getElementById('ad-area').style.display = 'block';
-                    document.getElementById('ad-img').src = ad.img;
-                    document.getElementById('ad-link').href = ad.link;
-                }
-            });
-        }
 
         window.onload = () => { if(currentUser) startApp(); };
     </script>
