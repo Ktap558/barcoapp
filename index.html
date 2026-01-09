@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BarcoApp | Logística</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #1b4332; --accent: #b07d62; --river: #0077b6;
+            --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a;
+            --text-sub: #64748b; --radius: 20px;
+        }
+        * { transition: all 0.25s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); height: 100%; overflow-x: hidden; }
+
+        /* TELA LOGIN */
+        #screen-welcome {
+            height: 100vh; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(27, 67, 50, 0.95) 100%), 
+            url('https://images.unsplash.com/photo-1559139225-33270846af99?q=80&w=1200') center/cover;
+            display: flex; flex-direction: column; justify-content: flex-end; align-items: center; text-align: center;
+            padding-bottom: 50px;
+        }
+        .login-content { width: 90%; max-width: 400px; color: white; }
+        .hero-title { font-size: 2.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 10px; letter-spacing: -1px; }
+        .hero-subtitle { font-size: 1rem; opacity: 0.9; margin-bottom: 30px; line-height: 1.5; font-weight: 500; }
+        .promo-badge { background: #fbbf24; color: #78350f; padding: 8px 15px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; display: inline-block; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4); text-transform: uppercase; }
+        
+        .login-form { background: rgba(255,255,255,1); padding: 25px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .input-premium { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid #f1f5f9; margin-bottom: 12px; font-weight: 600; outline: none; font-size: 16px; color: var(--text-main); }
+        .input-premium:focus { border-color: var(--accent); }
+        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--primary); color: white; font-weight: 800; cursor: pointer; font-size: 1rem; box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3); }
+
+        /* HEADER E NAV */
+        #screen-main { display: none; }
+        .header { background: var(--primary); padding: 40px 20px 60px; color: white; border-radius: 0 0 35px 35px; }
+        .calendar-nav { display: flex; gap: 10px; overflow-x: auto; padding: 15px 20px; margin-top: -40px; scrollbar-width: none; }
+        .day-card { min-width: 100px; height: 50px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; box-shadow: 0 10px 20px rgba(0,0,0,0.05); cursor: pointer; color: var(--text-sub); flex-shrink: 0; }
+        .day-card.active { background: var(--accent); color: white; }
+
+        /* ANÚNCIO */
+        .ad-banner-container { padding: 0 20px; margin-top: 15px; display: none; }
+        .ad-anchor { display: block; overflow: hidden; border-radius: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
+        .ad-img { width: 100%; height: 110px; object-fit: cover; display: block; }
+
+        /* FEED */
+        .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; padding-bottom: 100px; }
+        .boat-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); display: flex; flex-direction: column; }
+        .boat-img { width: 100%; height: 120px; object-fit: cover; }
+        .boat-info { padding: 12px; flex: 1; }
+        .boat-info .b-name { font-size: 0.9rem; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .boat-info .b-origin { font-size: 0.75rem; color: var(--river); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+        .boat-info .b-time { font-size: 0.7rem; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+
+        .vote-area { display: flex; border-top: 1px solid #f8fafc; padding: 8px; gap: 8px; }
+        .btn-vote { flex: 1; padding: 10px; border-radius: 10px; border: none; background: #f8fafc; cursor: pointer; font-size: 0.75rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-vote.liked { background: #dcfce7; color: #166534; }
+
+        #screen-register { display: none; background: white; min-height: 100vh; padding: 25px; }
+        .fab { position: fixed; bottom: 30px; right: 25px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 20px; border: none; font-size: 1.5rem; box-shadow: 0 15px 30px rgba(27, 67, 50, 0.4); z-index: 100; }
+    </style>
+</head>
+<body>
+
+    <section id="screen-welcome">
+        <div class="login-content">
+            <div class="promo-badge"><i class="fas fa-gift"></i> Prêmio Surpresa Liberado</div>
+            <h1 class="hero-title">BarcoApp</h1>
+            <p class="hero-subtitle">Sua próxima viagem começa aqui. Alcance <b>1.000 likes</b> e ganhe prêmios exclusivos!</p>
+            <div class="login-form">
+                <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome">
+                <input type="tel" id="user-phone" class="input-premium" placeholder="Seu WhatsApp">
+                <button class="btn-main" onclick="launchApp()">ENTRAR NO APP</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="screen-main">
+        <div class="header">
+            <div style="font-size: 0.9rem; opacity: 0.8; font-weight: 600;">Seja bem-vindo! Escolha abaixo o dia da sua viagem</div>
+            <div style="font-weight: 800; font-size: 1.5rem;"><span id="display-user"></span> ⚓</div>
+        </div>
+
+        <div class="calendar-nav">
+            <div class="day-card active" onclick="changePage('Segunda', this)">Segunda</div>
+            <div class="day-card" onclick="changePage('Terça', this)">Terça</div>
+            <div class="day-card" onclick="changePage('Quarta', this)">Quarta</div>
+            <div class="day-card" onclick="changePage('Quinta', this)">Quinta</div>
+            <div class="day-card" onclick="changePage('Sexta', this)">Sexta</div>
+            <div class="day-card" onclick="changePage('Sábado', this)">Sábado</div>
+            <div class="day-card" onclick="changePage('Domingo', this)">Domingo</div>
+        </div>
+
+        <div id="ad-area" class="ad-banner-container">
+            <a id="ad-link" href="#" target="_blank" class="ad-anchor">
+                <img id="ad-img" src="" class="ad-img">
+            </a>
+        </div>
+
+        <div class="feed" id="boat-feed"></div>
+        <button class="fab" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
+    </section>
+
+    <section id="screen-register">
+        <div onclick="navigate('screen-main')" style="margin-bottom:20px; font-weight:800; color:var(--primary); cursor:pointer;"><i class="fas fa-arrow-left"></i> VOLTAR</div>
+        <h2>Postar novo Barco</h2>
+        <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
+        <div onclick="document.getElementById('file-input').click()" style="width:100%; height:160px; background:#f1f5f9; border-radius:18px; display:flex; align-items:center; justify-content:center; border:2px dashed #cbd5e1; overflow:hidden; margin-bottom:20px;">
+            <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
+            <span id="label-foto" style="font-weight:700; color:var(--text-sub);"><i class="fas fa-camera"></i> ADICIONAR FOTO</span>
+        </div>
+        <div style="display: grid; gap: 10px;">
+            <input type="text" id="in-name" class="input-premium" placeholder="Nome do Barco">
+            <input type="text" id="in-origin" class="input-premium" placeholder="Cidade de Saída">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="date" id="in-date" class="input-premium">
+                <input type="time" id="in-time" class="input-premium">
+            </div>
+            <button class="btn-main" onclick="publish()" style="background: var(--accent);">PUBLICAR NA REDE</button>
+        </div>
+    </section>
+
+    <div id="modal-details" style="position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:2000; display:none; overflow-y:auto;">
+        <div style="position:relative"><img id="m-img" style="width:100%; height:300px; object-fit:cover;"><button onclick="closeModal()" style="position:absolute; top:20px; right:20px; border:none; background:white; width:40px; height:40px; border-radius:12px;"><i class="fas fa-times"></i></button></div>
+        <div style="padding:25px;">
+            <h1 id="m-name" style="margin:0; color:var(--primary);"></h1>
+            <div id="m-origin" style="margin:10px 0; color:var(--river); font-weight:700;"></div>
+            <div id="m-price" style="font-size:1.2rem; font-weight:800; color:#166534; background:#dcfce7; padding:12px; border-radius:15px; display:inline-block; margin:15px 0;">Consultar Preço</div>
+            <p id="m-info" style="line-height:1.6; color:var(--text-sub);"></p>
+            <button id="m-btn-zap" style="width:100%; padding:18px; background:#25d366; color:white; border:none; border-radius:16px; margin-top:20px; font-weight:800;"><i class="fab fa-whatsapp"></i> CHAMAR NO WHATSAPP</button>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
+            authDomain: "barcoapp-c0f00.firebaseapp.com",
+            databaseURL: "https://barcoapp-c0f00-default-rtdb.firebaseio.com",
+            projectId: "barcoapp-c0f00",
+            storageBucket: "barcoapp-c0f00.firebasestorage.app",
+            messagingSenderId: "575071745494",
+            appId: "1:575071745494:web:63c1db8d2c1038c27c6077"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const rtdb = firebase.database();
+
+        let currentUser = JSON.parse(localStorage.getItem('barco_user_data'));
+        let currentPage = "Segunda";
+        let currentImg = "";
+
+        function navigate(id) {
+            document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function launchApp() {
+            let n = document.getElementById('user-name').value;
+            let p = document.getElementById('user-phone').value;
+            if(!n || !p) return alert("Preencha seus dados!");
+            
+            currentUser = { name: n, phone: p };
+            localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
+            startApp();
+        }
+
+        function startApp() {
+            document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
+            navigate('screen-main');
+            updateFeed();
+            listenAds();
+        }
+
+        function processImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = 600;
+                        canvas.height = img.height * (600 / img.width);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        currentImg = canvas.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('preview-img').src = currentImg;
+                        document.getElementById('preview-img').style.display = 'block';
+                        document.getElementById('label-foto').style.display = 'none';
+                    }
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function publish() {
+            const name = document.getElementById('in-name').value;
+            const dateVal = document.getElementById('in-date').value;
+            if(!name || !dateVal) return alert("Preencha Nome e Data!");
+
+            const dt = new Date(dateVal + "T00:00:00");
+            const daysOfWeek = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+            const dayName = daysOfWeek[dt.getDay()];
+
+            const boat = {
+                id: Date.now(),
+                author: currentUser.name,
+                authorPhone: currentUser.phone,
+                name: name,
+                origin: document.getElementById('in-origin').value || "Não informado",
+                time: document.getElementById('in-time').value || "--:--",
+                img: currentImg || 'https://via.placeholder.com/400x200?text=BarcoApp',
+                likes: 0
+            };
+
+            rtdb.ref('barcos/' + dayName).push(boat).then(() => {
+                alert("Publicado!");
+                currentPage = dayName;
+                location.reload();
+            });
+        }
+
+        function changePage(day, el) {
+            currentPage = day;
+            document.querySelectorAll('.day-card').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+            updateFeed();
+        }
+
+        function updateFeed() {
+            const feed = document.getElementById('boat-feed');
+            rtdb.ref('barcos/' + currentPage).on('value', (snapshot) => {
+                feed.innerHTML = "";
+                const data = snapshot.val();
+                if(!data) {
+                    feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:50px; opacity:0.3;'>Nenhum barco hoje.</p>";
+                    return;
+                }
+                Object.keys(data).forEach(key => {
+                    const b = data[key];
+                    const hasVoted = localStorage.getItem('voted_' + b.id);
+                    feed.innerHTML += `
+                        <div class="boat-card">
+                            <img src="${b.img}" class="boat-img" onclick="showBoat('${key}')">
+                            <div class="boat-info" onclick="showBoat('${key}')">
+                                <span class="b-name">${b.name}</span>
+                                <span class="b-origin">📍 ${b.origin}</span>
+                                <span class="b-time">🕒 ${b.time}h</span>
+                            </div>
+                            <div class="vote-area">
+                                <button class="btn-vote ${hasVoted?'liked':''}" onclick="vote('${key}', ${b.id})">
+                                    <i class="fas fa-heart"></i> ${b.likes || 0}
+                                </button>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        function vote(key, id) {
+            if(localStorage.getItem('voted_' + id)) return;
+            rtdb.ref(`barcos/${currentPage}/${key}/likes`).transaction(l => (l || 0) + 1);
+            localStorage.setItem('voted_' + id, "true");
+        }
+
+        function showBoat(key) {
+            rtdb.ref(`barcos/${currentPage}/${key}`).once('value', (s) => {
+                const b = s.val();
+                document.getElementById('m-name').innerText = b.name;
+                document.getElementById('m-img').src = b.img;
+                document.getElementById('m-origin').innerText = "📍 " + b.origin;
+                document.getElementById('m-info').innerHTML = `Postado por: ${b.author}<br>Saída: ${b.time}h`;
+                document.getElementById('m-btn-zap').onclick = () => window.open(`https://wa.me/55${b.authorPhone.replace(/\D/g, '')}`);
+                document.getElementById('modal-details').style.display = 'block';
+            });
+        }
+
+        function closeModal() { document.getElementById('modal-details').style.display = 'none'; }
+
+        function listenAds() {
+            rtdb.ref('config/anuncio').on('value', (s) => {
+                const ad = s.val();
+                if(ad && ad.active) {
+                    document.getElementById('ad-area').style.display = 'block';
+                    document.getElementById('ad-img').src = ad.img;
+                    document.getElementById('ad-link').href = ad.link;
+                }
+            });
+        }
+
+        window.onload = () => { if(currentUser) startApp(); };
+    </script>
+</body>
+</html>

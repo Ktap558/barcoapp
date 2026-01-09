@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel BarcoApp | Administração</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #1b4332; --accent: #b07d62; --dark: #0f172a;
+            --surface: #1e293b; --text: #f8fafc; --river: #0077b6;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--dark); color: var(--text); padding: 20px; margin: 0; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .header-admin { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #334155; padding-bottom: 20px; }
+        .header-admin h1 { color: var(--accent); margin: 0; font-size: 1.8rem; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 380px 1fr; gap: 25px; }
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+        .card { background: var(--surface); border-radius: 24px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px; }
+        .card h3 { margin-top: 0; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* INPUTS ADMIN */
+        .admin-input-group { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; margin-top: 15px; }
+        .input-premium { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 12px; outline: none; font-family: inherit; width: 100%; }
+        .btn-save-ad { background: var(--accent); color: white; border: none; padding: 0 25px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+
+        /* RANKING */
+        .ranking-item { background: #0f172a; padding: 18px; border-radius: 18px; margin-bottom: 15px; border-left: 4px solid var(--accent); }
+        .ranking-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .user-name { font-weight: 700; font-size: 1rem; color: #fff; }
+        .user-phone { font-size: 0.8rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+        .user-score { font-weight: 800; color: #fbbf24; font-size: 0.9rem; }
+        .progress-container { width: 100%; height: 8px; background: #334155; border-radius: 10px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #b07d62, #fbbf24); transition: width 1s ease-in-out; }
+
+        /* TABELA */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: -10px; }
+        th { text-align: left; padding: 15px; color: #64748b; font-size: 0.75rem; }
+        td { background: #0f172a; padding: 15px; vertical-align: middle; }
+        td:first-child { border-radius: 15px 0 0 15px; }
+        td:last-child { border-radius: 0 15px 15px 0; }
+
+        .boat-img { width: 55px; height: 55px; border-radius: 10px; object-fit: cover; }
+        .badge-day { background: var(--primary); color: #4ade80; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+        .btn-delete { background: #ef4444; color: white; border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-admin">
+            <h1><i class="fas fa-shield-alt"></i> BarcoApp Admin</h1>
+            <div id="stats" style="color: #94a3b8;">Sincronizando...</div>
+        </div>
+
+        <div class="card" style="border: 1px solid var(--accent);">
+            <h3><i class="fas fa-ad"></i> Gerenciar Banner de Anúncio</h3>
+            <div class="admin-input-group">
+                <input type="text" id="ad-img-url" class="input-premium" placeholder="Link da Imagem (JPG/PNG)">
+                <input type="text" id="ad-link-url" class="input-premium" placeholder="Link de Destino (WhatsApp/Site)">
+                <button class="btn-save-ad" onclick="saveAd()">ATUALIZAR BANNER</button>
+            </div>
+            <p style="font-size: 0.75rem; margin-top: 10px; opacity: 0.6;">* Deixe em branco e salve para remover o anúncio do app.</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3><i class="fas fa-medal"></i> Ranking de Likes</h3>
+                <div id="ranking-list"></div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-ship"></i> Barcos no Sistema</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Barco</th>
+                                <th>Origem / Autor</th>
+                                <th>Dia</th>
+                                <th>Likes</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-boat-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO FIREBASE (IGUAL AO INDEX)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
+            authDomain: "barcoapp-c0f00.firebaseapp.com",
+            databaseURL: "https://barcoapp-c0f00-default-rtdb.firebaseio.com",
+            projectId: "barcoapp-c0f00",
+            storageBucket: "barcoapp-c0f00.firebasestorage.app",
+            messagingSenderId: "575071745494",
+            appId: "1:575071745494:web:63c1db8d2c1038c27c6077"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const rtdb = firebase.database();
+
+        // SALVAR ANÚNCIO NO FIREBASE
+        function saveAd() {
+            const img = document.getElementById('ad-img-url').value;
+            const link = document.getElementById('ad-link-url').value;
+            
+            rtdb.ref('config/anuncio').set({
+                img: img,
+                link: link,
+                active: img !== ""
+            }).then(() => alert("Banner atualizado para todos os usuários!"));
+        }
+
+        // CARREGAR DADOS EM TEMPO REAL
+        function initAdmin() {
+            // Carregar Anúncio Atual
+            rtdb.ref('config/anuncio').once('value', s => {
+                const data = s.val();
+                if(data) {
+                    document.getElementById('ad-img-url').value = data.img || "";
+                    document.getElementById('ad-link-url').value = data.link || "";
+                }
+            });
+
+            // Escutar todos os barcos para Ranking e Lista
+            rtdb.ref('barcos').on('value', snapshot => {
+                const allDays = snapshot.val();
+                renderAll(allDays);
+            });
+        }
+
+        function renderAll(allDays) {
+            const tableBody = document.getElementById('admin-boat-list');
+            const rankDiv = document.getElementById('ranking-list');
+            tableBody.innerHTML = "";
+            
+            let userScores = {};
+            let totalCounter = 0;
+
+            if(!allDays) {
+                tableBody.innerHTML = "<tr><td colspan='5' class='empty-state'>Nenhum barco cadastrado.</td></tr>";
+                return;
+            }
+
+            for(let day in allDays) {
+                const boatsInDay = allDays[day];
+                Object.keys(boatsInDay).forEach(key => {
+                    const b = boatsInDay[key];
+                    totalCounter++;
+
+                    // Soma likes para o ranking por telefone
+                    if(b.authorPhone) {
+                        if(!userScores[b.authorPhone]) {
+                            userScores[b.authorPhone] = { name: b.author, likes: 0, phone: b.authorPhone };
+                        }
+                        userScores[b.authorPhone].likes += (b.likes || 0);
+                    }
+
+                    // Adiciona na tabela
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td><img src="${b.img}" class="boat-img"><br><b>${b.name}</b></td>
+                            <td>
+                                <div style="color:var(--river); font-weight:700;">📍 ${b.origin}</div>
+                                <div style="font-size:0.7rem; opacity:0.7;">Por: ${b.author}</div>
+                            </td>
+                            <td><span class="badge-day">${day}</span><br><small>${b.time}h</small></td>
+                            <td><b style="color:#fbbf24;"><i class="fas fa-heart"></i> ${b.likes || 0}</b></td>
+                            <td>
+                                <button class="btn-delete" onclick="deleteBoat('${day}', '${key}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                });
+            }
+
+            document.getElementById('stats').innerText = `${totalCounter} barcos ativos no sistema`;
+
+            // Renderiza Ranking
+            const sortedUsers = Object.values(userScores).sort((a,b) => b.likes - a.likes);
+            rankDiv.innerHTML = "";
+            sortedUsers.forEach((u, i) => {
+                const perc = Math.min((u.likes / 1000) * 100, 100);
+                rankDiv.innerHTML += `
+                    <div class="ranking-item">
+                        <div class="ranking-info">
+                            <div>
+                                <div class="user-name">${i+1}º ${u.name}</div>
+                                <small style="color:var(--accent)">${u.phone}</small>
+                            </div>
+                            <span class="user-score">${u.likes}/1000</span>
+                        </div>
+                        <div class="progress-container"><div class="progress-bar" style="width:${perc}%"></div></div>
+                    </div>`;
+            });
+        }
+
+        function deleteBoat(day, key) {
+            if(confirm("Deseja remover este barco permanentemente?")) {
+                rtdb.ref(`barcos/${day}/${key}`).remove();
+            }
+        }
+
+        window.onload = initAdmin;
+    </script>
+</body>
+</html>
