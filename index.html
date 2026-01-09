@@ -19,88 +19,100 @@
 
     <style>
         :root {
-            --primary: #1b4332; --accent: #b07d62; --river: #0077b6;
-            --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a;
-            --text-sub: #64748b; --radius: 20px;
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #a855f7;
+            --text-white: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass: rgba(255, 255, 255, 0.05);
+            --gradient: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
         }
+
         * { transition: all 0.25s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); height: 100%; overflow-x: hidden; }
+        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); height: 100%; overflow-x: hidden; }
 
         /* TELA LOGIN */
         #screen-welcome {
-            height: 100vh; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(27, 67, 50, 0.95) 100%), 
-            url('https://images.unsplash.com/photo-1559139225-33270846af99?q=80&w=1200') center/cover;
-            display: flex; flex-direction: column; justify-content: flex-end; align-items: center; text-align: center;
-            padding-bottom: 50px;
+            height: 100vh; background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            padding: 20px;
         }
-        .login-content { width: 90%; max-width: 400px; color: white; }
-        .hero-title { font-size: 2.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 10px; letter-spacing: -1px; }
-        .hero-subtitle { font-size: 1rem; opacity: 0.9; margin-bottom: 30px; line-height: 1.5; font-weight: 500; }
-        .promo-badge { background: #fbbf24; color: #78350f; padding: 8px 15px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; display: inline-block; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4); text-transform: uppercase; }
+        .login-content { width: 100%; max-width: 400px; }
+        .hero-title { font-size: 2.8rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        .hero-subtitle { font-size: 1rem; color: var(--text-dim); margin-bottom: 30px; font-weight: 500; }
+        .promo-badge { background: var(--gradient); color: white; padding: 8px 15px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; display: inline-block; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4); text-transform: uppercase; }
         
-        .login-form { background: rgba(255,255,255,1); padding: 25px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
-        .input-premium { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid #f1f5f9; margin-bottom: 12px; font-weight: 600; outline: none; font-size: 16px; color: var(--text-main); }
-        .input-premium:focus { border-color: var(--accent); }
-        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--primary); color: white; font-weight: 800; cursor: pointer; font-size: 1rem; box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3); }
+        .login-form { background: var(--card-dark); padding: 30px; border-radius: 24px; border: 1px solid var(--glass); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .input-premium { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--glass); margin-bottom: 12px; font-weight: 600; outline: none; font-size: 16px; background: #0f172a; color: white; }
+        .input-premium:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(34, 211, 238, 0.2); }
+        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; font-size: 1rem; box-shadow: 0 10px 20px rgba(168, 85, 247, 0.3); }
 
-        /* HEADER E NAV */
-        #screen-main { display: none; }
-        .header { background: var(--primary); padding: 40px 20px 60px; color: white; border-radius: 0 0 35px 35px; }
-        .calendar-nav { display: flex; gap: 10px; overflow-x: auto; padding: 15px 20px; margin-top: -40px; scrollbar-width: none; }
-        .day-card { min-width: 100px; height: 50px; background: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; box-shadow: 0 10px 20px rgba(0,0,0,0.05); cursor: pointer; color: var(--text-sub); flex-shrink: 0; }
-        .day-card.active { background: var(--accent); color: white; }
+        /* HEADER */
+        .header { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); padding: 40px 20px; border-radius: 0 0 35px 35px; border-bottom: 1px solid var(--glass); }
+        
+        /* MENU 2 COLUNAS (DIAS) */
+        .calendar-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .day-card { background: var(--card-dark); height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; border: 1px solid var(--glass); cursor: pointer; color: var(--text-white); }
+        .day-card:active { transform: scale(0.95); background: var(--glass); }
+        .day-card.active { background: var(--gradient); border: none; }
+        .day-card.full-width { grid-column: span 2; height: 60px; border: 1px dashed var(--accent-purple); }
 
-        /* ANÚNCIO */
-        .ad-banner-container { padding: 0 20px; margin-top: 15px; display: none; }
-        .ad-anchor { display: block; overflow: hidden; border-radius: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
-        .ad-img { width: 100%; height: 110px; object-fit: cover; display: block; }
+        /* FEED PÁGINA DE BARCOS */
+        #screen-day-detail { display: none; }
+        .back-bar { padding: 20px; color: var(--accent-cyan); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; }
 
         /* FEED */
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; padding-bottom: 100px; }
-        .boat-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); display: flex; flex-direction: column; }
-        .boat-img { width: 100%; height: 120px; object-fit: cover; }
+        .boat-card { background: var(--card-dark); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--glass); display: flex; flex-direction: column; }
+        .boat-img { width: 100%; height: 110px; object-fit: cover; filter: brightness(0.9); }
         .boat-info { padding: 12px; flex: 1; }
-        .boat-info .b-name { font-size: 0.9rem; color: var(--primary); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .boat-info .b-origin { font-size: 0.75rem; color: var(--river); font-weight: 700; display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
-        .boat-info .b-time { font-size: 0.7rem; color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .boat-info .b-name { font-size: 0.85rem; color: var(--accent-cyan); font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
+        .boat-info .b-origin { font-size: 0.75rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
+        .boat-info .b-time { font-size: 0.7rem; color: var(--accent-purple); font-weight: 600; }
 
-        .vote-area { display: flex; border-top: 1px solid #f8fafc; padding: 8px; gap: 8px; }
-        .btn-vote { flex: 1; padding: 10px; border-radius: 10px; border: none; background: #f8fafc; cursor: pointer; font-size: 0.75rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-vote.liked { background: #dcfce7; color: #166534; }
+        .vote-area { display: flex; border-top: 1px solid var(--glass); padding: 8px; }
+        .btn-vote { flex: 1; padding: 10px; border-radius: 10px; border: none; background: rgba(255,255,255,0.03); cursor: pointer; font-size: 0.75rem; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-vote.liked { color: #f43f5e; }
 
-        #screen-register { display: none; background: white; min-height: 100vh; padding: 25px; }
-        .fab { position: fixed; bottom: 30px; right: 25px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 20px; border: none; font-size: 1.5rem; box-shadow: 0 15px 30px rgba(27, 67, 50, 0.4); z-index: 100; }
+        /* REGISTRO */
+        #screen-register { display: none; background: var(--bg-dark); min-height: 100vh; padding: 25px; }
+        .fab { position: fixed; bottom: 30px; right: 25px; width: 64px; height: 64px; background: var(--gradient); color: white; border-radius: 50%; border: none; font-size: 1.5rem; box-shadow: 0 10px 30px rgba(168, 85, 247, 0.5); z-index: 100; }
+        
+        /* MODAL */
+        #modal-details { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg-dark); z-index:2000; display:none; overflow-y:auto; }
+        .close-modal { position:absolute; top:20px; right:20px; border:none; background:rgba(0,0,0,0.5); color:white; width:40px; height:40px; border-radius:50%; backdrop-filter: blur(10px); }
     </style>
 </head>
 <body>
 
     <section id="screen-welcome">
         <div class="login-content">
-            <div class="promo-badge"><i class="fas fa-gift"></i> Prêmio Surpresa Liberado</div>
+            <div class="promo-badge"><i class="fas fa-bolt"></i> Sistema Atualizado</div>
             <h1 class="hero-title">BarcoApp</h1>
             <p class="hero-subtitle">Sua próxima viagem começa aqui. Alcance <b>1.000 likes</b> e ganhe prêmios exclusivos!</p>
             <div class="login-form">
                 <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome">
                 <input type="tel" id="user-phone" class="input-premium" placeholder="Seu WhatsApp">
-                <button class="btn-main" onclick="launchApp()">ENTRAR NO APP</button>
+                <button class="btn-main" onclick="launchApp()">INICIAR</button>
             </div>
         </div>
     </section>
 
     <section id="screen-main">
         <div class="header">
-            <div style="font-size: 0.9rem; opacity: 0.8; font-weight: 600;">Seja bem-vindo! Escolha abaixo o dia da sua viagem</div>
-            <div style="font-weight: 800; font-size: 1.5rem;"><span id="display-user"></span> ⚓</div>
+            <div style="font-size: 0.9rem; color: var(--accent-cyan); font-weight: 600;">Seja bem-vindo! Escolha abaixo o dia da sua viagem!</div>
+            <div style="font-weight: 800; font-size: 1.6rem;"><span id="display-user"></span> ⚓</div>
         </div>
 
         <div class="calendar-nav">
-            <div class="day-card active" onclick="changePage('Segunda', this)">Segunda</div>
-            <div class="day-card" onclick="changePage('Terça', this)">Terça</div>
-            <div class="day-card" onclick="changePage('Quarta', this)">Quarta</div>
-            <div class="day-card" onclick="changePage('Quinta', this)">Quinta</div>
-            <div class="day-card" onclick="changePage('Sexta', this)">Sexta</div>
-            <div class="day-card" onclick="changePage('Sábado', this)">Sábado</div>
-            <div class="day-card" onclick="changePage('Domingo', this)">Domingo</div>
+            <div class="day-card" onclick="changePage('Segunda', this)">SEGUNDA</div>
+            <div class="day-card" onclick="changePage('Terça', this)">TERÇA</div>
+            <div class="day-card" onclick="changePage('Quarta', this)">QUARTA</div>
+            <div class="day-card" onclick="changePage('Quinta', this)">QUINTA</div>
+            <div class="day-card" onclick="changePage('Sexta', this)">SEXTA</div>
+            <div class="day-card" onclick="changePage('Sábado', this)">SÁBADO</div>
+            <div class="day-card full-width" onclick="changePage('Domingo', this)">DOMINGO</div>
         </div>
 
         <div id="ad-area" class="ad-banner-container">
@@ -108,18 +120,24 @@
                 <img id="ad-img" src="" class="ad-img">
             </a>
         </div>
-
-        <div class="feed" id="boat-feed"></div>
         <button class="fab" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
     </section>
 
+    <section id="screen-day-detail">
+        <div class="back-bar" onclick="navigate('screen-main')">
+            <i class="fas fa-arrow-left"></i> VOLTAR AO MENU
+        </div>
+        <h2 id="day-title" style="padding: 0 20px; color: var(--accent-purple); margin: 0;"></h2>
+        <div class="feed" id="boat-feed"></div>
+    </section>
+
     <section id="screen-register">
-        <div onclick="navigate('screen-main')" style="margin-bottom:20px; font-weight:800; color:var(--primary); cursor:pointer;"><i class="fas fa-arrow-left"></i> VOLTAR</div>
-        <h2>Postar novo Barco</h2>
+        <div onclick="navigate('screen-main')" style="margin-bottom:20px; font-weight:800; color:var(--accent-cyan); cursor:pointer;"><i class="fas fa-times"></i> CANCELAR</div>
+        <h2 style="color: white;">Novo Registro</h2>
         <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
-        <div onclick="document.getElementById('file-input').click()" style="width:100%; height:160px; background:#f1f5f9; border-radius:18px; display:flex; align-items:center; justify-content:center; border:2px dashed #cbd5e1; overflow:hidden; margin-bottom:20px;">
+        <div onclick="document.getElementById('file-input').click()" style="width:100%; height:160px; background:var(--card-dark); border-radius:18px; display:flex; align-items:center; justify-content:center; border:2px dashed var(--glass); overflow:hidden; margin-bottom:20px;">
             <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
-            <span id="label-foto" style="font-weight:700; color:var(--text-sub);"><i class="fas fa-camera"></i> ADICIONAR FOTO</span>
+            <span id="label-foto" style="font-weight:700; color:var(--text-dim);"><i class="fas fa-camera"></i> ADICIONAR FOTO</span>
         </div>
         <div style="display: grid; gap: 10px;">
             <input type="text" id="in-name" class="input-premium" placeholder="Nome do Barco">
@@ -128,23 +146,25 @@
                 <input type="date" id="in-date" class="input-premium">
                 <input type="time" id="in-time" class="input-premium">
             </div>
-            <button class="btn-main" onclick="publish()" style="background: var(--accent);">PUBLICAR NA REDE</button>
+            <button class="btn-main" onclick="publish()">PUBLICAR NO SISTEMA</button>
         </div>
     </section>
 
-    <div id="modal-details" style="position: fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:2000; display:none; overflow-y:auto;">
-        <div style="position:relative"><img id="m-img" style="width:100%; height:300px; object-fit:cover;"><button onclick="closeModal()" style="position:absolute; top:20px; right:20px; border:none; background:white; width:40px; height:40px; border-radius:12px;"><i class="fas fa-times"></i></button></div>
-        <div style="padding:25px;">
-            <h1 id="m-name" style="margin:0; color:var(--primary);"></h1>
-            <div id="m-origin" style="margin:10px 0; color:var(--river); font-weight:700;"></div>
-            <div id="m-price" style="font-size:1.2rem; font-weight:800; color:#166534; background:#dcfce7; padding:12px; border-radius:15px; display:inline-block; margin:15px 0;">Consultar Preço</div>
-            <p id="m-info" style="line-height:1.6; color:var(--text-sub);"></p>
-            <button id="m-btn-zap" style="width:100%; padding:18px; background:#25d366; color:white; border:none; border-radius:16px; margin-top:20px; font-weight:800;"><i class="fab fa-whatsapp"></i> CHAMAR NO WHATSAPP</button>
+    <div id="modal-details">
+        <div style="position:relative">
+            <img id="m-img" style="width:100%; height:320px; object-fit:cover;">
+            <button onclick="closeModal()" class="close-modal"><i class="fas fa-times"></i></button>
+        </div>
+        <div style="padding:30px; background: var(--bg-dark); border-top-left-radius: 30px; border-top-right-radius: 30px; margin-top: -30px; position: relative;">
+            <h1 id="m-name" style="margin:0; color:white;"></h1>
+            <div id="m-origin" style="margin:10px 0; color:var(--accent-cyan); font-weight:700;"></div>
+            <p id="m-info" style="line-height:1.6; color:var(--text-dim);"></p>
+            <button id="m-btn-zap" style="width:100%; padding:18px; background:#22c55e; color:white; border:none; border-radius:16px; margin-top:20px; font-weight:800; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);"><i class="fab fa-whatsapp"></i> CONTACTAR PROPRIETÁRIO</button>
         </div>
     </div>
 
     <script>
-        // CONFIGURAÇÃO FIREBASE
+        // CONFIGURAÇÃO FIREBASE (MANTIDA IGUAL)
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -154,7 +174,6 @@
             messagingSenderId: "575071745494",
             appId: "1:575071745494:web:63c1db8d2c1038c27c6077"
         };
-
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database();
 
@@ -171,7 +190,6 @@
             let n = document.getElementById('user-name').value;
             let p = document.getElementById('user-phone').value;
             if(!n || !p) return alert("Preencha seus dados!");
-            
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
             startApp();
@@ -180,8 +198,14 @@
         function startApp() {
             document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
             navigate('screen-main');
-            updateFeed();
             listenAds();
+        }
+
+        function changePage(day, el) {
+            currentPage = day;
+            document.getElementById('day-title').innerText = day;
+            navigate('screen-day-detail');
+            updateFeed();
         }
 
         function processImage(input) {
@@ -210,11 +234,9 @@
             const name = document.getElementById('in-name').value;
             const dateVal = document.getElementById('in-date').value;
             if(!name || !dateVal) return alert("Preencha Nome e Data!");
-
             const dt = new Date(dateVal + "T00:00:00");
             const daysOfWeek = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
             const dayName = daysOfWeek[dt.getDay()];
-
             const boat = {
                 id: Date.now(),
                 author: currentUser.name,
@@ -225,19 +247,10 @@
                 img: currentImg || 'https://via.placeholder.com/400x200?text=BarcoApp',
                 likes: 0
             };
-
             rtdb.ref('barcos/' + dayName).push(boat).then(() => {
                 alert("Publicado!");
-                currentPage = dayName;
                 location.reload();
             });
-        }
-
-        function changePage(day, el) {
-            currentPage = day;
-            document.querySelectorAll('.day-card').forEach(d => d.classList.remove('active'));
-            el.classList.add('active');
-            updateFeed();
         }
 
         function updateFeed() {
@@ -246,7 +259,7 @@
                 feed.innerHTML = "";
                 const data = snapshot.val();
                 if(!data) {
-                    feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:50px; opacity:0.3;'>Nenhum barco hoje.</p>";
+                    feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:50px; opacity:0.3;'>Nenhum barco registrado.</p>";
                     return;
                 }
                 Object.keys(data).forEach(key => {
@@ -282,7 +295,7 @@
                 document.getElementById('m-name').innerText = b.name;
                 document.getElementById('m-img').src = b.img;
                 document.getElementById('m-origin').innerText = "📍 " + b.origin;
-                document.getElementById('m-info').innerHTML = `Postado por: ${b.author}<br>Saída: ${b.time}h`;
+                document.getElementById('m-info').innerHTML = `Logística por: ${b.author}<br>Saída confirmada: ${b.time}h`;
                 document.getElementById('m-btn-zap').onclick = () => window.open(`https://wa.me/55${b.authorPhone.replace(/\D/g, '')}`);
                 document.getElementById('modal-details').style.display = 'block';
             });
