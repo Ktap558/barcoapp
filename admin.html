@@ -28,12 +28,10 @@
         .card { background: var(--surface); border-radius: 24px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px; }
         .card h3 { margin-top: 0; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* INPUTS ADMIN */
         .admin-input-group { display: grid; grid-template-columns: 1fr 1fr auto; gap: 15px; margin-top: 15px; }
         .input-premium { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 12px; outline: none; font-family: inherit; width: 100%; }
         .btn-save-ad { background: var(--accent); color: white; border: none; padding: 0 25px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
 
-        /* RANKING */
         .ranking-item { background: #0f172a; padding: 18px; border-radius: 18px; margin-bottom: 15px; border-left: 4px solid var(--accent); }
         .ranking-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .user-name { font-weight: 700; font-size: 1rem; color: #fff; }
@@ -41,7 +39,6 @@
         .progress-container { width: 100%; height: 8px; background: #334155; border-radius: 10px; overflow: hidden; }
         .progress-bar { height: 100%; background: linear-gradient(90deg, #b07d62, #fbbf24); transition: width 1s ease-in-out; }
 
-        /* TABELA */
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: -10px; }
         th { text-align: left; padding: 15px; color: #64748b; font-size: 0.75rem; }
@@ -52,7 +49,6 @@
         .boat-img { width: 55px; height: 55px; border-radius: 10px; object-fit: cover; }
         .badge-day { background: var(--primary); color: #4ade80; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
         .btn-delete { background: #ef4444; color: white; border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; }
-        
         .contact-link { color: #22c55e; text-decoration: none; font-weight: 700; font-size: 0.75rem; }
     </style>
 </head>
@@ -67,8 +63,8 @@
         <div class="card" style="border: 1px solid var(--accent);">
             <h3><i class="fas fa-ad"></i> Gerenciar Banner de Anúncio</h3>
             <div class="admin-input-group">
-                <input type="text" id="ad-img-url" class="input-premium" placeholder="Link da Imagem (JPG/PNG)">
-                <input type="text" id="ad-link-url" class="input-premium" placeholder="Link de Destino (WhatsApp/Site)">
+                <input type="text" id="ad-img-url" class="input-premium" placeholder="Link da Imagem do Banner">
+                <input type="text" id="ad-link-url" class="input-premium" placeholder="Link de Destino">
                 <button class="btn-save-ad" onclick="saveAd()">ATUALIZAR BANNER</button>
             </div>
         </div>
@@ -86,9 +82,9 @@
                         <thead>
                             <tr>
                                 <th>Barco</th>
-                                <th>Contatos (Dono / Autor)</th>
+                                <th>Rota / Contatos</th>
                                 <th>Dia / Hora</th>
-                                <th>Status</th>
+                                <th>Interação</th>
                                 <th>Ação</th>
                             </tr>
                         </thead>
@@ -120,10 +116,11 @@
                 img: img,
                 link: link,
                 active: img !== ""
-            }).then(() => alert("Anúncio atualizado!"));
+            }).then(() => alert("Anúncio atualizado com sucesso!"));
         }
 
         function initAdmin() {
+            // Carregar config de anúncio inicial
             rtdb.ref('config/anuncio').once('value', s => {
                 const data = s.val();
                 if(data) {
@@ -132,6 +129,7 @@
                 }
             });
 
+            // Escutar mudanças nos barcos
             rtdb.ref('barcos').on('value', snapshot => {
                 const allDays = snapshot.val();
                 renderAll(allDays);
@@ -143,11 +141,11 @@
             const rankDiv = document.getElementById('ranking-list');
             tableBody.innerHTML = "";
             
-            let userScores = {}; // Para o termômetro (Ranking)
+            let userScores = {}; 
             let totalCounter = 0;
 
             if(!allDays) {
-                tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:50px;'>Nenhum registro.</td></tr>";
+                tableBody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:50px;'>Nenhum registro encontrado.</td></tr>";
                 return;
             }
 
@@ -157,16 +155,16 @@
                     const b = boatsInDay[key];
                     totalCounter++;
 
-                    // Lógica do Termômetro: Soma likes por quem registrou (registeredBy)
-                    const userKey = b.registeredBy || b.authorPhone; // Fallback caso um campo falte
+                    // Acumula likes para o ranking usando o telefone de quem registrou
+                    const userKey = b.registeredBy; 
                     if(userKey) {
                         if(!userScores[userKey]) {
-                            userScores[userKey] = { name: b.authorName || b.author, likes: 0, phone: userKey };
+                            userScores[userKey] = { name: b.authorName || 'Usuário', likes: 0, phone: userKey };
                         }
                         userScores[userKey].likes += (b.likes || 0);
                     }
 
-                    // Tabela com as novas informações
+                    // Preenche a tabela com os campos corretos do formulário
                     tableBody.innerHTML += `
                         <tr>
                             <td>
@@ -174,16 +172,21 @@
                                 <b>${b.name}</b>
                             </td>
                             <td>
-                                <div style="color:var(--river); font-weight:700;">📍 ${b.origin}</div>
-                                <a href="https://wa.me/55${b.ownerPhone}" target="_blank" class="contact-link">
-                                    <i class="fab fa-whatsapp"></i> Dono: ${b.ownerPhone || 'N/A'}
+                                <div style="color:var(--river); font-weight:700; font-size:0.8rem;">
+                                   <i class="fas fa-route"></i> ${b.origin} ➔ ${b.destiny}
+                                </div>
+                                <a href="https://wa.me/${b.tel1}" target="_blank" class="contact-link">
+                                    <i class="fab fa-whatsapp"></i> Zap Dono: ${b.tel1 || 'N/A'}
                                 </a>
                                 <div style="font-size:0.65rem; opacity:0.6; margin-top:5px;">
-                                    Postado por: ${b.authorName || b.author}
+                                    Postado por: ${b.authorName} (${b.registeredBy})
                                 </div>
                             </td>
-                            <td><span class="badge-day">${day}</span><br><small>${b.time}h</small></td>
-                            <td><b style="color:#fbbf24;"><i class="fas fa-heart"></i> ${b.likes || 0}</b></td>
+                            <td><span class="badge-day">${day}</span><br><small>${b.time || '--:--'}h</small></td>
+                            <td>
+                                <b style="color:#fbbf24;"><i class="fas fa-heart"></i> ${b.likes || 0}</b><br>
+                                <small style="color:#4ade80">Passagem: R$ ${b.priceP || '0'}</small>
+                            </td>
                             <td>
                                 <button class="btn-delete" onclick="deleteBoat('${day}', '${key}')">
                                     <i class="fas fa-trash"></i>
@@ -193,9 +196,9 @@
                 });
             }
 
-            document.getElementById('stats').innerText = `${totalCounter} barcos cadastrados`;
+            document.getElementById('stats').innerText = `${totalCounter} barcos cadastrados no total`;
 
-            // Renderizar Ranking (Termômetro)
+            // Renderizar e ordenar Ranking
             const sortedUsers = Object.values(userScores).sort((a,b) => b.likes - a.likes);
             rankDiv.innerHTML = "";
             sortedUsers.forEach((u, i) => {
@@ -205,17 +208,19 @@
                         <div class="ranking-info">
                             <div>
                                 <div class="user-name">${i+1}º ${u.name}</div>
-                                <small style="color:var(--accent)">ID: ${u.phone}</small>
+                                <small style="color:var(--accent)">Whats: ${u.phone}</small>
                             </div>
                             <span class="user-score">${u.likes} / 1000</span>
                         </div>
-                        <div class="progress-container"><div class="progress-bar" style="width:${perc}%"></div></div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width:${perc}%"></div>
+                        </div>
                     </div>`;
             });
         }
 
         function deleteBoat(day, key) {
-            if(confirm("Excluir permanentemente este barco?")) {
+            if(confirm("Tem certeza que deseja excluir permanentemente este barco?")) {
                 rtdb.ref(`barcos/${day}/${key}`).remove();
             }
         }
