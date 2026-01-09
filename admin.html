@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Panel | BarcoApp</title>
+    <title>Master Admin | BarcoApp</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -14,211 +14,109 @@
     <style>
         :root {
             --primary: #22d3ee;
-            --secondary: #a855f7;
+            --warning: #fbbf24;
+            --danger: #ef4444;
             --dark-bg: #020617;
             --card-bg: #0f172a;
             --surface: #1e293b;
             --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --danger: #ef4444;
-            --success: #22c55e;
         }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--dark-bg); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 20px;
-        }
-
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--dark-bg); color: var(--text-main); margin: 0; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
-
-        /* HEADER */
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid var(--surface);
-            margin-bottom: 30px;
-        }
-
-        /* ESTATÍSTICAS RÁPIDAS */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid var(--surface);
-            text-align: center;
-        }
-
-        .stat-card i { font-size: 1.5rem; color: var(--primary); margin-bottom: 10px; }
-        .stat-card h4 { margin: 5px 0; font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; }
-        .stat-card span { font-size: 1.8rem; font-weight: 800; display: block; }
-
-        /* LAYOUT PRINCIPAL */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 30px;
-        }
-
-        @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } }
-
-        .panel-card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 25px;
-            border: 1px solid var(--surface);
-            margin-bottom: 25px;
-        }
-
-        .panel-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--primary);
-        }
-
-        /* TABELA DE BARCOS */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 15px; color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid var(--surface); }
-        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.02); vertical-align: middle; }
         
-        .boat-row-info { display: flex; align-items: center; gap: 12px; }
-        .mini-img { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; background: var(--surface); }
+        .grid-main { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px; }
+        @media (max-width: 1000px) { .grid-main { grid-template-columns: 1fr; } }
 
-        /* RANKING */
-        .rank-user-item {
-            background: var(--surface);
-            padding: 15px;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--secondary);
-        }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 25px; border: 1px solid var(--surface); margin-bottom: 25px; }
+        h2 { font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 10px; margin-top: 0; }
 
-        .progress-bar-bg { width: 100%; height: 6px; background: #020617; border-radius: 10px; margin-top: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 10px; }
+        .input-box { width: 100%; background: var(--surface); border: 1px solid #334155; color: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; outline: none; }
+        
+        /* TABELAS */
+        .scroll-area { max-height: 400px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { text-align: left; padding: 12px; color: #94a3b8; border-bottom: 1px solid var(--surface); }
+        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.02); }
 
-        /* BOTÕES */
-        .btn-action {
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-save { background: var(--primary); color: var(--dark-bg); }
-        .btn-clear { background: var(--danger); color: white; margin-top: 10px; width: 100%; }
-        .btn-del-small { background: rgba(239, 68, 68, 0.1); color: var(--danger); width: 35px; height: 35px; border-radius: 8px; }
+        .btn { padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: #000; }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-danger { background: var(--danger); color: #fff; }
 
-        .input-box {
-            width: 100%;
-            background: var(--surface);
-            border: 1px solid #334155;
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            outline: none;
-        }
+        .badge { background: var(--surface); padding: 5px 10px; border-radius: 8px; font-weight: 600; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header class="admin-header">
-        <div>
-            <h1 style="margin:0; font-weight:800; letter-spacing:-1px;">DASHBOARD <span style="color:var(--primary)">ADMIN</span></h1>
-            <p style="margin:0; color:var(--text-dim); font-size:0.9rem;">Controle total do BarcoApp</p>
-        </div>
-        <div id="sync-status" style="font-size:0.8rem; background: var(--success); color: var(--dark-bg); padding:5px 15px; border-radius:20px; font-weight:700;">
-            <i class="fas fa-sync fa-spin"></i> LIVE
-        </div>
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>MASTER <span style="color:var(--primary)">CONTROL</span></h1>
+        <div id="stats-summary" class="badge">Sincronizando...</div>
     </header>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <i class="fas fa-ship"></i>
-            <h4>Barcos Ativos</h4>
-            <span id="stat-total-boats">0</span>
+    <div class="grid-main" style="grid-template-columns: 1fr 1.5fr;">
+        <div>
+            <div class="card" style="border: 1px solid var(--warning);">
+                <h2><i class="fas fa-bullhorn"></i> Alerta Global</h2>
+                <input type="text" id="alert-msg" class="input-box" placeholder="Mensagem para todos os usuários...">
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-warning" style="flex:1" onclick="sendAlert()">ATIVAR ALERTA</button>
+                    <button class="btn btn-danger" onclick="clearAlert()"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+
+            <div class="card" style="border: 1px solid var(--primary);">
+                <h2><i class="fas fa-ad"></i> Banner de Anúncio</h2>
+                <p style="font-size: 0.7rem; color: #94a3b8;">Link da imagem (JPG/PNG):</p>
+                <input type="text" id="ad-img-url" class="input-box" placeholder="https://site.com/imagem.jpg">
+                <p style="font-size: 0.7rem; color: #94a3b8;">Link ao clicar (WhatsApp ou Site):</p>
+                <input type="text" id="ad-click-url" class="input-box" placeholder="https://wa.me/55...">
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" style="flex:1" onclick="saveAd()">PUBLICAR ANÚNCIO</button>
+                    <button class="btn btn-danger" onclick="removeAd()"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
         </div>
-        <div class="stat-card">
-            <i class="fas fa-heart"></i>
-            <h4>Total Likes</h4>
-            <span id="stat-total-likes">0</span>
-        </div>
-        <div class="stat-card">
-            <i class="fas fa-users"></i>
-            <h4>Parceiros</h4>
-            <span id="stat-total-users">0</span>
-        </div>
-        <div class="stat-card">
-            <i class="fas fa-user-plus"></i>
-            <h4>Indicações</h4>
-            <span id="stat-total-invites">0</span>
+
+        <div class="card">
+            <h2><i class="fas fa-users"></i> Usuários e Indicações</h2>
+            <div class="scroll-area">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>WhatsApp</th>
+                            <th>Amigos</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-list"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div class="main-layout">
-        <aside>
-            <div class="panel-card">
-                <h3><i class="fas fa-bullhorn"></i> Anúncio Global</h3>
-                <input type="text" id="ad-img" class="input-box" placeholder="URL da Imagem do Banner">
-                <input type="text" id="ad-link" class="input-box" placeholder="Link do WhatsApp/Site">
-                <button class="btn-action btn-save" onclick="saveAd()" style="width:100%">ATUALIZAR BANNER</button>
-            </div>
-
-            <div class="panel-card">
-                <h3><i class="fas fa-trophy"></i> Ranking de Engajamento</h3>
-                <div id="ranking-container">
-                    </div>
-            </div>
-
-            <div class="panel-card" style="border-color: var(--danger);">
-                <h3 style="color:var(--danger)"><i class="fas fa-exclamation-triangle"></i> Zona de Risco</h3>
-                <p style="font-size:0.75rem; color:var(--text-dim);">Apague todos os barcos para iniciar uma nova semana de escalas.</p>
-                <button class="btn-action btn-clear" onclick="clearAllBoats()">LIMPAR TODA A ESCALA</button>
-            </div>
-        </aside>
-
-        <main>
-            <div class="panel-card">
-                <h3><i class="fas fa-list-ul"></i> Escala Completa de Barcos</h3>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Barco</th>
-                                <th>Origem/Destino</th>
-                                <th>Dia/Hora</th>
-                                <th>Engajamento</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="boat-table-body">
-                            </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
+    <div class="card">
+        <h2><i class="fas fa-ship"></i> Escala de Barcos Cadastrados</h2>
+        <div class="scroll-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Barco</th>
+                        <th>Dia</th>
+                        <th>Dono (WhatsApp)</th>
+                        <th>Likes</th>
+                        <th>Excluir</th>
+                    </tr>
+                </thead>
+                <tbody id="boat-list"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
-    // CONFIGURAÇÃO FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
         authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -231,119 +129,113 @@
     firebase.initializeApp(firebaseConfig);
     const rtdb = firebase.database();
 
-    function init() {
-        // Carregar Anúncio Atual
-        rtdb.ref('config/anuncio').once('value', s => {
-            const d = s.val();
-            if(d) {
-                document.getElementById('ad-img').value = d.img || "";
-                document.getElementById('ad-link').value = d.link || "";
-            }
-        });
+    // --- FUNÇÕES DE ALERTA ---
+    function sendAlert() {
+        const msg = document.getElementById('alert-msg').value;
+        if(!msg) return alert("Digite algo!");
+        rtdb.ref('config/alerta').set({ text: msg, active: true })
+            .then(() => alert("Alerta Enviado!"));
+    }
 
-        // Ouvinte em Tempo Real para Barcos e Indicações
-        rtdb.ref('barcos').on('value', boatSnap => {
-            rtdb.ref('indicacoes').once('value', indSnap => {
-                renderDashboard(boatSnap.val(), indSnap.val() || {});
-            });
+    function clearAlert() {
+        rtdb.ref('config/alerta').remove().then(() => {
+            document.getElementById('alert-msg').value = "";
+            alert("Alerta Removido!");
         });
     }
 
-    function renderDashboard(allDays, allInds) {
-        const table = document.getElementById('boat-table-body');
-        const ranking = document.getElementById('ranking-container');
-        table.innerHTML = "";
-        ranking.innerHTML = "";
+    // --- FUNÇÕES DE ANÚNCIO ---
+    function saveAd() {
+        const img = document.getElementById('ad-img-url').value;
+        const link = document.getElementById('ad-click-url').value;
+        if(!img) return alert("A imagem é obrigatória!");
+        
+        rtdb.ref('config/anuncio').set({
+            img: img,
+            link: link,
+            active: true
+        }).then(() => alert("Anúncio Publicado!"));
+    }
 
-        let stats = { boats: 0, likes: 0, users: {}, invites: 0 };
+    function removeAd() {
+        rtdb.ref('config/anuncio').remove().then(() => {
+            document.getElementById('ad-img-url').value = "";
+            document.getElementById('ad-click-url').value = "";
+            alert("Anúncio Removido!");
+        });
+    }
 
-        if(allDays) {
-            for(let day in allDays) {
-                for(let key in allDays[day]) {
-                    const b = allDays[day][key];
-                    stats.boats++;
-                    stats.likes += (b.likes || 0);
-                    
-                    if(b.registeredBy) {
-                        if(!stats.users[b.registeredBy]) {
-                            const nInvites = allInds[b.registeredBy] ? Object.keys(allInds[b.registeredBy]).length : 0;
-                            stats.users[b.registeredBy] = { name: b.name.split(' ')[0], likes: 0, invites: nInvites };
+    // --- CARREGAMENTO DE DADOS ---
+    function init() {
+        // Carrega Alertas e Ads atuais
+        rtdb.ref('config/alerta').on('value', s => { if(s.exists()) document.getElementById('alert-msg').value = s.val().text; });
+        rtdb.ref('config/anuncio').on('value', s => { 
+            if(s.exists()){
+                document.getElementById('ad-img-url').value = s.val().img;
+                document.getElementById('ad-click-url').value = s.val().link;
+            }
+        });
+
+        // Carrega Barcos e cruza com Usuários
+        rtdb.ref().on('value', snap => {
+            const data = snap.val();
+            const boatTable = document.getElementById('boat-list');
+            const userTable = document.getElementById('user-list');
+            
+            boatTable.innerHTML = "";
+            userTable.innerHTML = "";
+
+            let usersFound = {}; // Agrupar usuários
+            let boatCount = 0;
+
+            if(data && data.barcos) {
+                for(let dia in data.barcos) {
+                    for(let key in data.barcos[dia]) {
+                        const b = data.barcos[dia][key];
+                        boatCount++;
+                        
+                        // Captura info do usuário
+                        if(b.registeredBy) {
+                            if(!usersFound[b.registeredBy]) usersFound[b.registeredBy] = { name: b.name.split(' ')[0], phone: b.registeredBy };
                         }
-                        stats.users[b.registeredBy].likes += (b.likes || 0);
-                    }
 
-                    // Render Tabela
-                    const row = `
-                        <tr>
-                            <td>
-                                <div class="boat-row-info">
-                                    <img src="${b.img || 'https://via.placeholder.com/50'}" class="mini-img">
-                                    <div><b>${b.name}</b><br><small style="color:var(--text-dim)">${b.registeredBy}</small></div>
-                                </div>
-                            </td>
-                            <td><small>${b.origin} <i class="fas fa-arrow-right"></i> ${b.destiny}</small></td>
-                            <td><span style="color:var(--primary)">${day}</span><br><small>${b.time}h</small></td>
-                            <td>
-                                <i class="fas fa-heart" style="color:var(--danger)"></i> ${b.likes || 0}<br>
-                                <small style="color:var(--success)">R$ ${b.price_p || '0'}</small>
-                            </td>
-                            <td>
-                                <button class="btn-action btn-del-small" onclick="deleteBoat('${day}', '${key}')"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                    table.innerHTML += row;
+                        boatTable.innerHTML += `
+                            <tr>
+                                <td><b>${b.name}</b></td>
+                                <td><span class="badge">${dia}</span></td>
+                                <td>${b.registeredBy}</td>
+                                <td style="color:var(--primary)">❤️ ${b.likes || 0}</td>
+                                <td><button class="btn-danger" style="padding:5px 10px" onclick="deleteBoat('${dia}','${key}')">X</button></td>
+                            </tr>
+                        `;
+                    }
                 }
             }
-        }
 
-        // Atualizar Cards de Stats
-        document.getElementById('stat-total-boats').innerText = stats.boats;
-        document.getElementById('stat-total-likes').innerText = stats.likes.toLocaleString();
-        document.getElementById('stat-total-users').innerText = Object.keys(stats.users).length;
-        
-        let totalInvites = 0;
-        Object.values(allInds).forEach(i => totalInvites += Object.keys(i).length);
-        document.getElementById('stat-total-invites').innerText = totalInvites;
+            // Renderiza Usuários com contagem de indicações
+            for(let phone in usersFound) {
+                const totalRef = (data.indicacoes && data.indicacoes[phone]) ? Object.keys(data.indicacoes[phone]).length : 0;
+                userTable.innerHTML += `
+                    <tr>
+                        <td><b>${usersFound[phone].name}</b></td>
+                        <td>${phone}</td>
+                        <td style="color:var(--warning)">🔥 ${totalRef}</td>
+                        <td>
+                            <a href="https://wa.me/${phone}" target="_blank" class="btn btn-primary" style="padding:5px 10px; text-decoration:none; font-size:0.7rem">CONTATO</a>
+                        </td>
+                    </tr>
+                `;
+            }
 
-        // Render Ranking
-        const sortedUsers = Object.entries(stats.users).sort((a,b) => b[1].likes - a[1].likes);
-        sortedUsers.forEach(([phone, data], index) => {
-            const perc = Math.min((data.likes / 1000) * 100, 100);
-            ranking.innerHTML += `
-                <div class="rank-user-item">
-                    <div style="display:flex; justify-content:space-between; align-items:center">
-                        <b>${index+1}º ${data.name}</b>
-                        <small style="color:var(--primary)">${data.likes} likes</small>
-                    </div>
-                    <div style="font-size:0.7rem; color:var(--text-dim); margin-top:5px;">Amigos convidados: ${data.invites}</div>
-                    <div class="progress-bar-bg"><div class="progress-fill" style="width:${perc}%"></div></div>
-                </div>
-            `;
+            document.getElementById('stats-summary').innerText = `${boatCount} barcos ativos`;
         });
     }
 
-    function saveAd() {
-        const img = document.getElementById('ad-img').value;
-        const link = document.getElementById('ad-link').value;
-        rtdb.ref('config/anuncio').set({ img, link, active: true })
-            .then(() => alert("✅ Banner atualizado com sucesso!"));
-    }
-
-    function deleteBoat(day, key) {
-        if(confirm("Deseja excluir este barco?")) {
-            rtdb.ref(`barcos/${day}/${key}`).remove();
-        }
-    }
-
-    function clearAllBoats() {
-        if(confirm("⚠️ ATENÇÃO: Isso apagará TODOS os barcos da escala. Deseja continuar?")) {
-            rtdb.ref('barcos').remove();
-        }
+    function deleteBoat(d, k) {
+        if(confirm("Excluir este barco da escala?")) rtdb.ref(`barcos/${d}/${k}`).remove();
     }
 
     init();
 </script>
-
 </body>
 </html>
