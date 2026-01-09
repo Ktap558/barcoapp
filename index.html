@@ -24,6 +24,7 @@
             --accent-cyan: #22d3ee;
             --accent-purple: #a855f7;
             --accent-green: #22c55e;
+            --accent-yellow: #fbbf24;
             --text-white: #f8fafc;
             --text-dim: #94a3b8;
             --glass: rgba(255, 255, 255, 0.05);
@@ -34,99 +35,83 @@
         * { transition: all 0.25s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); height: 100%; overflow-x: hidden; }
 
-        /* HEADER & VOLTAR */
+        /* ALERTA GLOBAL */
+        #global-alert { display: none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 10001; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+        /* BANNER DE ANÚNCIO */
+        #promo-banner { display: none; margin: 15px 20px; border-radius: 15px; overflow: hidden; border: 1px solid var(--glass); line-height: 0; }
+        #promo-banner img { width: 100%; height: auto; object-fit: cover; }
+
         .top-nav { padding: 20px; display: flex; align-items: center; justify-content: space-between; }
         .btn-back-minimal { background: none; border: none; color: var(--text-dim); font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-back-minimal:hover { color: var(--accent-cyan); }
 
-        /* LOGIN */
         #screen-welcome { height: 100vh; background: radial-gradient(circle at top right, #1e293b, #0f172a); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         .hero-title { font-size: 2.8rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; font-size: 1rem; box-shadow: 0 10px 20px rgba(34, 211, 238, 0.2); }
+        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; font-size: 1rem; }
 
-        /* STATUS / TERMÔMETRO */
-        .user-stats-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass); border-radius: 20px; padding: 20px; margin: 20px; }
+        .user-stats-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass); border-radius: 20px; padding: 20px; margin: 0 20px 20px; }
         .thermometer-container { width: 100%; height: 8px; background: #020617; border-radius: 10px; margin: 8px 0 18px; position: relative; overflow: hidden; }
-        .thermometer-bar { height: 100%; width: 0%; background: var(--gradient); border-radius: 10px; box-shadow: 0 0 10px rgba(34, 211, 238, 0.5); }
-        .thermometer-bar.green { background: var(--gradient-green); box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
+        .thermometer-bar { height: 100%; width: 0%; background: var(--gradient); border-radius: 10px; }
+        .thermometer-bar.green { background: var(--gradient-green); }
 
-        /* CALENDARIO */
         .calendar-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
         .day-card { background: var(--card-dark); height: 70px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; border: 1px solid var(--glass); cursor: pointer; }
         .day-card.full-width { grid-column: span 2; height: 55px; border: 1px dashed var(--accent-purple); color: var(--accent-purple); }
 
-        /* FORMULÁRIO */
-        #screen-register { display: none; padding-bottom: 100px; }
-        .form-content { padding: 0 20px; }
-        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); margin-bottom: 10px; background: #0f172a; color: white; font-size: 15px; outline: none; }
-        .required-field { border-left: 4px solid var(--accent-purple) !important; }
-        .row { display: flex; gap: 10px; }
-        .row > input { flex: 1; }
-        .section-label { font-size: 0.65rem; font-weight: 800; color: var(--accent-cyan); margin: 15px 0 5px; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* FEED */
-        #screen-day-detail { display: none; }
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 160px; }
         .boat-card { background: var(--card-dark); border-radius: 15px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
         .boat-img { width: 100%; height: 100px; object-fit: cover; }
         .price-badge { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.8); color: var(--accent-green); padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; }
         .boat-info { padding: 10px; }
-        .boat-name { font-size: 0.85rem; font-weight: 800; color: var(--accent-cyan); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .boat-name { font-size: 0.85rem; font-weight: 800; color: var(--accent-cyan); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* FAB */
         .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
         .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+
+        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); margin-bottom: 10px; background: #0f172a; color: white; outline: none; }
+        #screen-register { display:none; padding: 20px; padding-bottom: 100px; }
     </style>
 </head>
 <body>
 
-    <section id="screen-welcome">
-    <h1 class="hero-title">BarcoApp</h1>
-    
-    <div style="padding: 0 20px; margin-bottom: 25px; max-width: 400px;">
-        <h2 style="color: var(--accent-cyan); font-size: 1.2rem; font-weight: 800; margin-bottom: 8px;">
-           
-        </h2>
-        <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.4; margin: 0;">
-            Participe da nossa promoção: acumule <b>Likes</b>, convide amigos e desbloqueie prêmios exclusivos. Quanto mais você interage, mais perto fica da sua próxima viagem!
-        </p>
+    <div id="global-alert">
+        <i class="fas fa-exclamation-triangle"></i> <span id="alert-text"></span>
     </div>
 
-    <div style="background: var(--card-dark); padding: 30px; border-radius: 24px; width: 90%; max-width: 380px; border: 1px solid var(--glass); box-shadow: 0 15px 35px rgba(0,0,0,0.5);">
-        <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome">
-        <input type="tel" id="user-phone" class="input-premium" placeholder="Seu WhatsApp">
-        <button class="btn-main" onclick="launchApp()">ENTRAR E PARTICIPAR</button>
-    </div>
-</section>
+    <section id="screen-welcome">
+        <h1 class="hero-title">BarcoApp</h1>
+        <p style="color: var(--text-dim); padding: 0 40px; margin-bottom: 30px;">Acumule likes, convide amigos e desbloqueie prêmios exclusivos!</p>
+        <div style="background: var(--card-dark); padding: 25px; border-radius: 24px; width: 90%; max-width: 380px; border: 1px solid var(--glass);">
+            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome">
+            <input type="tel" id="user-phone" class="input-premium" placeholder="Seu WhatsApp (apenas números)">
+            <button class="btn-main" onclick="launchApp()">ENTRAR NO APP</button>
+        </div>
+    </section>
 
     <section id="screen-main" style="display:none;">
-        <div class="top-nav" style="flex-direction: column; align-items: flex-start; gap: 4px; padding: 30px 20px 10px;">
-    <div style="font-weight: 800; font-size: 1.4rem; line-height: 1.2;">
-        <br>
-        <span id="display-user" style="color:var(--accent-cyan)"></span>! ⚓
-    </div>
-    <div style="font-size: 0.85rem; color: var(--text-dim); font-weight: 500; margin-top: 5px;">
-        Seja bem-vindo! Escolha o dia da sua viagem abaixo:
-    </div>
-</div>
+        <div class="top-nav">
+            <div style="font-weight: 800; font-size: 1.2rem;">Olá, <span id="display-user" style="color:var(--accent-cyan)"></span>! ⚓</div>
+            <i class="fas fa-ship" style="color: var(--accent-cyan)"></i>
+        </div>
+
+        <div id="promo-banner">
+            <a id="ad-link" href="#" target="_blank">
+                <img id="ad-img" src="" alt="Anúncio">
+            </a>
+        </div>
 
         <div class="user-stats-card">
-            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-dim);">
-                <span>META: 1.000 LIKES</span>
+            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-dim); margin-bottom:5px;">
+                <span>LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b> / 1.000</span>
                 <span id="percent-label" style="color:var(--accent-cyan)">0%</span>
             </div>
             <div class="thermometer-container"><div id="thermometer-bar" class="thermometer-bar"></div></div>
 
-            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-dim);">
-                <span>META: 100 AMIGOS</span>
+            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-dim); margin-bottom:5px;">
+                <span>AMIGOS: <b id="total-invites-count" style="color:var(--accent-green)">0</b> / 100</span>
                 <span id="invite-label" style="color:var(--accent-green)">0%</span>
             </div>
             <div class="thermometer-container"><div id="invite-bar" class="thermometer-bar green"></div></div>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top: 5px;">
-                <div style="text-align:center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px;"><small style="color:var(--text-dim)">LIKES</small><br><b id="total-likes-count" style="color:var(--accent-cyan)">0</b></div>
-                <div style="text-align:center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px;"><small style="color:var(--text-dim)">AMIGOS</small><br><b id="total-invites-count" style="color:var(--accent-green)">0</b></div>
-            </div>
         </div>
 
         <div class="calendar-nav">
@@ -145,48 +130,7 @@
         </div>
     </section>
 
-    <section id="screen-register">
-        <div class="top-nav">
-            <button class="btn-back-minimal" onclick="navigate('screen-main')"><i class="fas fa-chevron-left"></i> Voltar</button>
-            <span style="font-weight: 800; color: var(--accent-cyan);">CADASTRO</span>
-        </div>
-        
-        <div class="form-content">
-            <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
-            <div onclick="document.getElementById('file-input').click()" style="width:100%; height:140px; background:var(--card-dark); border-radius:15px; border:2px dashed var(--glass); display:flex; align-items:center; justify-content:center; margin-bottom:15px; overflow:hidden;">
-                <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
-                <span id="label-foto" style="font-weight: 800; font-size: 0.7rem; color: var(--text-dim);">+ ADICIONAR FOTO</span>
-            </div>
-
-            <div class="section-label">Obrigatórios</div>
-            <input type="text" id="in-name" class="input-premium required-field" placeholder="Nome do Barco">
-            <div class="row">
-                <input type="date" id="in-date" class="input-premium required-field">
-                <input type="time" id="in-time" class="input-premium required-field">
-            </div>
-
-            <div class="section-label">Rota e Local</div>
-            <div class="row">
-                <input type="text" id="in-origin" class="input-premium" placeholder="Origem">
-                <input type="text" id="in-destiny" class="input-premium" placeholder="Destino">
-            </div>
-            <input type="text" id="in-local" class="input-premium" placeholder="Local de Embarque">
-
-            <div class="section-label">Valores R$</div>
-            <div class="row">
-                <input type="number" id="in-price-p" class="input-premium" placeholder="Passagem">
-                <input type="number" id="in-price-c" class="input-premium" placeholder="Camarote">
-            </div>
-
-            <div class="section-label">Contatos</div>
-            <input type="tel" id="in-tel-1" class="input-premium" placeholder="WhatsApp Principal">
-            <input type="tel" id="in-tel-2" class="input-premium" placeholder="Telefone Secundário">
-
-            <button class="btn-main" onclick="publish()" style="margin-top: 10px;">PUBLICAR BARCO</button>
-        </div>
-    </section>
-
-    <section id="screen-day-detail">
+    <section id="screen-day-detail" style="display:none;">
         <div class="top-nav">
             <button class="btn-back-minimal" onclick="navigate('screen-main')"><i class="fas fa-chevron-left"></i> Voltar</button>
             <span id="day-title" style="font-weight: 800; color: var(--accent-cyan); text-transform: uppercase;"></span>
@@ -194,8 +138,31 @@
         <div class="feed" id="boat-feed"></div>
     </section>
 
+    <section id="screen-register">
+        <div class="top-nav">
+            <button class="btn-back-minimal" onclick="navigate('screen-main')"><i class="fas fa-chevron-left"></i> Cancelar</button>
+            <span style="font-weight: 800; color: var(--accent-cyan);">NOVO BARCO</span>
+        </div>
+        <div style="max-width: 500px; margin: auto;">
+             <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
+             <div onclick="document.getElementById('file-input').click()" style="width:100%; height:150px; background:var(--card-dark); border-radius:15px; border:2px dashed var(--glass); display:flex; align-items:center; justify-content:center; margin-bottom:15px; overflow:hidden;">
+                <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
+                <span id="label-foto" style="font-weight: 800; font-size: 0.7rem; color: var(--text-dim);">+ ADICIONAR FOTO</span>
+            </div>
+            <input type="text" id="in-name" class="input-premium" placeholder="Nome do Barco">
+            <div style="display:flex; gap:10px;">
+                <input type="date" id="in-date" class="input-premium">
+                <input type="time" id="in-time" class="input-premium">
+            </div>
+            <input type="text" id="in-origin" class="input-premium" placeholder="Origem">
+            <input type="text" id="in-destiny" class="input-premium" placeholder="Destino">
+            <input type="number" id="in-price-p" class="input-premium" placeholder="Preço Passagem R$">
+            <input type="tel" id="in-tel-1" class="input-premium" placeholder="WhatsApp Contato">
+            <button class="btn-main" onclick="publish()">PUBLICAR NA ESCALA</button>
+        </div>
+    </section>
+
     <script>
-        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -212,42 +179,89 @@
         let currentImg = "";
         let currentDayPage = "";
 
+        // GERENCIAR NAVEGAÇÃO
         function navigate(id) {
             document.querySelectorAll('section').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'block';
             window.scrollTo(0,0);
         }
 
-        async function launchApp() {
-            let n = document.getElementById('user-name').value;
-            let p = document.getElementById('user-phone').value;
-            if(!n || !p) return alert("Preencha Nome e Whats!");
+        // ENTRAR NO APP E TRATAR INDICAÇÃO
+        function launchApp() {
+            const n = document.getElementById('user-name').value;
+            const p = document.getElementById('user-phone').value.replace(/\D/g,'');
+            if(n.length < 3 || p.length < 8) return alert("Dados inválidos!");
+
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
+
+            // Lógica de Indicação (Referência)
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref');
+            if(ref && ref !== p) {
+                rtdb.ref(`indicacoes/${ref}/${p}`).set(true);
+            }
+
             startApp();
         }
 
         function startApp() {
             document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
             navigate('screen-main');
+            
+            // OUVINTES EM TEMPO REAL
+            listenAlerts();
+            listenAds();
             updateStats();
         }
 
+        // ESCUTAR ALERTAS DO PAINEL
+        function listenAlerts() {
+            rtdb.ref('config/alerta').on('value', snap => {
+                const div = document.getElementById('global-alert');
+                if(snap.exists()) {
+                    div.style.display = 'block';
+                    document.getElementById('alert-text').innerText = snap.val().text;
+                } else {
+                    div.style.display = 'none';
+                }
+            });
+        }
+
+        // ESCUTAR ANÚNCIOS DO PAINEL
+        function listenAds() {
+            rtdb.ref('config/anuncio').on('value', snap => {
+                const data = snap.val();
+                const banner = document.getElementById('promo-banner');
+                if(data && data.active && data.img) {
+                    banner.style.display = 'block';
+                    document.getElementById('ad-img').src = data.img;
+                    document.getElementById('ad-link').href = data.link || "#";
+                } else {
+                    banner.style.display = 'none';
+                }
+            });
+        }
+
         function updateStats() {
+            // Stats de Likes
             rtdb.ref('barcos').on('value', snap => {
                 let likes = 0;
                 const data = snap.val();
                 if(data) {
                     Object.values(data).forEach(day => {
-                        Object.values(day).forEach(b => { if(b.registeredBy === currentUser.phone) likes += (b.likes || 0); });
+                        Object.values(day).forEach(b => { 
+                            if(b.registeredBy === currentUser.phone) likes += (b.likes || 0); 
+                        });
                     });
                 }
                 const p = Math.min((likes/1000)*100, 100);
-                document.getElementById('total-likes-count').innerText = likes.toLocaleString();
+                document.getElementById('total-likes-count').innerText = likes;
                 document.getElementById('thermometer-bar').style.width = p + '%';
                 document.getElementById('percent-label').innerText = Math.floor(p) + '%';
             });
 
+            // Stats de Indicações
             rtdb.ref('indicacoes/' + currentUser.phone).on('value', snap => {
                 const total = snap.exists() ? Object.keys(snap.val()).length : 0;
                 const p = Math.min((total/100)*100, 100);
@@ -269,28 +283,28 @@
             rtdb.ref('barcos/' + currentDayPage).on('value', snap => {
                 feed.innerHTML = "";
                 const data = snap.val();
-                if(data) {
-                    Object.keys(data).forEach(key => {
-                        const b = data[key];
-                        feed.innerHTML += `
-                            <div class="boat-card">
-                                ${b.price_p ? `<div class="price-badge">R$ ${b.price_p}</div>` : ''}
-                                <img src="${b.img || 'https://via.placeholder.com/150/0f172a/ffffff?text=⚓'}" class="boat-img">
-                                <div class="boat-info">
-                                    <span class="boat-name">${b.name}</span>
-                                    <small style="color:var(--text-dim); font-size:0.6rem;">${b.time}h | ${b.origin || 'Origem'}</small>
-                                </div>
-                                <button style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:none; color:white; font-size:0.75rem; font-weight:700;" onclick="vote('${key}', ${b.id})">❤️ ${b.likes||0}</button>
-                            </div>`;
-                    });
-                } else {
-                    feed.innerHTML = `<div style="grid-column: span 2; text-align:center; padding: 40px; color:var(--text-dim)">Nenhum barco para este dia.</div>`;
+                if(!data) {
+                    feed.innerHTML = `<div style="grid-column:span 2; text-align:center; padding:50px; color:var(--text-dim)">Sem barcos hoje.</div>`;
+                    return;
                 }
+                Object.keys(data).forEach(key => {
+                    const b = data[key];
+                    feed.innerHTML += `
+                        <div class="boat-card">
+                            ${b.price_p ? `<div class="price-badge">R$ ${b.price_p}</div>` : ''}
+                            <img src="${b.img || 'https://via.placeholder.com/150/0f172a/ffffff?text=⚓'}" class="boat-img">
+                            <div class="boat-info">
+                                <span class="boat-name">${b.name}</span>
+                                <small style="color:var(--text-dim); font-size:0.6rem;">${b.time}h | ${b.origin}</small>
+                            </div>
+                            <button style="width:100%; padding:10px; background:var(--glass); border:none; color:white; font-size:0.75rem; font-weight:700;" onclick="vote('${key}', '${b.id}')">❤️ ${b.likes||0}</button>
+                        </div>`;
+                });
             });
         }
 
         function vote(key, id) {
-            if(localStorage.getItem('voted_'+id)) return alert("Você já curtiu este barco!");
+            if(localStorage.getItem('voted_'+id)) return alert("Já curtiu!");
             rtdb.ref(`barcos/${currentDayPage}/${key}/likes`).transaction(l => (l||0)+1);
             localStorage.setItem('voted_'+id, "true");
         }
@@ -313,54 +327,33 @@
             const dateVal = document.getElementById('in-date').value;
             const timeVal = document.getElementById('in-time').value;
 
-            if(!name || !dateVal || !timeVal) return alert("Por favor, preencha o Nome, Data e Horário.");
+            if(!name || !dateVal) return alert("Preencha os campos!");
 
             const boat = {
-                id: Date.now(),
-                name: name,
-                time: timeVal,
-                date: dateVal,
-                origin: document.getElementById('in-origin').value || "",
-                destiny: document.getElementById('in-destiny').value || "",
-                local: document.getElementById('in-local').value || "",
-                price_p: document.getElementById('in-price-p').value || "",
-                price_c: document.getElementById('in-price-c').value || "",
-                tel1: document.getElementById('in-tel-1').value || "",
-                tel2: document.getElementById('in-tel-2').value || "",
-                img: currentImg || "",
-                likes: 0,
-                registeredBy: currentUser.phone
+                id: Date.now().toString(),
+                name, time: timeVal, date: dateVal,
+                origin: document.getElementById('in-origin').value,
+                price_p: document.getElementById('in-price-p').value,
+                tel1: document.getElementById('in-tel-1').value,
+                img: currentImg, likes: 0, registeredBy: currentUser.phone
             };
 
-            const dt = new Date(dateVal + "T00:00:00");
-            const dayName = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][dt.getDay()];
+            const dayName = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][new Date(dateVal + "T00:00:00").getDay()];
             
             rtdb.ref('barcos/' + dayName).push(boat).then(() => {
-                alert("🚢 Barco publicado com sucesso!");
+                alert("🚢 Publicado!");
                 navigate('screen-main');
-                // Limpar campos
-                document.querySelectorAll('input').forEach(i => i.value = "");
-                document.getElementById('preview-img').style.display = 'none';
-                document.getElementById('label-foto').style.display = 'block';
                 currentImg = "";
             });
         }
 
         function shareApp() {
-            const link = window.location.href.split('?')[0] + '?ref=' + currentUser.phone;
-            window.open(`https://wa.me/?text=${encodeURIComponent('🚢 Confira a escala de barcos e logísticas aqui: ' + link)}`);
+            const link = window.location.origin + window.location.pathname + '?ref=' + currentUser.phone;
+            const text = encodeURIComponent("🚢 Veja a escala de barcos aqui: " + link);
+            window.open("https://wa.me/?text=" + text);
         }
 
         window.onload = () => { if(currentUser) startApp(); };
-
-        // REGISTRO DO SERVICE WORKER (PWA)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('PWA ativo!'))
-                .catch(err => console.log('Erro PWA', err));
-            });
-        }
     </script>
 </body>
 </html>
