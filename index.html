@@ -59,7 +59,7 @@
         .day-card.full-width { grid-column: span 2; height: 55px; border: 1px dashed var(--accent-purple); color: var(--accent-purple); }
 
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 160px; }
-        .boat-card { background: var(--card-dark); border-radius: 15px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
+        .boat-card { background: var(--card-dark); border-radius: 15px; overflow: hidden; border: 1px solid var(--glass); position: relative; cursor: pointer; }
         .boat-img { width: 100%; height: 100px; object-fit: cover; }
         .price-badge { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.8); color: var(--accent-green); padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; }
         .boat-info { padding: 10px; }
@@ -179,14 +179,12 @@
         let currentImg = "";
         let currentDayPage = "";
 
-        // GERENCIAR NAVEGAÇÃO
         function navigate(id) {
             document.querySelectorAll('section').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'block';
             window.scrollTo(0,0);
         }
 
-        // ENTRAR NO APP E TRATAR INDICAÇÃO
         function launchApp() {
             const n = document.getElementById('user-name').value;
             const p = document.getElementById('user-phone').value.replace(/\D/g,'');
@@ -195,7 +193,14 @@
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
 
-            // Lógica de Indicação (Referência)
+            // ATUALIZAÇÃO SOLICITADA: Salva o usuário na lista de cadastrados
+            rtdb.ref('usuarios_cadastrados/' + p).set({
+                nome: n,
+                whatsapp: p,
+                dataCadastro: new Date().toLocaleDateString('pt-BR')
+            });
+
+            // Lógica de Indicação
             const urlParams = new URLSearchParams(window.location.search);
             const ref = urlParams.get('ref');
             if(ref && ref !== p) {
@@ -208,18 +213,15 @@
         function startApp() {
             document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
             navigate('screen-main');
-            
-            // OUVINTES EM TEMPO REAL
             listenAlerts();
             listenAds();
             updateStats();
         }
 
-        // ESCUTAR ALERTAS DO PAINEL
         function listenAlerts() {
             rtdb.ref('config/alerta').on('value', snap => {
                 const div = document.getElementById('global-alert');
-                if(snap.exists()) {
+                if(snap.exists() && snap.val().active) {
                     div.style.display = 'block';
                     document.getElementById('alert-text').innerText = snap.val().text;
                 } else {
@@ -228,7 +230,6 @@
             });
         }
 
-        // ESCUTAR ANÚNCIOS DO PAINEL
         function listenAds() {
             rtdb.ref('config/anuncio').on('value', snap => {
                 const data = snap.val();
@@ -244,7 +245,6 @@
         }
 
         function updateStats() {
-            // Stats de Likes
             rtdb.ref('barcos').on('value', snap => {
                 let likes = 0;
                 const data = snap.val();
@@ -261,7 +261,6 @@
                 document.getElementById('percent-label').innerText = Math.floor(p) + '%';
             });
 
-            // Stats de Indicações
             rtdb.ref('indicacoes/' + currentUser.phone).on('value', snap => {
                 const total = snap.exists() ? Object.keys(snap.val()).length : 0;
                 const p = Math.min((total/100)*100, 100);
@@ -289,18 +288,25 @@
                 }
                 Object.keys(data).forEach(key => {
                     const b = data[key];
+                    // Recuperamos a função de clique no card para abrir o WhatsApp (Informações)
                     feed.innerHTML += `
-                        <div class="boat-card">
+                        <div class="boat-card" onclick="openContact('${b.tel1}', '${b.name}')">
                             ${b.price_p ? `<div class="price-badge">R$ ${b.price_p}</div>` : ''}
                             <img src="${b.img || 'https://via.placeholder.com/150/0f172a/ffffff?text=⚓'}" class="boat-img">
                             <div class="boat-info">
                                 <span class="boat-name">${b.name}</span>
-                                <small style="color:var(--text-dim); font-size:0.6rem;">${b.time}h | ${b.origin}</small>
+                                <small style="color:var(--text-dim); font-size:0.6rem;">${b.time}h | ${b.origin} -> ${b.destiny || 'Destino'}</small>
                             </div>
-                            <button style="width:100%; padding:10px; background:var(--glass); border:none; color:white; font-size:0.75rem; font-weight:700;" onclick="vote('${key}', '${b.id}')">❤️ ${b.likes||0}</button>
+                            <button style="width:100%; padding:10px; background:var(--glass); border:none; color:white; font-size:0.75rem; font-weight:700;" onclick="event.stopPropagation(); vote('${key}', '${b.id}')">❤️ ${b.likes||0}</button>
                         </div>`;
                 });
             });
+        }
+
+        function openContact(tel, boat) {
+            if(!tel) return alert("Contato não disponível");
+            const text = encodeURIComponent(`Olá! Vi o barco *${boat}* no App e gostaria de informações.`);
+            window.open(`https://wa.me/55${tel.replace(/\D/g,'')}?text=${text}`);
         }
 
         function vote(key, id) {
@@ -326,24 +332,31 @@
             const name = document.getElementById('in-name').value;
             const dateVal = document.getElementById('in-date').value;
             const timeVal = document.getElementById('in-time').value;
+            const origin = document.getElementById('in-origin').value;
+            const destiny = document.getElementById('in-destiny').value;
+            const price = document.getElementById('in-price-p').value;
+            const tel = document.getElementById('in-tel-1').value;
 
-            if(!name || !dateVal) return alert("Preencha os campos!");
+            if(!name || !dateVal || !tel) return alert("Nome, Data e WhatsApp são obrigatórios!");
 
             const boat = {
                 id: Date.now().toString(),
                 name, time: timeVal, date: dateVal,
-                origin: document.getElementById('in-origin').value,
-                price_p: document.getElementById('in-price-p').value,
-                tel1: document.getElementById('in-tel-1').value,
+                origin: origin,
+                destiny: destiny,
+                price_p: price,
+                tel1: tel,
                 img: currentImg, likes: 0, registeredBy: currentUser.phone
             };
 
             const dayName = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"][new Date(dateVal + "T00:00:00").getDay()];
             
             rtdb.ref('barcos/' + dayName).push(boat).then(() => {
-                alert("🚢 Publicado!");
+                alert("🚢 Publicado com sucesso!");
                 navigate('screen-main');
                 currentImg = "";
+                document.getElementById('preview-img').style.display = 'none';
+                document.getElementById('label-foto').style.display = 'block';
             });
         }
 
