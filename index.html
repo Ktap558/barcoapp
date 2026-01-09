@@ -40,13 +40,26 @@
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 150px; }
         .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
         .boat-img { width: 100%; height: 110px; object-fit: cover; }
-        .price-tag { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; }
+        .price-tag { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; z-index: 5; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 20000; padding: 20px; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-dark); width: 100%; max-width: 400px; border-radius: 25px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; border: 1px solid var(--glass); }
-        .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--glass); }
-        .detail-label { color: var(--text-dim); font-size: 0.8rem; }
-        .detail-value { font-weight: 700; font-size: 0.85rem; color: var(--text-white); }
+        /* ESTILO DO NOVO MODAL E CARROSSEL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; padding: 15px; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-dark); width: 100%; max-width: 450px; border-radius: 30px; position: relative; max-height: 95vh; overflow-y: auto; border: 1px solid var(--glass); padding-bottom: 25px; }
+        
+        .carousel-box { width: 100%; height: 250px; position: relative; overflow: hidden; border-radius: 30px 30px 0 0; background: #000; }
+        .carousel-track { display: flex; height: 100%; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .carousel-track img { min-width: 100%; height: 100%; object-fit: cover; }
+        .carousel-nav { position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; padding: 0 15px; transform: translateY(-50%); }
+        .c-btn { background: rgba(0,0,0,0.5); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 0.8rem; cursor: pointer; backdrop-filter: blur(5px); }
+        .carousel-dots { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 6px; }
+        .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; }
+        .dot.active { background: var(--accent-cyan); width: 20px; border-radius: 10px; }
+
+        .modal-body { padding: 25px; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .detail-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; border: 1px solid var(--glass); }
+        .detail-label { display: block; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+        .detail-value { display: block; font-weight: 800; font-size: 0.9rem; color: var(--text-white); }
 
         #global-alert { display: none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 10001; }
         #promo-banner { display: none; margin: 15px 20px; border-radius: 15px; overflow: hidden; }
@@ -174,19 +187,35 @@
 
     <div id="boat-modal" class="modal" onclick="closeModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" src="" style="width:100%; height:200px; object-fit:cover; border-radius:15px; margin-bottom:20px;">
-            <h2 id="modal-name" style="margin:0; color:var(--accent-cyan)"></h2>
-            <p id="modal-route" style="color:var(--text-dim); font-size:0.8rem; margin-top:5px; margin-bottom:20px;"></p>
-            
-            <div class="detail-row"><span class="detail-label">Data e Hora</span><span class="detail-value" id="modal-datetime"></span></div>
-            <div class="detail-row"><span class="detail-label">Passagem</span><span class="detail-value" style="color:var(--accent-green)" id="modal-price-p"></span></div>
-            <div class="detail-row"><span class="detail-label">Camarote</span><span class="detail-value" style="color:var(--accent-yellow)" id="modal-price-c"></span></div>
-            <div class="detail-row"><span class="detail-label">Contato 1</span><span class="detail-value" id="modal-tel1"></span></div>
-            <div class="detail-row" style="border:none;"><span class="detail-label">Contato 2</span><span class="detail-value" id="modal-tel2"></span></div>
+            <div class="carousel-box">
+                <div class="carousel-track" id="modal-carousel-track"></div>
+                <div class="carousel-nav">
+                    <button class="c-btn" onclick="moveCarousel(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <button class="c-btn" onclick="moveCarousel(1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="carousel-dots" id="modal-dots"></div>
+            </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-                <button id="btn-wa1" class="btn-main" style="background:#25d366; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> Zap 1</button>
-                <button id="btn-wa2" class="btn-main" style="background:#128c7e; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> Zap 2</button>
+            <div class="modal-body">
+                <h2 id="modal-name" style="margin:0; color:var(--accent-cyan); font-size: 1.4rem;"></h2>
+                <p id="modal-route" style="color:var(--text-dim); font-size:0.75rem; margin-top:5px; margin-bottom:0; font-weight: 600;"></p>
+                
+                <div class="detail-grid">
+                    <div class="detail-item"><span class="detail-label"><i class="far fa-calendar-alt"></i> Data</span><span class="detail-value" id="modal-date"></span></div>
+                    <div class="detail-item"><span class="detail-label"><i class="far fa-clock"></i> Hora</span><span class="detail-value" id="modal-time"></span></div>
+                    <div class="detail-item" style="border-left: 3px solid var(--accent-green)"><span class="detail-label">Passagem</span><span class="detail-value" style="color:var(--accent-green)" id="modal-price-p"></span></div>
+                    <div class="detail-item" style="border-left: 3px solid var(--accent-yellow)"><span class="detail-label">Camarote</span><span class="detail-value" style="color:var(--accent-yellow)" id="modal-price-c"></span></div>
+                </div>
+
+                <div class="detail-item" style="margin-bottom: 20px;">
+                    <span class="detail-label">Contatos Disponíveis</span>
+                    <span class="detail-value" style="font-size: 0.8rem;" id="modal-tels"></span>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <button id="btn-wa1" class="btn-main" style="background:#25d366; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> Zap 1</button>
+                    <button id="btn-wa2" class="btn-main" style="background:#128c7e; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> Zap 2</button>
+                </div>
             </div>
         </div>
     </div>
@@ -207,6 +236,8 @@
         let currentUser = JSON.parse(localStorage.getItem('barco_user_data'));
         let currentImg = "";
         let currentDayPage = "";
+        let carouselIndex = 0;
+        let totalCarouselImages = 0;
 
         function navigate(id) {
             document.querySelectorAll('section').forEach(s => s.style.display = 'none');
@@ -234,6 +265,7 @@
         }
 
         function startApp() {
+            if(!currentUser) return;
             document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
             navigate('screen-main');
             listenAlerts();
@@ -287,10 +319,12 @@
                 if(!data) { feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:40px; color:var(--text-dim)'>Nenhuma embarcação hoje.</p>"; return; }
                 Object.keys(data).forEach(key => {
                     const b = data[key];
+                    // Pega a primeira imagem para o card se for carrossel
+                    const firstImg = b.img ? b.img.split(',')[0].trim() : 'https://via.placeholder.com/150';
                     feed.innerHTML += `
                         <div class="boat-card" onclick="openDetails('${key}')">
                             <div class="price-tag">R$ ${b.price_p}</div>
-                            <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
+                            <img src="${firstImg}" class="boat-img">
                             <div style="padding:10px;">
                                 <span style="font-weight:800; font-size:0.75rem; color:var(--accent-cyan); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${b.name}</span>
                                 <small style="font-size:0.6rem; color:var(--text-dim);"><i class="far fa-clock"></i> ${b.time}h | ${b.origin}</small>
@@ -304,14 +338,31 @@
         function openDetails(key) {
             rtdb.ref(`barcos/${currentDayPage}/${key}`).once('value', s => {
                 const b = s.val();
-                document.getElementById('modal-img').src = b.img;
+                
+                // Configurar Carrossel
+                const track = document.getElementById('modal-carousel-track');
+                const dotBox = document.getElementById('modal-dots');
+                track.innerHTML = "";
+                dotBox.innerHTML = "";
+                
+                const imgs = b.img ? b.img.split(',') : ['https://via.placeholder.com/400x250'];
+                totalCarouselImages = imgs.length;
+                carouselIndex = 0;
+
+                imgs.forEach((url, i) => {
+                    track.innerHTML += `<img src="${url.trim()}">`;
+                    dotBox.innerHTML += `<div class="dot ${i===0?'active':''}"></div>`;
+                });
+                track.style.transform = `translateX(0)`;
+
+                // Dados Textuais
                 document.getElementById('modal-name').innerText = b.name;
-                document.getElementById('modal-route').innerText = `ROTA: ${b.origin} ➔ ${b.destiny}`;
-                document.getElementById('modal-datetime').innerText = `${b.date} às ${b.time}h`;
+                document.getElementById('modal-route').innerText = `${b.origin} ➔ ${b.destiny}`;
+                document.getElementById('modal-date').innerText = b.date;
+                document.getElementById('modal-time').innerText = b.time + 'h';
                 document.getElementById('modal-price-p').innerText = `R$ ${b.price_p}`;
                 document.getElementById('modal-price-c').innerText = b.price_c ? `R$ ${b.price_c}` : 'N/A';
-                document.getElementById('modal-tel1').innerText = b.tel1;
-                document.getElementById('modal-tel2').innerText = b.tel2 || '---';
+                document.getElementById('modal-tels').innerText = `${b.tel1} ${b.tel2 ? ' / ' + b.tel2 : ''}`;
 
                 document.getElementById('btn-wa1').onclick = () => window.open(`https://wa.me/55${b.tel1.replace(/\D/g,'')}`);
                 if(b.tel2) {
@@ -321,6 +372,15 @@
 
                 document.getElementById('boat-modal').style.display = 'flex';
             });
+        }
+
+        function moveCarousel(dir) {
+            carouselIndex = (carouselIndex + dir + totalCarouselImages) % totalCarouselImages;
+            document.getElementById('modal-carousel-track').style.transform = `translateX(-${carouselIndex * 100}%)`;
+            
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach(d => d.classList.remove('active'));
+            dots[carouselIndex].classList.add('active');
         }
 
         function closeModal(e) { document.getElementById('boat-modal').style.display = 'none'; }
@@ -375,6 +435,7 @@
                 document.getElementById('preview-img').style.display = 'none';
                 document.getElementById('camera-icon').style.display = 'block';
                 document.getElementById('label-foto').style.display = 'block';
+                currentImg = "";
             });
         }
 
@@ -385,7 +446,6 @@
 
         window.onload = () => { if(currentUser) startApp(); };
 
-        // REGISTRO DO SERVICE WORKER (PARA SER PWA)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
