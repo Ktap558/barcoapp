@@ -49,7 +49,7 @@
         td { background: #0f172a; padding: 15px; vertical-align: middle; }
         td:first-child { border-radius: 15px 0 0 15px; }
         td:last-child { border-radius: 0 15px 15px 0; }
-        .boat-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+        .boat-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #1e293b; display: flex; align-items: center; justify-content: center; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
@@ -81,7 +81,7 @@
                 <div class="table-wrap">
                     <table>
                         <thead>
-                            <tr>
+                            <tr style="text-align: left; color: #94a3b8; font-size: 0.8rem;">
                                 <th>Barco</th>
                                 <th>Rota / Contato</th>
                                 <th>Dia</th>
@@ -138,40 +138,50 @@
             const rankDiv = document.getElementById('ranking-list');
             tableBody.innerHTML = "";
             let userScores = {};
-            let total = 0;
+            let totalBarcos = 0;
 
-            if(!allDays) return;
+            if(!allDays) {
+                document.getElementById('stats').innerText = "0 barcos cadastrados";
+                return;
+            }
 
             for(let day in allDays) {
                 Object.keys(allDays[day]).forEach(key => {
                     const b = allDays[day][key];
-                    total++;
-                    const userKey = b.registeredBy;
+                    totalBarcos++;
+                    const userPhone = b.registeredBy;
 
-                    if(userKey) {
-                        if(!userScores[userKey]) {
-                            const invites = allInvites[userKey] ? Object.keys(allInvites[userKey]).length : 0;
-                            userScores[userKey] = { name: b.authorName, likes: 0, invites, phone: userKey };
+                    // Acumular pontos para o Ranking
+                    if(userPhone) {
+                        if(!userScores[userPhone]) {
+                            const invites = allInvites[userPhone] ? Object.keys(allInvites[userPhone]).length : 0;
+                            userScores[userPhone] = { name: b.name.split(' ')[0], likes: 0, invites, phone: userPhone };
                         }
-                        userScores[userKey].likes += (b.likes || 0);
+                        userScores[userPhone].likes += (b.likes || 0);
                     }
 
+                    // Renderizar Tabela
+                    const imgTag = b.img ? `<img src="${b.img}" class="boat-img">` : `<div class="boat-img"><i class="fas fa-anchor"></i></div>`;
+                    
                     tableBody.innerHTML += `
                         <tr>
-                            <td><img src="${b.img}" class="boat-img"><br><b>${b.name}</b></td>
+                            <td>${imgTag}<br><b>${b.name}</b></td>
                             <td>
-                                <small>${b.origin} ➔ ${b.destiny}</small><br>
-                                <a href="https://wa.me/${b.tel1}" target="_blank" style="color:var(--green-glow); font-size:0.7rem;">Zap: ${b.tel1}</a>
+                                <small>${b.origin || '---'} ➔ ${b.destiny || '---'}</small><br>
+                                <a href="https://wa.me/${b.tel1}" target="_blank" style="color:var(--green-glow); font-size:0.75rem; text-decoration:none;">
+                                    <i class="fab fa-whatsapp"></i> ${b.tel1 || 'Sem Zap'}
+                                </a>
                             </td>
                             <td><small>${day}</small><br>${b.time}h</td>
-                            <td><b style="color:#fbbf24">${b.likes || 0}</b></td>
+                            <td><b style="color:#fbbf24"><i class="fas fa-heart"></i> ${b.likes || 0}</b></td>
                             <td><button class="btn-delete" onclick="deleteBoat('${day}', '${key}')"><i class="fas fa-trash"></i></button></td>
                         </tr>`;
                 });
             }
 
-            document.getElementById('stats').innerText = `${total} barcos cadastrados`;
+            document.getElementById('stats').innerText = `${totalBarcos} barcos cadastrados`;
 
+            // Renderizar Ranking
             const sorted = Object.values(userScores).sort((a,b) => b.likes - a.likes);
             rankDiv.innerHTML = "";
             sorted.forEach((u, i) => {
@@ -180,19 +190,22 @@
                 rankDiv.innerHTML += `
                     <div class="ranking-item">
                         <div class="ranking-info">
-                            <div><span class="user-name">${i+1}º ${u.name}</span><br><small>${u.phone}</small></div>
+                            <div><span class="user-name">${i+1}º ${u.name}</span><br><small style="color:#94a3b8">${u.phone}</small></div>
                             <div style="text-align:right">
-                                <small style="color:#fbbf24">L: ${u.likes}</small> | <small style="color:#22c55e">A: ${u.invites}</small>
+                                <small style="color:#fbbf24">Likes: ${u.likes}</small><br>
+                                <small style="color:#22c55e">Amigos: ${u.invites}</small>
                             </div>
                         </div>
                         <div class="progress-container"><div class="bar-likes" style="width:${pL}%"></div></div>
-                        <div class="progress-container" style="height:4px;"><div class="bar-invites" style="width:${pI}%"></div></div>
+                        <div class="progress-container" style="height:4px; margin-top:3px;"><div class="bar-invites" style="width:${pI}%"></div></div>
                     </div>`;
             });
         }
 
         function deleteBoat(d, k) {
-            if(confirm("Excluir barco?")) rtdb.ref(`barcos/${d}/${k}`).remove();
+            if(confirm("Deseja realmente excluir este barco da escala?")) {
+                rtdb.ref(`barcos/${d}/${k}`).remove();
+            }
         }
 
         window.onload = initAdmin;
