@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BarcoApp | Oficial</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -28,25 +33,21 @@
         * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
-        /* Estilo dos Inputs Profissionais */
         .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
         .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; font-size: 0.9rem; }
         .input-premium:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(34, 211, 238, 0.2); }
 
-        /* Feed e Cards */
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 150px; }
         .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
         .boat-img { width: 100%; height: 110px; object-fit: cover; }
         .price-tag { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; }
         
-        /* Modal de Detalhes */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 20000; padding: 20px; align-items: center; justify-content: center; }
         .modal-content { background: var(--card-dark); width: 100%; max-width: 400px; border-radius: 25px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; border: 1px solid var(--glass); }
         .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--glass); }
         .detail-label { color: var(--text-dim); font-size: 0.8rem; }
         .detail-value { font-weight: 700; font-size: 0.85rem; color: var(--text-white); }
 
-        /* Reaproveitando seus estilos base para não quebrar nada */
         #global-alert { display: none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 10001; }
         #promo-banner { display: none; margin: 15px 20px; border-radius: 15px; overflow: hidden; }
         #promo-banner img { width: 100%; height: auto; }
@@ -191,7 +192,6 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO FIREBASE (IGUAL)
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -222,12 +222,10 @@
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
             
-            // Grava na lista de usuários (para o seu novo painel ver)
             rtdb.ref('usuarios_cadastrados/' + p).set({
                 nome: n, whatsapp: p, dataCadastro: new Date().toLocaleDateString('pt-BR')
             });
 
-            // Indicação
             const urlParams = new URLSearchParams(window.location.search);
             const ref = urlParams.get('ref');
             if(ref && ref !== p) rtdb.ref(`indicacoes/${ref}/${p}`).set(true);
@@ -243,7 +241,6 @@
             updateStats();
         }
 
-        // Funções de Escuta (Iguais para manter sincronia com o Painel)
         function listenAlerts() {
             rtdb.ref('config/alerta').on('value', s => {
                 const div = document.getElementById('global-alert');
@@ -304,7 +301,6 @@
             });
         }
 
-        // FUNÇÃO DE DETALHES PROFISSIONAL
         function openDetails(key) {
             rtdb.ref(`barcos/${currentDayPage}/${key}`).once('value', s => {
                 const b = s.val();
@@ -375,7 +371,6 @@
             rtdb.ref('barcos/' + dayName).push(boat).then(() => {
                 alert("🚢 Viagem publicada com sucesso!");
                 navigate('screen-main');
-                // Limpar campos
                 document.querySelectorAll('.input-premium').forEach(i => i.value = "");
                 document.getElementById('preview-img').style.display = 'none';
                 document.getElementById('camera-icon').style.display = 'block';
@@ -389,7 +384,15 @@
         }
 
         window.onload = () => { if(currentUser) startApp(); };
+
+        // REGISTRO DO SERVICE WORKER (PARA SER PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('PWA ativo!'))
+                .catch(err => console.log('Erro PWA:', err));
+            });
+        }
     </script>
 </body>
 </html>
-
