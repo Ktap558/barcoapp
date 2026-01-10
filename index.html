@@ -11,6 +11,8 @@
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "27900578-30bf-4465-b623-7997d8a6d003",
+          serviceWorkerPath: "OneSignalSDKWorker.js",
+          serviceWorkerParam: { scope: "/barcoapp/" },
         });
       });
     </script>
@@ -37,10 +39,8 @@
         * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; height: 100%; }
         
-        /* Layout Principal */
         .main-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 30px; }
         
-        /* Card Hoje */
         .today-card {
             background: var(--card-dark); border-radius: 30px; padding: 35px 20px;
             text-align: center; border: 1px solid rgba(34, 211, 238, 0.2);
@@ -50,7 +50,6 @@
         .today-tag { background: var(--gradient); color: #000; padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; }
         .today-name { display: block; font-size: 2.2rem; font-weight: 900; margin: 10px 0; }
         
-        /* Botão Escala */
         .btn-open-week {
             background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
             margin: 0 20px; padding: 18px; border-radius: 20px;
@@ -58,7 +57,6 @@
             font-weight: 700; color: var(--text-white); cursor: pointer;
         }
 
-        /* Modal Escala (Aba que sobe) */
         .week-modal {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 75%;
             background: #0f172a; border-top: 3px solid var(--accent-cyan);
@@ -70,7 +68,6 @@
             display: flex; justify-content: space-between; align-items: center; font-weight: 700;
         }
 
-        /* Auxiliares */
         .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; }
         .form-label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; }
@@ -145,8 +142,7 @@
             <h3 style="margin:0">Escala Semanal</h3>
             <i class="fas fa-times" onclick="toggleWeek(false)" style="font-size: 1.5rem; opacity: 0.5;"></i>
         </div>
-        <div id="week-list-container">
-            </div>
+        <div id="week-list-container"></div>
     </div>
 
     <section id="screen-day-detail" style="display:none;">
@@ -228,9 +224,9 @@
 
         function navigate(id) {
             document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-            document.getElementById(id).style.display = 'flex';
-            if(id === 'screen-main') document.getElementById(id).style.display = 'flex';
-            else document.getElementById(id).style.display = 'block';
+            const el = document.getElementById(id);
+            if(id === 'screen-main') el.style.display = 'flex';
+            else el.style.display = 'block';
             window.scrollTo(0,0);
         }
 
@@ -238,20 +234,24 @@
             const n = document.getElementById('user-name').value.trim();
             const p = document.getElementById('user-phone').value.replace(/\D/g,'');
             if(n.length < 3 || p.length < 8) return alert("Preencha corretamente!");
+            
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
             rtdb.ref('usuarios_cadastrados/' + p).update({ nome: n, whatsapp: p });
+
+            // Identificar usuário no OneSignal
+            OneSignalDeferred.push(function(OneSignal) {
+                OneSignal.User.addTag("user_name", n);
+            });
+
             startApp();
         }
 
         function startApp() {
             if(!currentUser) return;
             document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
-            
-            // Lógica do Dia de Hoje
             const hoje = diasSemana[new Date().getDay()];
             document.getElementById('label-hoje').innerText = hoje;
-
             navigate('screen-main');
             renderWeekList();
             listenAlerts();
@@ -292,7 +292,10 @@
             rtdb.ref('barcos/' + currentDayPage).on('value', s => {
                 feed.innerHTML = "";
                 const data = s.val();
-                if(!data) { feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:50px; opacity:0.5;'>Nenhum barco para este dia.</p>"; return; }
+                if(!data) { 
+                    feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:50px; opacity:0.5;'>Nenhum barco para este dia.</p>"; 
+                    return; 
+                }
                 Object.keys(data).forEach(key => {
                     const b = data[key];
                     feed.innerHTML += `
@@ -393,7 +396,7 @@
                     Object.values(data).forEach(slide => {
                         wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="window.open('${slide.link}', '_blank')" style="width:100%; height:160px; object-fit:cover;"></div>`;
                     });
-                    new Swiper(".mySwiper", { loop: true, autoplay: true, pagination: { el: ".swiper-pagination" } });
+                    new Swiper(".mySwiper", { loop: true, autoplay: { delay: 3000 }, pagination: { el: ".swiper-pagination" } });
                 }
             });
         }
@@ -427,7 +430,8 @@
         }
 
         function shareApp() {
-            window.open("https://wa.me/?text=Confira a escala de barcos: " + window.location.href);
+            const url = window.location.href;
+            window.open("https://wa.me/?text=Confira a escala de barcos no BarcoApp: " + url);
         }
 
         window.onload = () => { if(currentUser) startApp(); };
