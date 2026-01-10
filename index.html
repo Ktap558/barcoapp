@@ -12,7 +12,6 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -21,64 +20,21 @@
 
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --card-dark: #1e293b;
-            --accent-cyan: #22d3ee;
-            --accent-purple: #a855f7;
-            --accent-green: #22c55e;
-            --accent-yellow: #fbbf24;
-            --text-white: #f8fafc;
-            --text-dim: #94a3b8;
-            --glass: rgba(255, 255, 255, 0.05);
+            --bg-dark: #0f172a; --card-dark: #1e293b; --accent-cyan: #22d3ee;
+            --accent-purple: #a855f7; --accent-green: #22c55e; --accent-yellow: #fbbf24;
+            --text-white: #f8fafc; --text-dim: #94a3b8; --glass: rgba(255, 255, 255, 0.05);
             --gradient: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
         }
-
         * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
-
-        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
         .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; font-size: 0.9rem; }
-        .input-premium:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(34, 211, 238, 0.2); }
-
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 150px; }
         .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
         .boat-img { width: 100%; height: 110px; object-fit: cover; }
         .price-tag { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; z-index: 5; }
-        
-        .swiper-container { width: 100%; height: 180px; margin: 15px 0; border-radius: 20px; overflow: hidden; }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; cursor: pointer; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; padding: 15px; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-dark); width: 100%; max-width: 450px; border-radius: 30px; position: relative; max-height: 95vh; overflow-y: auto; border: 1px solid var(--glass); padding-bottom: 25px; }
-        
-        .boat-modal-header-img { width: 100%; height: 250px; object-fit: cover; border-radius: 30px 30px 0 0; }
-        
-        .route-highlight { 
-            background: var(--glass); 
-            padding: 15px; 
-            border-radius: 15px; 
-            text-align: center; 
-            margin: 15px 0;
-            border: 1px solid rgba(34, 211, 238, 0.2);
-        }
-        .route-text { 
-            font-size: 1.1rem; 
-            font-weight: 800; 
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .route-arrow { color: var(--accent-cyan); font-size: 1.4rem; }
-
-        .modal-body { padding: 25px; }
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .detail-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; border: 1px solid var(--glass); }
-        .detail-label { display: block; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
-        .detail-value { display: block; font-weight: 800; font-size: 0.9rem; color: var(--text-white); }
-
-        #global-alert { display: none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 10001; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
+        .modal-content { background: var(--card-dark); width: 100%; max-width: 450px; border-radius: 30px; overflow-y: auto; max-height: 90vh; border: 1px solid var(--glass); }
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; }
         .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
         .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
@@ -86,11 +42,13 @@
 </head>
 <body>
 
-    <div id="global-alert"><i class="fas fa-bullhorn"></i> <span id="alert-text"></span></div>
+    <div id="global-alert" style="display:none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 1001;">
+        <i class="fas fa-bullhorn"></i> <span id="alert-text"></span>
+    </div>
 
     <section id="screen-welcome" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center;">
         <h1 style="font-size:3rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;">BarcoApp</h1>
-        <p style="color:var(--text-dim); margin-bottom:40px;">Participe da nossa promoção: acumule Likes, convide amigos e desbloqueie prêmios exclusivos.</p>
+        <p style="color:var(--text-dim); margin-bottom:40px;">Escala de embarcações e prêmios exclusivos.</p>
         <div style="width:100%; max-width:350px;">
             <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome Completo" style="margin-bottom:15px;">
             <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp (DDD + Número)" style="margin-bottom:20px;">
@@ -116,7 +74,9 @@
                 <span>LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
                 <span id="percent-label">0%</span>
             </div>
-            <div style="width:100%; height:6px; background:#000; border-radius:10px; margin:8px 0;"><div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px;"></div></div>
+            <div style="width:100%; height:6px; background:#000; border-radius:10px; margin:8px 0;">
+                <div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px;"></div>
+            </div>
         </div>
 
         <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:12px; padding:0 20px;">
@@ -153,10 +113,10 @@
             <div onclick="document.getElementById('file-input').click()" id="photo-drop" style="width:100%; height:180px; background:var(--card-dark); border-radius:20px; border:2px dashed var(--glass); display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; margin-bottom:20px;">
                 <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
                 <i class="fas fa-camera" id="camera-icon" style="font-size:2rem; color:var(--accent-cyan); margin-bottom:10px;"></i>
-                <span id="label-foto" style="font-size:0.7rem; font-weight:700; color:var(--text-dim);">FOTO DA EMBARCAÇÃO</span>
+                <span style="font-size:0.7rem; font-weight:700; color:var(--text-dim);">FOTO DA EMBARCAÇÃO</span>
             </div>
             <label class="form-label">Nome da Embarcação</label>
-            <input type="text" id="in-name" class="input-premium" placeholder="Ex: N/M Comandante Souza">
+            <input type="text" id="in-name" class="input-premium">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                 <div><label class="form-label">Origem</label><input type="text" id="in-origin" class="input-premium"></div>
                 <div><label class="form-label">Destino</label><input type="text" id="in-destiny" class="input-premium"></div>
@@ -178,27 +138,21 @@
         </div>
     </section>
 
-    <div id="boat-modal" class="modal" onclick="closeModal(event)">
+    <div id="boat-modal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" class="boat-modal-header-img" src="">
-            <div class="modal-body">
-                <h2 id="modal-name" style="margin:0; color:var(--accent-cyan); font-size: 1.8rem; font-weight: 800; text-transform: uppercase; text-align: center;"></h2>
-                <div class="route-highlight">
-                    <div class="route-text">
-                        <span id="modal-origin"></span> 
-                        <span class="route-arrow">➔</span> 
-                        <span id="modal-destiny"></span>
-                    </div>
+            <img id="modal-img" style="width:100%; height:200px; object-fit:cover;">
+            <div style="padding:20px;">
+                <h2 id="modal-name" style="margin:0; color:var(--accent-cyan);"></h2>
+                <p id="modal-route" style="font-weight:bold; margin:10px 0;"></p>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.8rem;">
+                    <div><b>Data:</b> <span id="modal-date"></span></div>
+                    <div><b>Hora:</b> <span id="modal-time"></span></div>
+                    <div style="color:var(--accent-green)"><b>Passagem:</b> <span id="modal-price-p"></span></div>
+                    <div style="color:var(--accent-yellow)"><b>Camarote:</b> <span id="modal-price-c"></span></div>
                 </div>
-                <div class="detail-grid">
-                    <div class="detail-item"><span class="detail-label"><i class="far fa-calendar-alt"></i> Data</span><span class="detail-value" id="modal-date"></span></div>
-                    <div class="detail-item"><span class="detail-label"><i class="far fa-clock"></i> Hora</span><span class="detail-value" id="modal-time"></span></div>
-                    <div class="detail-item" style="border-left: 3px solid var(--accent-green)"><span class="detail-label">Passagem</span><span class="detail-value" style="color:var(--accent-green)" id="modal-price-p"></span></div>
-                    <div class="detail-item" style="border-left: 3px solid var(--accent-yellow)"><span class="detail-label">Camarote</span><span class="detail-value" style="color:var(--accent-yellow)" id="modal-price-c"></span></div>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top: 20px;">
-                    <button id="btn-wa1" class="btn-main" style="background:#25d366; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> ZAP 1</button>
-                    <button id="btn-wa2" class="btn-main" style="background:#128c7e; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> ZAP 2</button>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+                    <button id="btn-wa1" class="btn-main" style="background:#25d366; padding:10px; font-size:0.7rem;">ZAP 1</button>
+                    <button id="btn-wa2" class="btn-main" style="background:#128c7e; padding:10px; font-size:0.7rem;">ZAP 2</button>
                 </div>
             </div>
         </div>
@@ -224,12 +178,13 @@
 
         function navigate(id) {
             document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
+            const target = document.getElementById(id);
+            if(target) target.style.display = 'block';
             window.scrollTo(0,0);
         }
 
         function launchApp() {
-            const n = document.getElementById('user-name').value;
+            const n = document.getElementById('user-name').value.trim();
             const p = document.getElementById('user-phone').value.replace(/\D/g,'');
             if(n.length < 3 || p.length < 8) return alert("Preencha corretamente!");
             currentUser = { name: n, phone: p };
@@ -240,37 +195,23 @@
 
         function startApp() {
             if(!currentUser) return;
-            document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
+            const display = document.getElementById('display-user');
+            if(display) display.innerText = currentUser.name.split(' ')[0];
             navigate('screen-main');
             listenAlerts();
             listenCarousel();
             updateStats();
-            setupNotifications(); // Ativa as notificações no fundo
-        }
-
-        // --- FUNÇÃO DE NOTIFICAÇÕES (NOVA) ---
-        function setupNotifications() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./firebase-messaging-sw.js').then(reg => {
-                    const messaging = firebase.messaging();
-                    messaging.getToken({ vapidKey: "X8dPqkhjd4X26x3sdgSNwcIYJN8f-HyQMjEaPUCiCmw" }).then(token => {
-                        if (token && currentUser) {
-                            rtdb.ref('usuarios_cadastrados/' + currentUser.phone).update({ fcmToken: token });
-                        }
-                    });
-                });
-            }
         }
 
         function listenCarousel() {
             rtdb.ref('config/carrossel').on('value', s => {
                 const wrapper = document.getElementById('carousel-campaigns');
+                if(!wrapper) return;
                 wrapper.innerHTML = "";
                 const data = s.val();
                 if(data) {
-                    Object.keys(data).forEach(key => {
-                        const slide = data[key];
-                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="window.open('${slide.link}', '_blank')"></div>`;
+                    Object.values(data).forEach(slide => {
+                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="window.open('${slide.link}', '_blank')" style="width:100%; height:180px; object-fit:cover; border-radius:20px;"></div>`;
                     });
                     new Swiper(".mySwiper", { loop: true, autoplay: true, pagination: { el: ".swiper-pagination" } });
                 }
@@ -291,7 +232,13 @@
         function updateStats() {
             rtdb.ref('barcos').on('value', s => {
                 let l = 0; const d = s.val();
-                if(d) Object.values(d).forEach(dia => Object.values(dia).forEach(b => { if(b.registeredBy === currentUser.phone) l += (b.likes||0); }));
+                if(d) {
+                    Object.values(d).forEach(dia => {
+                        Object.values(dia).forEach(b => {
+                            if(b.registeredBy === currentUser.phone) l += (b.likes||0);
+                        });
+                    });
+                }
                 const p = Math.min((l/1000)*100, 100);
                 document.getElementById('total-likes-count').innerText = l;
                 document.getElementById('thermometer-bar').style.width = p+'%';
@@ -320,7 +267,7 @@
                             <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
                             <div style="padding:10px;">
                                 <span style="font-weight:800; font-size:0.75rem; color:var(--accent-cyan);">${b.name}</span><br>
-                                <small style="font-size:0.6rem; color:var(--text-dim);">${b.origin}</small>
+                                <small style="font-size:0.6rem; color:var(--text-dim);">${b.origin} ➔ ${b.destiny}</small>
                             </div>
                         </div>`;
                 });
@@ -332,39 +279,55 @@
                 const b = s.val();
                 document.getElementById('modal-img').src = b.img || 'https://via.placeholder.com/400';
                 document.getElementById('modal-name').innerText = b.name;
-                document.getElementById('modal-origin').innerText = b.origin;
-                document.getElementById('modal-destiny').innerText = b.destiny;
+                document.getElementById('modal-route').innerText = `${b.origin} ➔ ${b.destiny}`;
                 document.getElementById('modal-date').innerText = b.date;
                 document.getElementById('modal-time').innerText = b.time;
                 document.getElementById('modal-price-p').innerText = 'R$ ' + b.price_p;
                 document.getElementById('modal-price-c').innerText = 'R$ ' + b.price_c;
-                document.getElementById('btn-wa1').onclick = () => window.open('https://wa.me/55'+b.tel1);
-                document.getElementById('btn-wa2').onclick = () => window.open('https://wa.me/55'+b.tel2);
+                document.getElementById('btn-wa1').onclick = () => window.open('https://wa.me/55'+b.tel1.replace(/\D/g,''));
+                document.getElementById('btn-wa2').onclick = () => window.open('https://wa.me/55'+b.tel2.replace(/\D/g,''));
                 document.getElementById('boat-modal').style.display = 'flex';
             });
         }
 
         function closeModal() { document.getElementById('boat-modal').style.display = 'none'; }
 
+        // --- COMPRESSÃO DE IMAGEM ---
         function processImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    currentImg = e.target.result;
-                    document.getElementById('preview-img').src = currentImg;
-                    document.getElementById('preview-img').style.display = 'block';
-                    document.getElementById('camera-icon').style.display = 'none';
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const max_size = 600; // Tamanho máximo para não travar o banco
+                        let w = img.width, h = img.height;
+                        if (w > h) { if (w > max_size) { h *= max_size / w; w = max_size; } }
+                        else { if (h > max_size) { w *= max_size / h; h = max_size; } }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        currentImg = canvas.toDataURL('image/jpeg', 0.7); // 70% de qualidade
+                        document.getElementById('preview-img').src = currentImg;
+                        document.getElementById('preview-img').style.display = 'block';
+                        document.getElementById('camera-icon').style.display = 'none';
+                    };
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
         function publish() {
+            const name = document.getElementById('in-name').value;
+            const dateVal = document.getElementById('in-date').value;
+            
+            if(!name || !dateVal) return alert("Nome e Data são obrigatórios!");
+
             const boat = {
-                name: document.getElementById('in-name').value,
+                name: name,
                 origin: document.getElementById('in-origin').value,
                 destiny: document.getElementById('in-destiny').value,
-                date: document.getElementById('in-date').value,
+                date: dateVal,
                 time: document.getElementById('in-time').value,
                 price_p: document.getElementById('in-price-p').value,
                 price_c: document.getElementById('in-price-c').value,
@@ -374,28 +337,28 @@
                 likes: 0,
                 registeredBy: currentUser.phone
             };
-            const day = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"][new Date(boat.date + "T00:00:00").getDay()];
-            rtdb.ref('barcos/' + day).push(boat).then(() => {
+
+            // Lógica correta de dia da semana
+            const dateParts = dateVal.split('-');
+            const dayIdx = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]).getDay();
+            const days = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+            const dayName = days[dayIdx];
+
+            rtdb.ref('barcos/' + dayName).push(boat).then(() => {
                 alert("Publicado!");
                 navigate('screen-main');
-            });
+                // Limpar campos
+                currentImg = "";
+                document.getElementById('preview-img').style.display = 'none';
+                document.getElementById('camera-icon').style.display = 'block';
+            }).catch(e => alert("Erro ao salvar. Tente uma foto menor."));
         }
 
         function shareApp() {
-            window.open("https://wa.me/?text=Acesse a escala: " + window.location.href);
+            window.open("https://wa.me/?text=Confira a escala de barcos no BarcoApp: " + window.location.href);
         }
 
         window.onload = () => { if(currentUser) startApp(); };
-        <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "27900578-30bf-4465-b623-7997d8a6d003",
-    });
-  });
-</script>
     </script>
 </body>
 </html>
-
