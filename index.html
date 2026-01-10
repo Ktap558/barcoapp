@@ -7,9 +7,12 @@
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -18,9 +21,15 @@
 
     <style>
         :root {
-            --bg-dark: #0f172a; --card-dark: #1e293b; --accent-cyan: #22d3ee;
-            --accent-purple: #a855f7; --accent-green: #22c55e; --accent-yellow: #fbbf24;
-            --text-white: #f8fafc; --text-dim: #94a3b8; --glass: rgba(255, 255, 255, 0.05);
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #a855f7;
+            --accent-green: #22c55e;
+            --accent-yellow: #fbbf24;
+            --text-white: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass: rgba(255, 255, 255, 0.05);
             --gradient: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
         }
 
@@ -28,45 +37,71 @@
         body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
         .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
-        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; font-size: 0.9rem; margin-bottom: 10px; }
-        
+        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; font-size: 0.9rem; }
+        .input-premium:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(34, 211, 238, 0.2); }
+
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 150px; }
-        .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); }
+        .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
         .boat-img { width: 100%; height: 110px; object-fit: cover; }
+        .price-tag { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; z-index: 5; }
         
         .swiper-container { width: 100%; height: 180px; margin: 15px 0; border-radius: 20px; overflow: hidden; }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; cursor: pointer; }
 
-        #global-alert { 
-            display: none; background: var(--accent-yellow); color: #000; 
-            padding: 15px; font-weight: 800; text-align: center; font-size: 0.85rem; 
-            position: sticky; top: 0; z-index: 10001;
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; padding: 15px; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-dark); width: 100%; max-width: 450px; border-radius: 30px; position: relative; max-height: 95vh; overflow-y: auto; border: 1px solid var(--glass); padding-bottom: 25px; }
+        
+        .boat-modal-header-img { width: 100%; height: 250px; object-fit: cover; border-radius: 30px 30px 0 0; }
+        
+        .route-highlight { 
+            background: var(--glass); 
+            padding: 15px; 
+            border-radius: 15px; 
+            text-align: center; 
+            margin: 15px 0;
+            border: 1px solid rgba(34, 211, 238, 0.2);
         }
+        .route-text { 
+            font-size: 1.1rem; 
+            font-weight: 800; 
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .route-arrow { color: var(--accent-cyan); font-size: 1.4rem; }
+
+        .modal-body { padding: 25px; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .detail-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; border: 1px solid var(--glass); }
+        .detail-label { display: block; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+        .detail-value { display: block; font-weight: 800; font-size: 0.9rem; color: var(--text-white); }
+
+        #global-alert { display: none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 10001; }
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; }
         .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
-        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
     </style>
 </head>
 <body>
 
-    <div id="global-alert" onclick="this.style.display='none'">
-        <i class="fas fa-bell"></i> <span id="alert-text"></span>
-    </div>
+    <div id="global-alert"><i class="fas fa-bullhorn"></i> <span id="alert-text"></span></div>
 
     <section id="screen-welcome" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center;">
-        <h1 style="font-size:3rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">BarcoApp</h1>
-        <p style="color:var(--text-dim); margin-bottom:40px;">Sua escala profissional.</p>
+        <h1 style="font-size:3rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;">BarcoApp</h1>
+        <p style="color:var(--text-dim); margin-bottom:40px;">Participe da nossa promoção: acumule Likes, convide amigos e desbloqueie prêmios exclusivos.</p>
         <div style="width:100%; max-width:350px;">
-            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome">
-            <input type="tel" id="user-phone" class="input-premium" placeholder="Seu WhatsApp">
-            <button class="btn-main" onclick="launchApp()">ACESSAR AGORA</button>
+            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome Completo" style="margin-bottom:15px;">
+            <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp (DDD + Número)" style="margin-bottom:20px;">
+            <button class="btn-main" onclick="launchApp()">ACESSAR SISTEMA</button>
         </div>
     </section>
 
     <section id="screen-main" style="display:none;">
         <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-weight:800; font-size:1.2rem;">⚓ Olá, <span id="display-user" style="color:var(--accent-cyan)"></span></span>
-            <div style="width:10px; height:10px; background:var(--accent-green); border-radius:50%;"></div>
+            <i class="fas fa-bell" style="color:var(--text-dim)"></i>
         </div>
 
         <div style="padding: 0 20px;">
@@ -76,17 +111,23 @@
             </div>
         </div>
 
-        <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:12px; padding:20px;">
-            <button class="input-premium" onclick="loadBoats('Segunda')">Segunda</button>
-            <button class="input-premium" onclick="loadBoats('Terça')">Terça</button>
-            <button class="input-premium" onclick="loadBoats('Quarta')">Quarta</button>
-            <button class="input-premium" onclick="loadBoats('Quinta')">Quinta</button>
-            <button class="input-premium" onclick="loadBoats('Sexta')">Sexta</button>
-            <button class="input-premium" onclick="loadBoats('Sábado')">Sábado</button>
-            <button class="input-premium" style="grid-column:span 2; color:var(--accent-purple)" onclick="loadBoats('Domingo')">🚢 Domingo Especial</button>
+        <div style="background:var(--glass); margin:20px; padding:20px; border-radius:20px; border:1px solid var(--glass);">
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-dim);">
+                <span>LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
+                <span id="percent-label">0%</span>
+            </div>
+            <div style="width:100%; height:6px; background:#000; border-radius:10px; margin:8px 0;"><div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px;"></div></div>
         </div>
 
-        <div id="feed-boats" class="feed"></div>
+        <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:12px; padding:0 20px;">
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Segunda')">Segunda</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Terça')">Terça</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Quarta')">Quarta</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Quinta')">Quinta</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Sexta')">Sexta</button>
+            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Sábado')">Sábado</button>
+            <button class="input-premium" style="background:var(--card-dark); grid-column:span 2; border:1px dashed var(--accent-purple); color:var(--accent-purple)" onclick="changePage('Domingo')">Domingo Especial</button>
+        </div>
 
         <div class="fab-container">
             <button class="fab" style="background:var(--accent-green)" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
@@ -94,25 +135,74 @@
         </div>
     </section>
 
-    <section id="screen-register" style="display:none; padding:30px;">
-        <button onclick="navigate('screen-main')" style="background:none; border:none; color:white; margin-bottom:20px;"><i class="fas fa-arrow-left"></i> Voltar</button>
-        <h2>Cadastrar Barco</h2>
-        <label class="form-label">Nome da Embarcação</label>
-        <input type="text" id="boat-name" class="input-premium" placeholder="Ex: Lancha Fênix">
-        <label class="form-label">Cidade de Origem</label>
-        <input type="text" id="boat-origin" class="input-premium" placeholder="Ex: Manaus">
-        <label class="form-label">Dia da Partida</label>
-        <select id="boat-day" class="input-premium">
-            <option value="Segunda">Segunda</option>
-            <option value="Terça">Terça</option>
-            <option value="Quarta">Quarta</option>
-            <option value="Quinta">Quinta</option>
-            <option value="Sexta">Sexta</option>
-            <option value="Sábado">Sábado</option>
-            <option value="Domingo">Domingo</option>
-        </select>
-        <button class="btn-main" style="margin-top:20px;" onclick="saveBoat()">SALVAR NA ESCALA</button>
+    <section id="screen-day-detail" style="display:none;">
+        <div style="padding:20px; display:flex; align-items:center; gap:15px;">
+            <button onclick="navigate('screen-main')" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fas fa-arrow-left"></i></button>
+            <h2 id="day-title" style="margin:0; text-transform:uppercase; color:var(--accent-cyan)"></h2>
+        </div>
+        <div class="feed" id="boat-feed"></div>
     </section>
+
+    <section id="screen-register" style="display:none; padding:20px; padding-bottom:100px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <button onclick="navigate('screen-main')" style="background:none; border:none; color:var(--text-dim);"><i class="fas fa-times"></i> Fechar</button>
+            <span style="font-weight:800; color:var(--accent-cyan)">REGISTRAR VIAGEM</span>
+        </div>
+        <div style="max-width:500px; margin:auto;">
+            <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
+            <div onclick="document.getElementById('file-input').click()" id="photo-drop" style="width:100%; height:180px; background:var(--card-dark); border-radius:20px; border:2px dashed var(--glass); display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; margin-bottom:20px;">
+                <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
+                <i class="fas fa-camera" id="camera-icon" style="font-size:2rem; color:var(--accent-cyan); margin-bottom:10px;"></i>
+                <span id="label-foto" style="font-size:0.7rem; font-weight:700; color:var(--text-dim);">FOTO DA EMBARCAÇÃO</span>
+            </div>
+            <label class="form-label">Nome da Embarcação</label>
+            <input type="text" id="in-name" class="input-premium" placeholder="Ex: N/M Comandante Souza">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label class="form-label">Origem</label><input type="text" id="in-origin" class="input-premium"></div>
+                <div><label class="form-label">Destino</label><input type="text" id="in-destiny" class="input-premium"></div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label class="form-label">Data</label><input type="date" id="in-date" class="input-premium"></div>
+                <div><label class="form-label">Horário</label><input type="time" id="in-time" class="input-premium"></div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label class="form-label">Passagem</label><input type="number" id="in-price-p" class="input-premium"></div>
+                <div><label class="form-label">Camarote</label><input type="number" id="in-price-c" class="input-premium"></div>
+            </div>
+            <label class="form-label">Contatos</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input type="tel" id="in-tel-1" class="input-premium" placeholder="WhatsApp 1">
+                <input type="tel" id="in-tel-2" class="input-premium" placeholder="WhatsApp 2">
+            </div>
+            <button class="btn-main" onclick="publish()" style="margin-top:30px;">PUBLICAR NA ESCALA</button>
+        </div>
+    </section>
+
+    <div id="boat-modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="modal-img" class="boat-modal-header-img" src="">
+            <div class="modal-body">
+                <h2 id="modal-name" style="margin:0; color:var(--accent-cyan); font-size: 1.8rem; font-weight: 800; text-transform: uppercase; text-align: center;"></h2>
+                <div class="route-highlight">
+                    <div class="route-text">
+                        <span id="modal-origin"></span> 
+                        <span class="route-arrow">➔</span> 
+                        <span id="modal-destiny"></span>
+                    </div>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-item"><span class="detail-label"><i class="far fa-calendar-alt"></i> Data</span><span class="detail-value" id="modal-date"></span></div>
+                    <div class="detail-item"><span class="detail-label"><i class="far fa-clock"></i> Hora</span><span class="detail-value" id="modal-time"></span></div>
+                    <div class="detail-item" style="border-left: 3px solid var(--accent-green)"><span class="detail-label">Passagem</span><span class="detail-value" style="color:var(--accent-green)" id="modal-price-p"></span></div>
+                    <div class="detail-item" style="border-left: 3px solid var(--accent-yellow)"><span class="detail-label">Camarote</span><span class="detail-value" style="color:var(--accent-yellow)" id="modal-price-c"></span></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top: 20px;">
+                    <button id="btn-wa1" class="btn-main" style="background:#25d366; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> ZAP 1</button>
+                    <button id="btn-wa2" class="btn-main" style="background:#128c7e; font-size:0.8rem; padding:12px;"><i class="fab fa-whatsapp"></i> ZAP 2</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
@@ -129,16 +219,19 @@
         const rtdb = firebase.database();
 
         let currentUser = JSON.parse(localStorage.getItem('barco_user_data'));
+        let currentImg = "";
+        let currentDayPage = "";
 
         function navigate(id) {
             document.querySelectorAll('section').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'block';
+            window.scrollTo(0,0);
         }
 
         function launchApp() {
             const n = document.getElementById('user-name').value;
             const p = document.getElementById('user-phone').value.replace(/\D/g,'');
-            if(n.length < 3) return alert("Digite seu nome!");
+            if(n.length < 3 || p.length < 8) return alert("Preencha corretamente!");
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
             rtdb.ref('usuarios_cadastrados/' + p).update({ nome: n, whatsapp: p });
@@ -146,58 +239,27 @@
         }
 
         function startApp() {
+            if(!currentUser) return;
             document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
             navigate('screen-main');
             listenAlerts();
             listenCarousel();
-            setupPush();
-            loadBoats('Segunda'); // Carrega segunda por padrão
+            updateStats();
+            setupNotifications(); // Ativa as notificações no fundo
         }
 
-        function saveBoat() {
-            const name = document.getElementById('boat-name').value;
-            const day = document.getElementById('boat-day').value;
-            const origin = document.getElementById('boat-origin').value;
-            if(!name || !origin) return alert("Preencha tudo!");
-
-            rtdb.ref('barcos/' + day).push({
-                name: name, origin: origin, registeredBy: currentUser.name, likes: 0
-            }).then(() => {
-                alert("Sucesso!");
-                navigate('screen-main');
-            });
-        }
-
-        function loadBoats(day) {
-            rtdb.ref('barcos/' + day).on('value', s => {
-                const feed = document.getElementById('feed-boats');
-                feed.innerHTML = "";
-                const data = s.val();
-                if(data) {
-                    Object.keys(data).forEach(id => {
-                        const b = data[id];
-                        feed.innerHTML += `
-                            <div class="boat-card">
-                                <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200" class="boat-img">
-                                <div style="padding:10px">
-                                    <div style="font-weight:800; font-size:0.8rem">${b.name}</div>
-                                    <div style="font-size:0.7rem; color:var(--text-dim)">${b.origin}</div>
-                                </div>
-                            </div>`;
+        // --- FUNÇÃO DE NOTIFICAÇÕES (NOVA) ---
+        function setupNotifications() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./firebase-messaging-sw.js').then(reg => {
+                    const messaging = firebase.messaging();
+                    messaging.getToken({ vapidKey: "X8dPqkhjd4X26x3sdgSNwcIYJN8f-HyQMjEaPUCiCmw" }).then(token => {
+                        if (token && currentUser) {
+                            rtdb.ref('usuarios_cadastrados/' + currentUser.phone).update({ fcmToken: token });
+                        }
                     });
-                }
-            });
-        }
-
-        function listenAlerts() {
-            rtdb.ref('config/alerta').on('value', s => {
-                const div = document.getElementById('global-alert');
-                const data = s.val();
-                if(data && data.active) {
-                    document.getElementById('alert-text').innerText = data.text;
-                    div.style.display = 'block';
-                } else { div.style.display = 'none'; }
-            });
+                });
+            }
         }
 
         function listenCarousel() {
@@ -208,26 +270,119 @@
                 if(data) {
                     Object.keys(data).forEach(key => {
                         const slide = data[key];
-                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="window.open('${slide.link}')"></div>`;
+                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="window.open('${slide.link}', '_blank')"></div>`;
                     });
-                    new Swiper(".mySwiper", { loop: true, autoplay: true });
+                    new Swiper(".mySwiper", { loop: true, autoplay: true, pagination: { el: ".swiper-pagination" } });
                 }
             });
         }
 
-        function setupPush() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./firebase-messaging-sw.js').then(reg => {
-                    const messaging = firebase.messaging();
-                    messaging.getToken({ vapidKey: "X8dPqkhjd4X26x3sdgSNwcIYJN8f-HyQMjEaPUCiCmw" }).then(token => {
-                        if (token) rtdb.ref('usuarios_cadastrados/' + currentUser.phone).update({ fcmToken: token });
-                    });
+        function listenAlerts() {
+            rtdb.ref('config/alerta').on('value', s => {
+                const div = document.getElementById('global-alert');
+                const data = s.val();
+                if(data && data.active) {
+                    div.style.display = 'block';
+                    document.getElementById('alert-text').innerText = data.text;
+                } else { div.style.display = 'none'; }
+            });
+        }
+
+        function updateStats() {
+            rtdb.ref('barcos').on('value', s => {
+                let l = 0; const d = s.val();
+                if(d) Object.values(d).forEach(dia => Object.values(dia).forEach(b => { if(b.registeredBy === currentUser.phone) l += (b.likes||0); }));
+                const p = Math.min((l/1000)*100, 100);
+                document.getElementById('total-likes-count').innerText = l;
+                document.getElementById('thermometer-bar').style.width = p+'%';
+                document.getElementById('percent-label').innerText = Math.floor(p) + '%';
+            });
+        }
+
+        function changePage(day) {
+            currentDayPage = day;
+            document.getElementById('day-title').innerText = day;
+            navigate('screen-day-detail');
+            loadFeed();
+        }
+
+        function loadFeed() {
+            const feed = document.getElementById('boat-feed');
+            rtdb.ref('barcos/' + currentDayPage).on('value', s => {
+                feed.innerHTML = "";
+                const data = s.val();
+                if(!data) { feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:40px;'>Nenhuma embarcação.</p>"; return; }
+                Object.keys(data).forEach(key => {
+                    const b = data[key];
+                    feed.innerHTML += `
+                        <div class="boat-card" onclick="openDetails('${key}')">
+                            <div class="price-tag">R$ ${b.price_p}</div>
+                            <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
+                            <div style="padding:10px;">
+                                <span style="font-weight:800; font-size:0.75rem; color:var(--accent-cyan);">${b.name}</span><br>
+                                <small style="font-size:0.6rem; color:var(--text-dim);">${b.origin}</small>
+                            </div>
+                        </div>`;
                 });
+            });
+        }
+
+        function openDetails(key) {
+            rtdb.ref(`barcos/${currentDayPage}/${key}`).once('value', s => {
+                const b = s.val();
+                document.getElementById('modal-img').src = b.img || 'https://via.placeholder.com/400';
+                document.getElementById('modal-name').innerText = b.name;
+                document.getElementById('modal-origin').innerText = b.origin;
+                document.getElementById('modal-destiny').innerText = b.destiny;
+                document.getElementById('modal-date').innerText = b.date;
+                document.getElementById('modal-time').innerText = b.time;
+                document.getElementById('modal-price-p').innerText = 'R$ ' + b.price_p;
+                document.getElementById('modal-price-c').innerText = 'R$ ' + b.price_c;
+                document.getElementById('btn-wa1').onclick = () => window.open('https://wa.me/55'+b.tel1);
+                document.getElementById('btn-wa2').onclick = () => window.open('https://wa.me/55'+b.tel2);
+                document.getElementById('boat-modal').style.display = 'flex';
+            });
+        }
+
+        function closeModal() { document.getElementById('boat-modal').style.display = 'none'; }
+
+        function processImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    currentImg = e.target.result;
+                    document.getElementById('preview-img').src = currentImg;
+                    document.getElementById('preview-img').style.display = 'block';
+                    document.getElementById('camera-icon').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
+        function publish() {
+            const boat = {
+                name: document.getElementById('in-name').value,
+                origin: document.getElementById('in-origin').value,
+                destiny: document.getElementById('in-destiny').value,
+                date: document.getElementById('in-date').value,
+                time: document.getElementById('in-time').value,
+                price_p: document.getElementById('in-price-p').value,
+                price_c: document.getElementById('in-price-c').value,
+                tel1: document.getElementById('in-tel-1').value,
+                tel2: document.getElementById('in-tel-2').value,
+                img: currentImg,
+                likes: 0,
+                registeredBy: currentUser.phone
+            };
+            const day = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"][new Date(boat.date + "T00:00:00").getDay()];
+            rtdb.ref('barcos/' + day).push(boat).then(() => {
+                alert("Publicado!");
+                navigate('screen-main');
+            });
+        }
+
         function shareApp() {
-            window.open(`https://api.whatsapp.com/send?text=Acesse a escala de barcos: ${window.location.href}`);
+            window.open("https://wa.me/?text=Acesse a escala: " + window.location.href);
         }
 
         window.onload = () => { if(currentUser) startApp(); };
