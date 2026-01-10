@@ -2,179 +2,122 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BarcoApp | Oficial</title>
-
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Admin | BarcoApp Control</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging-compat.js"></script>
 
     <style>
         :root {
-            --bg-dark: #0f172a; --card-dark: #1e293b; --accent-cyan: #22d3ee;
-            --accent-purple: #a855f7; --accent-green: #22c55e; --accent-yellow: #fbbf24;
-            --text-white: #f8fafc; --text-dim: #94a3b8; --glass: rgba(255, 255, 255, 0.05);
-            --gradient: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
+            --primary: #22d3ee; --bg-dark: #020617; --bg-card: #0f172a;
+            --text-main: #f1f5f9; --text-dim: #94a3b8; --danger: #ef4444;
+            --success: #10b981; --border: rgba(255, 255, 255, 0.1);
         }
 
-        * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; display: flex; }
 
-        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
-        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; font-size: 0.9rem; }
+        .sidebar { width: 280px; background: #020617; height: 100vh; position: fixed; border-right: 1px solid var(--border); padding: 20px; }
+        .sidebar h1 { color: var(--primary); font-size: 1.5rem; display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: var(--text-dim); text-decoration: none; border-radius: 10px; margin-bottom: 5px; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: rgba(34, 211, 238, 0.1); color: var(--primary); }
+
+        .main { margin-left: 280px; width: calc(100% - 280px); padding: 40px; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--bg-card); padding: 20px; border-radius: 15px; border: 1px solid var(--border); }
+        .stat-card small { color: var(--text-dim); text-transform: uppercase; font-size: 0.7rem; font-weight: 700; }
+        .stat-card h2 { margin: 10px 0 0; font-size: 1.8rem; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 30px; }
+        .panel { background: var(--bg-card); border-radius: 20px; border: 1px solid var(--border); margin-bottom: 30px; overflow: hidden; }
+        .panel-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); }
+        .panel-header h3 { margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
         
-        .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 150px; }
-        .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
-        .boat-img { width: 100%; height: 110px; object-fit: cover; }
-        .price-tag { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; z-index: 5; }
-        
-        .swiper-container { width: 100%; height: 180px; margin: 15px 0; border-radius: 20px; overflow: hidden; }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; padding: 15px; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-dark); width: 100%; max-width: 450px; border-radius: 30px; position: relative; max-height: 95vh; overflow-y: auto; border: 1px solid var(--glass); padding-bottom: 25px; }
-        
-        .route-highlight { background: var(--glass); padding: 15px; border-radius: 15px; text-align: center; margin: 15px 0; border: 1px solid rgba(34, 211, 238, 0.2); }
-        .route-text { font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        input { width: 100%; background: #1e293b; border: 1px solid var(--border); padding: 12px; border-radius: 8px; color: white; margin-bottom: 10px; outline: none; }
+        .btn { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .btn-add { background: var(--primary); color: #000; width: 100%; margin-top: 10px; }
+        .btn-del { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .btn-del:hover { background: var(--danger); color: white; }
 
-        #global-alert { display: none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; position: sticky; top: 0; z-index: 10001; }
-        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; }
-        .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
-        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-
-        /* Estilo Admin */
-        .admin-card { background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 4px solid var(--accent-cyan); }
-        .admin-btn-del { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; margin-top: 5px; cursor: pointer; }
+        .rank-row { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 8px; }
+        .tag-dia { background: var(--primary); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; }
     </style>
 </head>
 <body>
 
-    <div id="global-alert"><i class="fas fa-bullhorn"></i> <span id="alert-text"></span></div>
+    <div class="sidebar">
+        <h1><i class="fas fa-anchor"></i> BARCO APP</h1>
+        <a href="#" class="nav-item active"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="#" class="nav-item"><i class="fas fa-ship"></i> Escalas</a>
+        <a href="#" class="nav-item"><i class="fas fa-users"></i> Usuários</a>
+        <a href="#" class="nav-item"><i class="fas fa-image"></i> Carrossel</a>
+    </div>
 
-    <section id="screen-welcome" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center;">
-        <h1 style="font-size:3rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;" onclick="checkAdmin()">BarcoApp</h1>
-        <p style="color:var(--text-dim); margin-bottom:40px;">Participe da nossa promoção: acumule Likes, convide amigos e desbloqueie prêmios exclusivos.</p>
-        <div style="width:100%; max-width:350px;">
-            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome Completo" style="margin-bottom:15px;">
-            <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp (DDD + Número)" style="margin-bottom:20px;">
-            <button class="btn-main" onclick="launchApp()">ACESSAR SISTEMA</button>
-        </div>
-    </section>
-
-    <section id="screen-main" style="display:none;">
-        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight:800; font-size:1.2rem;">⚓ Olá, <span id="display-user" style="color:var(--accent-cyan)"></span></span>
-            <i class="fas fa-cog" style="color:var(--text-dim)" onclick="navigate('screen-admin')"></i>
+    <div class="main">
+        <div class="stats-row">
+            <div class="stat-card"><small>Usuários</small><h2 id="total-users">0</h2></div>
+            <div class="stat-card"><small>Barcos</small><h2 id="total-boats">0</h2></div>
+            <div class="stat-card"><small>Total Likes</small><h2 id="total-likes">0</h2></div>
+            <div class="stat-card"><small>Push Tokens</small><h2 id="total-tokens">0</h2></div>
         </div>
 
-        <div style="padding: 0 20px;">
-            <div class="swiper-container mySwiper">
-                <div class="swiper-wrapper" id="carousel-campaigns"></div>
-                <div class="swiper-pagination"></div>
+        <div class="dashboard-grid">
+            <div class="left-side">
+                <div class="panel">
+                    <div class="panel-header"><h3><i class="fas fa-users"></i> Gerenciar Usuários</h3></div>
+                    <div class="panel-body">
+                        <table>
+                            <thead><tr><th>Nome</th><th>WhatsApp</th><th>Pts</th><th>Ações</th></tr></thead>
+                            <tbody id="users-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header"><h3><i class="fas fa-calendar-alt"></i> Gerenciar Publicações</h3></div>
+                    <div class="panel-body">
+                        <table>
+                            <thead><tr><th>Barco</th><th>Dia</th><th>Likes</th><th>Remover</th></tr></thead>
+                            <tbody id="boats-list"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div style="background:var(--glass); margin:20px; padding:20px; border-radius:20px; border:1px solid var(--glass);">
-            <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-dim);">
-                <span>LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
-                <span id="percent-label">0%</span>
-            </div>
-            <div style="width:100%; height:6px; background:#000; border-radius:10px; margin:8px 0;"><div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px;"></div></div>
-        </div>
+            <div class="right-side">
+                <div class="panel" style="border-color: var(--primary);">
+                    <div class="panel-header"><h3><i class="fas fa-broadcast-tower"></i> Push Notification (Global)</h3></div>
+                    <div class="panel-body">
+                        <input type="text" id="push-title" placeholder="Título da Notificação">
+                        <input type="text" id="push-msg" placeholder="Mensagem da Notificação">
+                        <button class="btn btn-add" onclick="sendPush()">Disparar Notificação</button>
+                    </div>
+                </div>
 
-        <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:12px; padding:0 20px;">
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Segunda')">Segunda</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Terça')">Terça</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Quarta')">Quarta</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Quinta')">Quinta</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Sexta')">Sexta</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Sábado')">Sábado</button>
-            <button class="input-premium" style="background:var(--card-dark); grid-column:span 2; border:1px dashed var(--accent-purple); color:var(--accent-purple)" onclick="changePage('Domingo')">Domingo Especial</button>
-        </div>
+                <div class="panel">
+                    <div class="panel-header"><h3><i class="fas fa-images"></i> Carrossel (6 Slots)</h3></div>
+                    <div class="panel-body" id="carousel-manager">
+                        </div>
+                    <button class="btn btn-add" onclick="updateCarousel()">Salvar Carrossel</button>
+                </div>
 
-        <div class="fab-container">
-            <button class="fab" style="background:var(--accent-green)" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
-            <button class="fab" style="background:var(--gradient)" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
-        </div>
-    </section>
-
-    <section id="screen-admin" style="display:none; padding:20px; padding-bottom:100px;">
-        <h2 style="color:var(--accent-cyan)">PAINEL DE CONTROLE</h2>
-        <button onclick="navigate('screen-main')" class="btn-main" style="background:var(--glass); margin-bottom:20px;">VOLTAR</button>
-        
-        <div id="admin-sections">
-            <h3>🏆 RANKING DE LIKES</h3>
-            <div id="admin-rank-list"></div>
-
-            <h3>👥 USUÁRIOS</h3>
-            <div id="admin-user-list"></div>
-
-            <h3>🚢 GERENCIAR BARCOS (DIA ATUAL)</h3>
-            <div id="admin-boat-list"></div>
-
-            <h3>🖼️ CONFIGURAR CARROSSEL (6 SLIDES)</h3>
-            <div id="admin-carousel-config">
-                <div id="carousel-inputs"></div>
-                <button class="btn-main" style="margin-top:10px" onclick="saveCarousel()">SALVAR CARROSSEL</button>
-            </div>
-        </div>
-    </section>
-
-    <section id="screen-day-detail" style="display:none;">
-        <div style="padding:20px; display:flex; align-items:center; gap:15px;">
-            <button onclick="navigate('screen-main')" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fas fa-arrow-left"></i></button>
-            <h2 id="day-title" style="margin:0; text-transform:uppercase; color:var(--accent-cyan)"></h2>
-        </div>
-        <div class="feed" id="boat-feed"></div>
-    </section>
-
-    <section id="screen-register" style="display:none; padding:20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <button onclick="navigate('screen-main')" style="background:none; border:none; color:var(--text-dim);"><i class="fas fa-times"></i> Fechar</button>
-            <span style="font-weight:800; color:var(--accent-cyan)">REGISTRAR VIAGEM</span>
-        </div>
-        <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
-        <div onclick="document.getElementById('file-input').click()" id="photo-drop" style="width:100%; height:180px; background:var(--card-dark); border-radius:20px; border:2px dashed var(--glass); display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:20px;">
-            <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
-            <span id="label-foto">CLIQUE PARA FOTO</span>
-        </div>
-        <input type="text" id="in-name" class="input-premium" placeholder="Nome do Barco">
-        <input type="text" id="in-origin" class="input-premium" placeholder="Origem" style="margin-top:10px">
-        <input type="text" id="in-destiny" class="input-premium" placeholder="Destino" style="margin-top:10px">
-        <input type="date" id="in-date" class="input-premium" style="margin-top:10px">
-        <input type="time" id="in-time" class="input-premium" style="margin-top:10px">
-        <input type="number" id="in-price-p" class="input-premium" placeholder="Preço Passagem" style="margin-top:10px">
-        <input type="number" id="in-price-c" class="input-premium" placeholder="Preço Camarote" style="margin-top:10px">
-        <input type="tel" id="in-tel-1" class="input-premium" placeholder="Zap 1" style="margin-top:10px">
-        <input type="tel" id="in-tel-2" class="input-premium" placeholder="Zap 2" style="margin-top:10px">
-        <button class="btn-main" onclick="publish()" style="margin-top:30px;">PUBLICAR</button>
-    </section>
-
-    <div id="boat-modal" class="modal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" style="width:100%; height:200px; object-fit:cover;">
-            <div style="padding:20px;">
-                <h2 id="modal-name"></h2>
-                <div class="route-text"><span id="modal-origin"></span> ➔ <span id="modal-destiny"></span></div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
-                    <button id="btn-wa1" class="btn-main" style="background:#25d366">ZAP 1</button>
-                    <button id="btn-wa2" class="btn-main" style="background:#128c7e">ZAP 2</button>
+                <div class="panel">
+                    <div class="panel-header"><h3><i class="fas fa-trophy"></i> Ranking de Influência</h3></div>
+                    <div class="panel-body" id="ranking-list"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
-        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -185,169 +128,102 @@
             appId: "1:575071745494:web:63c1db8d2c1038c27c6077"
         };
         firebase.initializeApp(firebaseConfig);
-        const rtdb = firebase.database();
+        const db = firebase.database();
 
-        let currentUser = JSON.parse(localStorage.getItem('barco_user_data'));
-        let currentImg = "";
-        let currentDayPage = "";
-
-        // --- INICIALIZAÇÃO E NOTIFICAÇÕES ---
-        function startApp() {
-            if(!currentUser) return;
-            document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
-            navigate('screen-main');
-            listenCarousel();
-            listenAlerts();
-            updateStats();
-            setupMessaging();
-            renderCarouselInputs(); // Prepara os 6 campos no admin
-        }
-
-        function setupMessaging() {
-            if ('serviceWorker' in navigator) {
-                const messaging = firebase.messaging();
-                messaging.getToken({ vapidKey: "SEU_VAPID_KEY_AQUI" }).then(token => {
-                    if(token) rtdb.ref('usuarios_cadastrados/'+currentUser.phone).update({fcmToken: token});
-                }).catch(err => console.log("Erro token:", err));
-            }
-        }
-
-        // --- FUNÇÕES ADMIN (RESTAURADAS E MELHORADAS) ---
-        function checkAdmin() {
-            const pass = prompt("Senha Admin:");
-            if(pass === "123") navigate('screen-admin');
-        }
-
-        // Carrega Ranking e Usuários no Admin
-        rtdb.ref('usuarios_cadastrados').on('value', s => {
-            const users = s.val();
-            const rankDiv = document.getElementById('admin-rank-list');
-            const userDiv = document.getElementById('admin-user-list');
-            rankDiv.innerHTML = ""; userDiv.innerHTML = "";
-            
-            if(!users) return;
-
-            // Converter para array e ordenar por likes (Rank)
-            const userArr = Object.values(users).sort((a,b) => (b.totalLikes||0) - (a.totalLikes||0));
-            
-            userArr.forEach(u => {
-                rankDiv.innerHTML += `<div class="admin-card">⭐ ${u.nome} - <b>${u.totalLikes||0} Likes</b></div>`;
-                userDiv.innerHTML += `
-                    <div class="admin-card">
-                        ${u.nome} (${u.whatsapp})
-                        <button class="admin-btn-del" onclick="deleteUser('${u.whatsapp}')">Remover Usuário</button>
-                    </div>`;
+        function init() {
+            db.ref().on('value', snap => {
+                const data = snap.val();
+                renderUsers(data.usuarios_cadastrados, data.indicacoes);
+                renderBoats(data.barcos);
+                renderRanking(data.usuarios_cadastrados, data.indicacoes);
+                setupCarouselFields(data.config ? data.config.carrossel : null);
             });
-        });
-
-        function deleteUser(phone) {
-            if(confirm("Excluir usuário permanentemente?")) rtdb.ref('usuarios_cadastrados/'+phone).remove();
         }
 
-        function deleteBoat(day, key) {
-            if(confirm("Excluir esta publicação?")) rtdb.ref(`barcos/${day}/${key}`).remove();
+        function renderUsers(users, invites) {
+            const list = document.getElementById('users-list');
+            list.innerHTML = ""; let count = 0;
+            for(let id in users) {
+                count++;
+                const pts = invites && invites[id] ? Object.keys(invites[id]).length : 0;
+                list.innerHTML += `<tr>
+                    <td>${users[id].nome}</td>
+                    <td>${users[id].whatsapp}</td>
+                    <td>${pts}</td>
+                    <td><button class="btn btn-del" onclick="deleteUser('${id}')">Excluir</button></td>
+                </tr>`;
+            }
+            document.getElementById('total-users').innerText = count;
         }
 
-        // --- CARROSSEL DINÂMICO (6 OPÇÕES) ---
-        function renderCarouselInputs() {
-            const container = document.getElementById('carousel-inputs');
+        function renderBoats(barcos) {
+            const list = document.getElementById('boats-list');
+            list.innerHTML = ""; let bCount = 0; let lCount = 0;
+            for(let dia in barcos) {
+                for(let key in barcos[dia]) {
+                    const b = barcos[dia][key];
+                    bCount++; lCount += (b.likes || 0);
+                    list.innerHTML += `<tr>
+                        <td>${b.name}</td>
+                        <td><span class="tag-dia">${dia}</span></td>
+                        <td>❤️ ${b.likes || 0}</td>
+                        <td><button class="btn btn-del" onclick="deleteBoat('${dia}','${key}')">Remover</button></td>
+                    </tr>`;
+                }
+            }
+            document.getElementById('total-boats').innerText = bCount;
+            document.getElementById('total-likes').innerText = lCount;
+        }
+
+        function setupCarouselFields(current) {
+            const container = document.getElementById('carousel-manager');
             container.innerHTML = "";
             for(let i=1; i<=6; i++) {
+                const img = current && current[`s${i}`] ? current[`s${i}`].img : "";
+                const link = current && current[`s${i}`] ? current[`s${i}`].link : "";
                 container.innerHTML += `
-                    <div class="admin-card">
-                        <label>Slide ${i} - URL Imagem</label>
-                        <input type="text" id="car-img-${i}" class="input-premium" placeholder="https://...">
-                        <label>Slide ${i} - Link Clicável</label>
-                        <input type="text" id="car-link-${i}" class="input-premium" placeholder="https://wa.me/...">
+                    <div style="border-bottom:1px solid #1e293b; padding-bottom:10px; margin-bottom:10px;">
+                        <small>Slide ${i}</small>
+                        <input type="text" id="img-${i}" placeholder="URL Imagem" value="${img}">
+                        <input type="text" id="link-${i}" placeholder="Link de destino" value="${link}">
                     </div>`;
             }
         }
 
-        function saveCarousel() {
-            const data = {};
+        function updateCarousel() {
+            const carrossel = {};
             for(let i=1; i<=6; i++) {
-                data['slide'+i] = {
-                    img: document.getElementById('car-img-'+i).value,
-                    link: document.getElementById('car-link-'+i).value
+                carrossel[`s${i}`] = {
+                    img: document.getElementById(`img-${i}`).value,
+                    link: document.getElementById(`link-${i}`).value
                 };
             }
-            rtdb.ref('config/carrossel').set(data).then(() => alert("Carrossel Atualizado!"));
+            db.ref('config/carrossel').set(carrossel).then(() => alert("Carrossel Atualizado!"));
         }
 
-        function listenCarousel() {
-            rtdb.ref('config/carrossel').on('value', s => {
-                const wrapper = document.getElementById('carousel-campaigns');
-                wrapper.innerHTML = "";
-                const data = s.val();
-                if(data) {
-                    Object.values(data).forEach(slide => {
-                        if(slide.img) {
-                            wrapper.innerHTML += `
-                            <div class="swiper-slide">
-                                <img src="${slide.img}" onclick="window.open('${slide.link}', '_blank')">
-                            </div>`;
-                        }
-                    });
-                    new Swiper(".mySwiper", { loop: true, autoplay: {delay:3000}, pagination: { el: ".swiper-pagination" } });
-                }
-            });
+        function deleteUser(uid) { if(confirm("Excluir usuário?")) db.ref(`usuarios_cadastrados/${uid}`).remove(); }
+        function deleteBoat(dia, key) { if(confirm("Excluir publicação?")) db.ref(`barcos/${dia}/${key}`).remove(); }
+
+        function renderRanking(users, invites) {
+            const div = document.getElementById('ranking-list');
+            let arr = [];
+            for(let id in users) {
+                const pts = invites && invites[id] ? Object.keys(invites[id]).length : 0;
+                arr.push({ nome: users[id].nome, pts });
+            }
+            arr.sort((a,b) => b.pts - a.pts);
+            div.innerHTML = arr.slice(0,5).map((u, i) => `<div class="rank-row"><span>${i+1}º ${u.nome}</span><b>${u.pts} Pts</b></div>`).join('');
         }
 
-        // --- LÓGICA DE USUÁRIO (MANTIDA) ---
-        function launchApp() {
-            const n = document.getElementById('user-name').value;
-            const p = document.getElementById('user-phone').value.replace(/\D/g,'');
-            if(n.length < 3) return alert("Nome inválido");
-            currentUser = { name: n, phone: p };
-            localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
-            rtdb.ref('usuarios_cadastrados/' + p).update({ nome: n, whatsapp: p });
-            startApp();
+        // Função para simular o push via Firebase
+        function sendPush() {
+            const title = document.getElementById('push-title').value;
+            const msg = document.getElementById('push-msg').value;
+            db.ref('notificacoes_pendentes').push({ title, msg, timestamp: Date.now() });
+            alert("Comando de notificação enviado ao servidor!");
         }
 
-        function navigate(id) {
-            document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
-        }
-
-        function changePage(day) {
-            currentDayPage = day;
-            document.getElementById('day-title').innerText = day;
-            navigate('screen-day-detail');
-            loadFeed(day);
-        }
-
-        function loadFeed(day) {
-            const feed = document.getElementById('boat-feed');
-            const adminBoatList = document.getElementById('admin-boat-list');
-            rtdb.ref('barcos/' + day).on('value', s => {
-                feed.innerHTML = "";
-                if(adminBoatList) adminBoatList.innerHTML = "";
-                const data = s.val();
-                if(!data) return;
-                Object.keys(data).forEach(key => {
-                    const b = data[key];
-                    feed.innerHTML += `
-                        <div class="boat-card" onclick="openDetails('${day}', '${key}')">
-                            <div class="price-tag">R$ ${b.price_p}</div>
-                            <img src="${b.img}" class="boat-img">
-                            <div style="padding:10px;"><b>${b.name}</b></div>
-                        </div>`;
-                    
-                    if(adminBoatList) {
-                        adminBoatList.innerHTML += `
-                        <div class="admin-card">
-                            ${b.name} (${day})
-                            <button class="admin-btn-del" onclick="deleteBoat('${day}', '${key}')">Remover Post</button>
-                        </div>`;
-                    }
-                });
-            });
-        }
-
-        // Outras funções auxiliares (closeModal, shareApp, processImage, publish, updateStats) devem ser mantidas conforme o original.
-        // O código de publish deve atualizar o "totalLikes" do usuário ao receber votos.
-
-        window.onload = () => { if(currentUser) startApp(); };
+        init();
     </script>
 </body>
 </html>
