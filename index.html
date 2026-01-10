@@ -183,6 +183,12 @@
                     <div style="color:var(--accent-green)">Passagem: <span id="modal-price-p"></span></div>
                     <div style="color:var(--accent-yellow)">Camarote: <span id="modal-price-c"></span></div>
                 </div>
+
+                <div id="vote-section" style="display:flex; gap:10px; margin-top:20px; border-top:1px solid var(--glass); padding-top:15px;">
+                    <button id="btn-like" class="btn-main" style="background:var(--accent-green); flex:1; padding:12px; font-size:0.7rem;"><i class="fas fa-thumbs-up"></i> GOSTEI</button>
+                    <button id="btn-dislike" class="btn-main" style="background:#ef4444; flex:1; padding:12px; font-size:0.7rem;"><i class="fas fa-thumbs-down"></i> NÃO GOSTEI</button>
+                </div>
+
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
                     <button id="btn-wa1" class="btn-main" style="background:#25d366; padding:12px; font-size:0.7rem;"><i class="fab fa-whatsapp"></i> ZAP 1</button>
                     <button id="btn-wa2" class="btn-main" style="background:#128c7e; padding:12px; font-size:0.7rem;"><i class="fab fa-whatsapp"></i> ZAP 2</button>
@@ -281,9 +287,12 @@
                 }
                 Object.keys(data).forEach(key => {
                     const b = data[key];
+                    // Cálculo do saldo para exibir no card
+                    const saldo = (b.likes || 0) - (b.dislikes || 0);
                     feed.innerHTML += `
                         <div class="boat-card" onclick="openDetails('${key}')">
                             <div style="position:absolute; top:5px; left:5px; background:var(--accent-green); color:#000; font-size:0.6rem; padding:2px 6px; border-radius:5px; font-weight:800;">R$ ${b.price_p}</div>
+                            <div style="position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.6); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:5px; font-weight:800;"><i class="fas fa-heart"></i> ${saldo}</div>
                             <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
                             <div style="padding:10px;">
                                 <div style="font-weight:800; font-size:0.75rem; color:var(--accent-cyan); white-space:nowrap; overflow:hidden;">${b.name}</div>
@@ -304,9 +313,25 @@
                 document.getElementById('modal-time').innerText = b.time;
                 document.getElementById('modal-price-p').innerText = 'R$ ' + b.price_p;
                 document.getElementById('modal-price-c').innerText = 'R$ ' + b.price_c;
+                
+                // Configuração dos botões de voto
+                document.getElementById('btn-like').onclick = () => registerVote(key, 'likes');
+                document.getElementById('btn-dislike').onclick = () => registerVote(key, 'dislikes');
+
                 document.getElementById('btn-wa1').onclick = () => window.open('https://wa.me/55'+b.tel1.replace(/\D/g,''));
                 document.getElementById('btn-wa2').onclick = () => window.open('https://wa.me/55'+b.tel2.replace(/\D/g,''));
                 document.getElementById('boat-modal').style.display = 'flex';
+            });
+        }
+
+        // NOVA FUNÇÃO: Registro de Votos
+        function registerVote(key, type) {
+            const boatRef = rtdb.ref(`barcos/${currentDayPage}/${key}/${type}`);
+            boatRef.transaction(currentValue => {
+                return (currentValue || 0) + 1;
+            }).then(() => {
+                alert("Voto registrado com sucesso!");
+                closeModal();
             });
         }
 
@@ -353,6 +378,7 @@
                 tel2: document.getElementById('in-tel-2').value,
                 img: currentImg,
                 likes: 0,
+                dislikes: 0, // Adicionado campo de deslikes
                 registeredBy: currentUser.phone
             };
 
@@ -401,7 +427,10 @@
                 if(d) {
                     Object.values(d).forEach(dia => {
                         Object.values(dia).forEach(b => {
-                            if(b.registeredBy === currentUser.phone) l += (b.likes||0);
+                            // O saldo total do usuário agora é Likes menos Dislikes
+                            if(b.registeredBy === currentUser.phone) {
+                                l += ((b.likes || 0) - (b.dislikes || 0));
+                            }
                         });
                     });
                 }
