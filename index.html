@@ -386,6 +386,16 @@
         }
 
         window.onload = () => { if(currentUser) startApp(); };
+        <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "27900578-30bf-4465-b623-7997d8a6d003",
+    });
+  });
+</script>
     </script>
 </body>
 </html>
+
