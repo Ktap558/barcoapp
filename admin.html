@@ -62,6 +62,9 @@
         th { color: var(--text-muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; padding: 15px; border-bottom: 1px solid var(--border); }
         td { padding: 15px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.03); }
         .avatar-circle { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; font-size: 0.8rem; }
+        
+        /* Thumbnail for carousel */
+        .img-thumb { width: 60px; height: 35px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border); }
 
         /* Forms */
         .input-group { margin-bottom: 15px; }
@@ -84,7 +87,7 @@
             <a href="#" class="nav-link active"><i class="fas fa-th-large"></i> Dashboard</a>
             <a href="#" class="nav-link"><i class="fas fa-ship"></i> Escala de Barcos</a>
             <a href="#" class="nav-link"><i class="fas fa-users"></i> Usuários</a>
-            <a href="#" class="nav-link"><i class="fas fa-ad"></i> Publicidade</a>
+            <a href="#" class="nav-link"><i class="fas fa-images"></i> Carrossel</a>
         </nav>
     </div>
 
@@ -115,25 +118,45 @@
         </div>
 
         <div class="admin-grid">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-users"></i> Usuários Cadastrados</h2>
+            <div style="display: flex; flex-direction: column; gap: 30px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-users"></i> Usuários Cadastrados</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Usuário</th>
+                                        <th>WhatsApp</th>
+                                        <th>Indicações</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Usuário</th>
-                                    <th>WhatsApp</th>
-                                    <th>Cadastro</th>
-                                    <th>Indicações</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="user-table-body">
-                                </tbody>
-                        </table>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-images"></i> Slides do Carrossel (App)</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Miniatura</th>
+                                        <th>Link Destino</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="carousel-table-body"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -157,18 +180,35 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h2><i class="fas fa-image"></i> Banner Publicitário</h2>
+                        <h2><i class="fas fa-plus-circle"></i> Novo Slide Carrossel</h2>
                     </div>
                     <div class="card-body">
                         <div class="input-group">
-                            <label>Link da Imagem (JPG/PNG)</label>
+                            <label>URL da Imagem</label>
+                            <input type="text" id="carousel-img" placeholder="https://...">
+                        </div>
+                        <div class="input-group">
+                            <label>Link de Destino (Opcional)</label>
+                            <input type="text" id="carousel-url" placeholder="https://...">
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%" onclick="addCarouselItem()">Adicionar ao Carrossel</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-image"></i> Banner Único (Ad)</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <label>Link da Imagem</label>
                             <input type="text" id="ad-img" placeholder="https://...">
                         </div>
                         <div class="input-group">
                             <label>Link de Destino</label>
-                            <input type="text" id="ad-url" placeholder="https://wa.me/...">
+                            <input type="text" id="ad-url" placeholder="https://...">
                         </div>
-                        <button class="btn btn-primary" style="width: 100%" onclick="updateAd()">Publicar Banner</button>
+                        <button class="btn btn-primary" style="width: 100%" onclick="updateAd()">Atualizar Banner</button>
                     </div>
                 </div>
             </div>
@@ -187,7 +227,6 @@
                                 <th>Dia</th>
                                 <th>Origem/Destino</th>
                                 <th>Likes</th>
-                                <th>Postado por</th>
                                 <th>Ação</th>
                             </tr>
                         </thead>
@@ -199,7 +238,7 @@
     </div>
 
     <script>
-        // Configuração Firebase (Sua configuração original)
+        // Configuração Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -212,9 +251,8 @@
         firebase.initializeApp(firebaseConfig);
         const rtdb = firebase.database();
 
-        // Carregar Dados
         function initAdmin() {
-            // Sincronizar Alertas e Ads nos campos
+            // Sincronizar Alertas e Ads
             rtdb.ref('config/alerta').on('value', s => { if(s.exists()) document.getElementById('alert-text').value = s.val().text; });
             rtdb.ref('config/anuncio').on('value', s => { 
                 if(s.exists()){
@@ -223,14 +261,15 @@
                 }
             });
 
-            // Sincronizar Tabelas e Stats
+            // Sincronizar Tudo
             rtdb.ref().on('value', snapshot => {
                 const data = snapshot.val();
                 if(!data) return;
 
                 renderUsers(data.usuarios_cadastrados, data.indicacoes);
                 renderBoats(data.barcos);
-                updateDashboardStats(data);
+                renderCarousel(data.config ? data.config.carrossel : null);
+                updateStats(data);
             });
         }
 
@@ -238,89 +277,100 @@
             const tbody = document.getElementById('user-table-body');
             tbody.innerHTML = "";
             let count = 0;
-
             for(let id in users) {
                 count++;
                 const u = users[id];
                 const totalInvites = invites && invites[id] ? Object.keys(invites[id]).length : 0;
-                
                 tbody.innerHTML += `
                     <tr>
-                        <td>
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <div class="avatar-circle">${u.nome.charAt(0)}</div>
-                                <b>${u.nome}</b>
-                            </div>
-                        </td>
+                        <td><div style="display:flex; align-items:center; gap:10px;"><div class="avatar-circle">${u.nome.charAt(0)}</div><b>${u.nome}</b></div></td>
                         <td>${u.whatsapp}</td>
-                        <td>${u.dataCadastro || '---'}</td>
                         <td><span style="color:var(--success)">🔥 ${totalInvites}</span></td>
-                        <td>
-                            <a href="https://wa.me/55${u.whatsapp}" target="_blank" class="btn btn-primary" style="padding: 5px 10px"><i class="fab fa-whatsapp"></i></a>
-                        </td>
-                    </tr>
-                `;
+                        <td><a href="https://wa.me/55${u.whatsapp}" target="_blank" class="btn btn-primary" style="padding: 5px 10px"><i class="fab fa-whatsapp"></i></a></td>
+                    </tr>`;
             }
             document.getElementById('stat-users').innerText = count;
+        }
+
+        function renderCarousel(slides) {
+            const tbody = document.getElementById('carousel-table-body');
+            tbody.innerHTML = "";
+            if(!slides) {
+                tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:var(--text-muted)'>Nenhum slide ativo</td></tr>";
+                return;
+            }
+            for(let key in slides) {
+                const s = slides[key];
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${s.img}" class="img-thumb" onerror="this.src='https://via.placeholder.com/60x35?text=Erro'"></td>
+                        <td style="font-size:0.7rem; max-width:150px; overflow:hidden; text-overflow:ellipsis;">${s.link || '---'}</td>
+                        <td><button class="btn btn-danger" style="padding:5px 10px" onclick="deleteCarouselItem('${key}')"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+            }
         }
 
         function renderBoats(barcos) {
             const tbody = document.getElementById('boat-table-body');
             tbody.innerHTML = "";
-            let boatCount = 0;
-            let totalLikes = 0;
-
+            let bCount = 0; let lCount = 0;
             if(barcos) {
                 for(let dia in barcos) {
                     for(let key in barcos[dia]) {
                         const b = barcos[dia][key];
-                        boatCount++;
-                        totalLikes += (b.likes || 0);
-
+                        bCount++; lCount += (b.likes || 0);
                         tbody.innerHTML += `
                             <tr>
                                 <td><b>${b.name}</b></td>
                                 <td><span style="background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:5px;">${dia}</span></td>
                                 <td style="font-size:0.75rem">${b.origin} → ${b.destiny || '?'}</td>
                                 <td style="color:var(--accent)">❤️ ${b.likes || 0}</td>
-                                <td style="font-size:0.75rem; color:var(--text-muted)">${b.registeredBy}</td>
                                 <td><button class="btn btn-danger" onclick="deleteBoat('${dia}','${key}')">Excluir</button></td>
-                            </tr>
-                        `;
+                            </tr>`;
                     }
                 }
             }
-            document.getElementById('stat-boats').innerText = boatCount;
-            document.getElementById('stat-likes').innerText = totalLikes;
+            document.getElementById('stat-boats').innerText = bCount;
+            document.getElementById('stat-likes').innerText = lCount;
         }
 
-        function updateDashboardStats(data) {
-            // As métricas são atualizadas dentro das funções de render para precisão
+        // Funções de Ação
+        function addCarouselItem() {
+            const img = document.getElementById('carousel-img').value;
+            const link = document.getElementById('carousel-url').value;
+            if(!img) return alert("Insira o link da imagem");
+            
+            rtdb.ref('config/carrossel').push({ img: img, link: link })
+                .then(() => {
+                    alert("Slide adicionado!");
+                    document.getElementById('carousel-img').value = "";
+                    document.getElementById('carousel-url').value = "";
+                });
         }
 
-        // Ações
+        function deleteCarouselItem(key) {
+            if(confirm("Remover este slide do carrossel?")) {
+                rtdb.ref(`config/carrossel/${key}`).remove();
+            }
+        }
+
         function updateAlert() {
             const t = document.getElementById('alert-text').value;
             rtdb.ref('config/alerta').set({ text: t, active: true }).then(() => alert("Alerta Atualizado!"));
         }
 
         function clearAlert() {
-            rtdb.ref('config/alerta').remove().then(() => {
-                document.getElementById('alert-text').value = "";
-                alert("Alerta Removido");
-            });
+            rtdb.ref('config/alerta').remove().then(() => alert("Alerta Removido"));
         }
 
         function updateAd() {
             const img = document.getElementById('ad-img').value;
             const url = document.getElementById('ad-url').value;
-            rtdb.ref('config/anuncio').set({ img: img, link: url, active: true }).then(() => alert("Anúncio Publicado!"));
+            rtdb.ref('config/anuncio').set({ img: img, link: url, active: true }).then(() => alert("Banner Atualizado!"));
         }
 
         function deleteBoat(dia, key) {
-            if(confirm("Deseja realmente remover este barco da escala?")) {
-                rtdb.ref(`barcos/${dia}/${key}`).remove();
-            }
+            if(confirm("Excluir barco da escala?")) rtdb.ref(`barcos/${dia}/${key}`).remove();
         }
 
         initAdmin();
