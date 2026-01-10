@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -5,8 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BarcoApp | Oficial</title>
 
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -15,158 +21,233 @@
     <style>
         :root {
             --bg-dark: #070b14; --card-dark: #111827; --accent-cyan: #22d3ee;
+            --accent-purple: #a855f7; --accent-green: #22c55e; --accent-yellow: #fbbf24;
             --text-white: #f8fafc; --text-dim: #94a3b8; --glass: rgba(255, 255, 255, 0.05);
             --gradient: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; height: 100%; }
         
-        body, html { 
-            margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg-dark); color: var(--text-white);
-            min-height: 100vh;
-        }
-
-        /* Container Principal com Rolagem Suave */
-        .main-container { 
-            display: block; 
-            padding-bottom: 120px; /* Espaço para o FAB não cobrir conteúdo */
-        }
-
-        /* CARROSSEL GRANDE E IMPACTANTE */
-        .swiper-container {
-            width: 100%;
-            height: 250px; /* Anúncio bem visível */
-            background: #000;
-        }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* HEADER DE BOAS VINDAS */
-        .user-header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* CARD DO DIA ATUAL */
+        /* Layout Principal */
+        .main-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 30px; }
+        
+        /* Card Hoje */
         .today-card {
-            background: var(--card-dark);
-            margin: 10px 20px;
-            padding: 30px 20px;
-            border-radius: 25px;
-            border: 1px solid rgba(34, 211, 238, 0.3);
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            background: var(--card-dark); border-radius: 30px; padding: 35px 20px;
+            text-align: center; border: 1px solid rgba(34, 211, 238, 0.2);
+            margin: 20px; position: relative; overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
-        .today-label { font-size: 0.65rem; font-weight: 800; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; }
-        .today-name { display: block; font-size: 2.5rem; font-weight: 900; margin: 10px 0; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* TERMÔMETRO */
-        .stats-box {
-            background: var(--glass);
-            margin: 15px 20px;
-            padding: 15px;
-            border-radius: 20px;
+        .today-tag { background: var(--gradient); color: #000; padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; }
+        .today-name { display: block; font-size: 2.2rem; font-weight: 900; margin: 10px 0; }
+        
+        /* Botão Escala */
+        .btn-open-week {
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            margin: 0 20px; padding: 18px; border-radius: 20px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-weight: 700; color: var(--text-white); cursor: pointer;
         }
 
-        /* BOTÃO SEMANA */
-        .btn-week {
-            background: var(--card-dark);
-            margin: 15px 20px;
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-weight: 700;
-            color: var(--text-white);
-        }
-
-        /* MODAL SEMANA (Aba) */
+        /* Modal Escala (Aba que sobe) */
         .week-modal {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 70%;
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 75%;
             background: #0f172a; border-top: 3px solid var(--accent-cyan);
-            border-radius: 30px 30px 0 0; z-index: 2000; padding: 20px; overflow-y: auto;
+            border-radius: 30px 30px 0 0; z-index: 2000; padding: 25px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.8); overflow-y: auto;
         }
-        .day-row { padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-weight: 700; color: white; text-decoration: none; }
+        .day-row {
+            padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; align-items: center; font-weight: 700;
+        }
 
-        /* FABs */
-        .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 999; }
-        .fab { width: 60px; height: 60px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+        /* Auxiliares */
+        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; }
+        .form-label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
+        .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; }
+        .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
+        .boat-img { width: 100%; height: 110px; object-fit: cover; }
+        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; }
+        .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
+        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
+        .modal-content { background: var(--card-dark); width: 100%; max-width: 450px; border-radius: 30px; overflow-y: auto; max-height: 90vh; }
     </style>
 </head>
 <body>
 
-    <div id="screen-main" class="main-container">
-        
-        <div class="swiper-container mySwiper">
-            <div class="swiper-wrapper" id="carousel-campaigns"></div>
-            <div class="swiper-pagination"></div>
+    <div id="global-alert" style="display:none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 1001;">
+        <i class="fas fa-bullhorn"></i> <span id="alert-text"></span>
+    </div>
+
+    <section id="screen-welcome" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center;">
+        <h1 style="font-size:3rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;">BarcoApp</h1>
+        <p style="color:var(--text-dim); margin-bottom:40px;">Escala oficial de embarcações.</p>
+        <div style="width:100%; max-width:350px;">
+            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome" style="margin-bottom:10px;">
+            <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp" style="margin-bottom:20px;">
+            <button class="btn-main" onclick="launchApp()">ENTRAR</button>
+        </div>
+    </section>
+
+    <section id="screen-main" style="display:none;" class="main-container">
+        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:800;">⚓ Olá, <span id="display-user" style="color:var(--accent-cyan)"></span></span>
+            <i class="fas fa-ship" style="color:var(--accent-cyan)"></i>
         </div>
 
-        <div class="user-header">
-            <div>
-                <small style="color:var(--text-dim); font-weight: 700;">BEM-VINDO AO BARCOAPP</small>
-                <div style="font-size: 1.3rem; font-weight: 800;">Olá, <span id="display-user" style="color:var(--accent-cyan)">...</span></div>
+        <div style="padding: 0 20px;">
+            <div class="swiper-container mySwiper" style="border-radius: 20px; overflow: hidden;">
+                <div class="swiper-wrapper" id="carousel-campaigns"></div>
+                <div class="swiper-pagination"></div>
             </div>
-            <i class="fas fa-ship" style="font-size: 1.5rem; color: var(--accent-cyan);"></i>
         </div>
 
-        <div class="stats-box">
-            <div style="display:flex; justify-content:space-between; font-size:0.7rem; font-weight:800; margin-bottom:8px;">
+        <div style="background:var(--glass); margin:20px; padding:15px; border-radius:20px; border:1px solid var(--glass);">
+            <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:var(--text-dim); font-weight: 800;">
                 <span>PONTOS DE LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
                 <span id="percent-label">0%</span>
             </div>
-            <div style="width:100%; height:8px; background:#000; border-radius:10px;">
+            <div style="width:100%; height:6px; background:#000; border-radius:10px; margin:8px 0;">
                 <div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px;"></div>
             </div>
         </div>
 
         <div class="today-card" onclick="openToday()">
-            <span class="today-label">Escala de Hoje</span>
+            <span class="today-tag">Escala de Hoje</span>
             <span class="today-name" id="label-hoje">...</span>
-            <div style="font-weight: 700; color: var(--accent-cyan); font-size: 0.9rem;">
-                VER BARCOS DISPONÍVEIS <i class="fas fa-chevron-right"></i>
+            <div style="color: var(--accent-cyan); font-weight: 700;">
+                <i class="fas fa-arrow-right"></i> Clique para ver barcos
             </div>
         </div>
 
-        <div class="btn-week" onclick="toggleWeek(true)">
-            <i class="far fa-calendar-alt" style="color:var(--accent-cyan)"></i>
-            OUTROS DIAS DA SEMANA
+        <div class="btn-open-week" onclick="toggleWeek(true)">
+            <i class="far fa-calendar-alt"></i> Ver escala de outros dias
         </div>
 
-    </div>
+        <div class="fab-container">
+            <button class="fab" style="background:#25d366" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
+            <button class="fab" style="background:var(--gradient)" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
+        </div>
+    </section>
 
     <div id="weekModal" class="week-modal">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="margin:0; font-weight: 800;">Escala Semanal</h2>
-            <i class="fas fa-times-circle" onclick="toggleWeek(false)" style="font-size: 2rem; color: var(--accent-cyan);"></i>
+            <h3 style="margin:0">Escala Semanal</h3>
+            <i class="fas fa-times" onclick="toggleWeek(false)" style="font-size: 1.5rem; opacity: 0.5;"></i>
         </div>
-        <div id="week-list-container"></div>
+        <div id="week-list-container">
+            </div>
     </div>
 
-    <div class="fab-container">
-        <button class="fab" style="background:#25d366" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
-        <button class="fab" style="background:var(--gradient)" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
+    <section id="screen-day-detail" style="display:none;">
+        <div style="padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top:0; background: var(--bg-dark); z-index:100;">
+            <button onclick="navigate('screen-main')" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fas fa-arrow-left"></i></button>
+            <h2 id="day-title" style="margin:0; text-transform:uppercase; color:var(--accent-cyan); font-size: 1.1rem;"></h2>
+        </div>
+        <div class="feed" id="boat-feed"></div>
+    </section>
+
+    <section id="screen-register" style="display:none; padding:20px; padding-bottom:100px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <button onclick="navigate('screen-main')" style="background:none; border:none; color:var(--text-dim);"><i class="fas fa-times"></i></button>
+            <span style="font-weight:800; color:var(--accent-cyan)">PUBLICAR VIAGEM</span>
+        </div>
+        <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
+        <div onclick="document.getElementById('file-input').click()" style="width:100%; height:150px; background:var(--card-dark); border-radius:20px; border:2px dashed var(--glass); display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:20px;">
+            <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:18px;">
+            <i class="fas fa-camera" id="camera-icon" style="font-size:1.5rem; color:var(--accent-cyan);"></i>
+        </div>
+        <label class="form-label">Nome do Barco</label><input type="text" id="in-name" class="input-premium">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div><label class="form-label">Origem</label><input type="text" id="in-origin" class="input-premium"></div>
+            <div><label class="form-label">Destino</label><input type="text" id="in-destiny" class="input-premium"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div><label class="form-label">Data</label><input type="date" id="in-date" class="input-premium"></div>
+            <div><label class="form-label">Horário</label><input type="time" id="in-time" class="input-premium"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div><label class="form-label">Passagem</label><input type="number" id="in-price-p" class="input-premium"></div>
+            <div><label class="form-label">Camarote</label><input type="number" id="in-price-c" class="input-premium"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div><label class="form-label">WhatsApp 1</label><input type="tel" id="in-tel-1" class="input-premium"></div>
+            <div><label class="form-label">WhatsApp 2</label><input type="tel" id="in-tel-2" class="input-premium"></div>
+        </div>
+        <button class="btn-main" onclick="publish()" style="margin-top:25px;">PUBLICAR AGORA</button>
+    </section>
+
+    <div id="boat-modal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="modal-img" style="width:100%; height:180px; object-fit:cover; border-radius:30px 30px 0 0;">
+            <div style="padding:20px;">
+                <h2 id="modal-name" style="margin:0; color:var(--accent-cyan); font-size:1.3rem;"></h2>
+                <p id="modal-route" style="font-weight:700; font-size:0.9rem; margin:10px 0;"></p>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.75rem; background: rgba(0,0,0,0.2); padding:10px; border-radius:10px;">
+                    <div>Data: <span id="modal-date"></span></div>
+                    <div>Hora: <span id="modal-time"></span></div>
+                    <div style="color:var(--accent-green)">Passagem: <span id="modal-price-p"></span></div>
+                    <div style="color:var(--accent-yellow)">Camarote: <span id="modal-price-c"></span></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+                    <button id="btn-wa1" class="btn-main" style="background:#25d366; padding:12px; font-size:0.7rem;"><i class="fab fa-whatsapp"></i> ZAP 1</button>
+                    <button id="btn-wa2" class="btn-main" style="background:#128c7e; padding:12px; font-size:0.7rem;"><i class="fab fa-whatsapp"></i> ZAP 2</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
-        // Mantenha aqui as suas configurações do Firebase (firebaseConfig e inicialização)
-        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
+            authDomain: "barcoapp-c0f00.firebaseapp.com",
+            databaseURL: "https://barcoapp-c0f00-default-rtdb.firebaseio.com",
+            projectId: "barcoapp-c0f00",
+            storageBucket: "barcoapp-c0f00.firebasestorage.app",
+            messagingSenderId: "575071745494",
+            appId: "1:575071745494:web:63c1db8d2c1038c27c6077"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const rtdb = firebase.database();
+
+        let currentUser = JSON.parse(localStorage.getItem('barco_user_data'));
+        let currentImg = "";
+        let currentDayPage = "";
         const diasSemana = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+
+        function navigate(id) {
+            document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'flex';
+            if(id === 'screen-main') document.getElementById(id).style.display = 'flex';
+            else document.getElementById(id).style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function launchApp() {
+            const n = document.getElementById('user-name').value.trim();
+            const p = document.getElementById('user-phone').value.replace(/\D/g,'');
+            if(n.length < 3 || p.length < 8) return alert("Preencha corretamente!");
+            currentUser = { name: n, phone: p };
+            localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
+            rtdb.ref('usuarios_cadastrados/' + p).update({ nome: n, whatsapp: p });
+            startApp();
+        }
 
         function startApp() {
             if(!currentUser) return;
             document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
+            
+            // Lógica do Dia de Hoje
             const hoje = diasSemana[new Date().getDay()];
             document.getElementById('label-hoje').innerText = hoje;
 
+            navigate('screen-main');
             renderWeekList();
-            listenCarousel(); // Seus anúncios do Firebase
-            updateStats();    // Seus likes do Firebase
+            listenAlerts();
+            listenCarousel();
+            updateStats();
         }
 
         function renderWeekList() {
@@ -175,8 +256,8 @@
             diasSemana.forEach(d => {
                 container.innerHTML += `
                     <div class="day-row" onclick="changePage('${d}'); toggleWeek(false)">
-                        <span>${d}-feira</span>
-                        <i class="fas fa-arrow-right"></i>
+                        <span>${d}</span>
+                        <i class="fas fa-chevron-right" style="color:var(--accent-cyan)"></i>
                     </div>`;
             });
         }
@@ -190,8 +271,157 @@
             changePage(hoje);
         }
 
-        // --- AS DEMAIS FUNÇÕES (navigate, changePage, publish, listenCarousel) 
-        // permanecem iguais ao seu código original para não quebrar a lógica do banco.
+        function changePage(day) {
+            currentDayPage = day;
+            document.getElementById('day-title').innerText = day;
+            navigate('screen-day-detail');
+            loadFeed();
+        }
+
+        function loadFeed() {
+            const feed = document.getElementById('boat-feed');
+            rtdb.ref('barcos/' + currentDayPage).on('value', s => {
+                feed.innerHTML = "";
+                const data = s.val();
+                if(!data) { feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:50px; opacity:0.5;'>Nenhum barco para este dia.</p>"; return; }
+                Object.keys(data).forEach(key => {
+                    const b = data[key];
+                    feed.innerHTML += `
+                        <div class="boat-card" onclick="openDetails('${key}')">
+                            <div style="position:absolute; top:5px; left:5px; background:var(--accent-green); color:#000; font-size:0.6rem; padding:2px 6px; border-radius:5px; font-weight:800;">R$ ${b.price_p}</div>
+                            <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
+                            <div style="padding:10px;">
+                                <div style="font-weight:800; font-size:0.75rem; color:var(--accent-cyan); white-space:nowrap; overflow:hidden;">${b.name}</div>
+                                <div style="font-size:0.55rem; color:var(--text-dim);">${b.origin} ➔ ${b.destiny}</div>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        function openDetails(key) {
+            rtdb.ref(`barcos/${currentDayPage}/${key}`).once('value', s => {
+                const b = s.val();
+                document.getElementById('modal-img').src = b.img || 'https://via.placeholder.com/400';
+                document.getElementById('modal-name').innerText = b.name;
+                document.getElementById('modal-route').innerText = `${b.origin} ➔ ${b.destiny}`;
+                document.getElementById('modal-date').innerText = b.date;
+                document.getElementById('modal-time').innerText = b.time;
+                document.getElementById('modal-price-p').innerText = 'R$ ' + b.price_p;
+                document.getElementById('modal-price-c').innerText = 'R$ ' + b.price_c;
+                document.getElementById('btn-wa1').onclick = () => window.open('https://wa.me/55'+b.tel1.replace(/\D/g,''));
+                document.getElementById('btn-wa2').onclick = () => window.open('https://wa.me/55'+b.tel2.replace(/\D/g,''));
+                document.getElementById('boat-modal').style.display = 'flex';
+            });
+        }
+
+        function closeModal() { document.getElementById('boat-modal').style.display = 'none'; }
+
+        function processImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        const max = 600;
+                        if (w > h) { if (w > max) { h *= max / w; w = max; } }
+                        else { if (h > max) { w *= max / h; h = max; } }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        currentImg = canvas.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('preview-img').src = currentImg;
+                        document.getElementById('preview-img').style.display = 'block';
+                        document.getElementById('camera-icon').style.display = 'none';
+                    };
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function publish() {
+            const name = document.getElementById('in-name').value;
+            const dateVal = document.getElementById('in-date').value;
+            if(!name || !dateVal) return alert("Preencha Nome e Data!");
+
+            const boat = {
+                name: name,
+                origin: document.getElementById('in-origin').value,
+                destiny: document.getElementById('in-destiny').value,
+                date: dateVal,
+                time: document.getElementById('in-time').value,
+                price_p: document.getElementById('in-price-p').value,
+                price_c: document.getElementById('in-price-c').value,
+                tel1: document.getElementById('in-tel-1').value,
+                tel2: document.getElementById('in-tel-2').value,
+                img: currentImg,
+                likes: 0,
+                registeredBy: currentUser.phone
+            };
+
+            const dp = dateVal.split('-');
+            const dIdx = new Date(dp[0], dp[1]-1, dp[2]).getDay();
+            const dName = diasSemana[dIdx];
+
+            rtdb.ref('barcos/' + dName).push(boat).then(() => {
+                alert("Sucesso!");
+                navigate('screen-main');
+                currentImg = "";
+                document.getElementById('preview-img').style.display = 'none';
+                document.getElementById('camera-icon').style.display = 'block';
+            });
+        }
+
+        function listenCarousel() {
+            rtdb.ref('config/carrossel').on('value', s => {
+                const wrapper = document.getElementById('carousel-campaigns');
+                if(!wrapper) return;
+                wrapper.innerHTML = "";
+                const data = s.val();
+                if(data) {
+                    Object.values(data).forEach(slide => {
+                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="window.open('${slide.link}', '_blank')" style="width:100%; height:160px; object-fit:cover;"></div>`;
+                    });
+                    new Swiper(".mySwiper", { loop: true, autoplay: true, pagination: { el: ".swiper-pagination" } });
+                }
+            });
+        }
+
+        function listenAlerts() {
+            rtdb.ref('config/alerta').on('value', s => {
+                const div = document.getElementById('global-alert');
+                const data = s.val();
+                if(data && data.active) {
+                    div.style.display = 'block';
+                    document.getElementById('alert-text').innerText = data.text;
+                } else { div.style.display = 'none'; }
+            });
+        }
+
+        function updateStats() {
+            rtdb.ref('barcos').on('value', s => {
+                let l = 0; const d = s.val();
+                if(d) {
+                    Object.values(d).forEach(dia => {
+                        Object.values(dia).forEach(b => {
+                            if(b.registeredBy === currentUser.phone) l += (b.likes||0);
+                        });
+                    });
+                }
+                const p = Math.min((l/1000)*100, 100);
+                document.getElementById('total-likes-count').innerText = l;
+                document.getElementById('thermometer-bar').style.width = p+'%';
+                document.getElementById('percent-label').innerText = Math.floor(p) + '%';
+            });
+        }
+
+        function shareApp() {
+            window.open("https://wa.me/?text=Confira a escala de barcos: " + window.location.href);
+        }
+
+        window.onload = () => { if(currentUser) startApp(); };
     </script>
 </body>
 </html>
