@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BarcoApp | Full View</title>
+    <title>BarcoApp | Oficial</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -18,102 +18,105 @@
             --text-white: #f8fafc; --text-dim: #94a3b8; --glass: rgba(255, 255, 255, 0.05);
             --gradient: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
         }
-        * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body, html { 
-            margin: 0; padding: 0; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg-dark); 
-            color: var(--text-white); 
-            overflow: hidden; /* ELIMINA A ROLAGEM */
-            height: 100vh;
-            width: 100vw;
+            margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-dark); color: var(--text-white);
+            min-height: 100vh;
         }
 
+        /* Container Principal com Rolagem Suave */
         .main-container { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-            padding: 10px 0;
-            justify-content: space-between; /* DISTRIBUI OS ELEMENTOS NA TELA */
+            display: block; 
+            padding-bottom: 120px; /* Espaço para o FAB não cobrir conteúdo */
         }
 
-        /* CARROSSEL AUMENTADO */
+        /* CARROSSEL GRANDE E IMPACTANTE */
         .swiper-container {
             width: 100%;
-            height: 220px; /* Aumentado para dar destaque aos anúncios */
-            border-radius: 0px; 
+            height: 250px; /* Anúncio bem visível */
+            background: #000;
         }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* CARD HOJE OTIMIZADO */
+        /* HEADER DE BOAS VINDAS */
+        .user-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* CARD DO DIA ATUAL */
         .today-card {
-            background: var(--card-dark); 
-            border-radius: 25px; 
-            padding: 25px 20px;
-            text-align: center; 
-            border: 1px solid rgba(34, 211, 238, 0.2);
-            margin: 0 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: var(--card-dark);
+            margin: 10px 20px;
+            padding: 30px 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-        .today-name { display: block; font-size: 2.4rem; font-weight: 900; line-height: 1; margin: 10px 0; }
-        
-        /* BOTÃO SEMANA */
-        .btn-open-week {
-            background: var(--glass); 
-            border: 1px solid rgba(255,255,255,0.1);
-            margin: 0 20px; 
-            padding: 18px; 
+        .today-label { font-size: 0.65rem; font-weight: 800; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; }
+        .today-name { display: block; font-size: 2.5rem; font-weight: 900; margin: 10px 0; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* TERMÔMETRO */
+        .stats-box {
+            background: var(--glass);
+            margin: 15px 20px;
+            padding: 15px;
             border-radius: 20px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            font-weight: 800; color: var(--text-white); cursor: pointer;
-            text-transform: uppercase; font-size: 0.8rem;
         }
 
-        /* TERMÔMETRO COMPACTO */
-        .stats-mini {
-            background: rgba(0,0,0,0.3);
-            margin: 0 20px; padding: 12px 20px;
-            border-radius: 15px;
+        /* BOTÃO SEMANA */
+        .btn-week {
+            background: var(--card-dark);
+            margin: 15px 20px;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 700;
+            color: var(--text-white);
         }
 
-        .fab-container { position: fixed; bottom: 25px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
-        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-
-        /* MODAL DA SEMANA */
+        /* MODAL SEMANA (Aba) */
         .week-modal {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 85%;
-            background: #0f172a; border-top: 4px solid var(--accent-cyan);
-            border-radius: 35px 35px 0 0; z-index: 2000; padding: 25px;
-            overflow-y: auto;
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 70%;
+            background: #0f172a; border-top: 3px solid var(--accent-cyan);
+            border-radius: 30px 30px 0 0; z-index: 2000; padding: 20px; overflow-y: auto;
         }
-        .day-row { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-weight: 700; }
+        .day-row { padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-weight: 700; color: white; text-decoration: none; }
+
+        /* FABs */
+        .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 999; }
+        .fab { width: 60px; height: 60px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
-    <section id="screen-main" class="main-container">
+    <div id="screen-main" class="main-container">
+        
         <div class="swiper-container mySwiper">
             <div class="swiper-wrapper" id="carousel-campaigns"></div>
             <div class="swiper-pagination"></div>
         </div>
 
-        <div style="padding: 0 25px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: 800; font-size: 1.1rem;">⚓ Olá, <span id="display-user" style="color:var(--accent-cyan)">...</span></span>
-            <i class="fas fa-ship" style="color:var(--accent-cyan)"></i>
-        </div>
-
-        <div class="today-card" onclick="openToday()">
-            <span style="background:var(--gradient); color:#000; padding:3px 10px; border-radius:10px; font-size:0.6rem; font-weight:800; text-transform:uppercase;">Escala de Hoje</span>
-            <span class="today-name" id="label-hoje">Sexta</span>
-            <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.8rem;">
-                <i class="fas fa-eye"></i> TOQUE PARA VER VIAGENS
+        <div class="user-header">
+            <div>
+                <small style="color:var(--text-dim); font-weight: 700;">BEM-VINDO AO BARCOAPP</small>
+                <div style="font-size: 1.3rem; font-weight: 800;">Olá, <span id="display-user" style="color:var(--accent-cyan)">...</span></div>
             </div>
+            <i class="fas fa-ship" style="font-size: 1.5rem; color: var(--accent-cyan);"></i>
         </div>
 
-        <div class="stats-mini">
-            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; margin-bottom: 5px;">
-                <span>LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
+        <div class="stats-box">
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; font-weight:800; margin-bottom:8px;">
+                <span>PONTOS DE LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
                 <span id="percent-label">0%</span>
             </div>
             <div style="width:100%; height:8px; background:#000; border-radius:10px;">
@@ -121,28 +124,37 @@
             </div>
         </div>
 
-        <div class="btn-open-week" onclick="toggleWeek(true)">
-            <i class="far fa-calendar-alt"></i> Outros dias da semana
+        <div class="today-card" onclick="openToday()">
+            <span class="today-label">Escala de Hoje</span>
+            <span class="today-name" id="label-hoje">...</span>
+            <div style="font-weight: 700; color: var(--accent-cyan); font-size: 0.9rem;">
+                VER BARCOS DISPONÍVEIS <i class="fas fa-chevron-right"></i>
+            </div>
         </div>
 
-        <div class="fab-container">
-            <button class="fab" style="background:#25d366" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
-            <button class="fab" style="background:var(--gradient)" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
+        <div class="btn-week" onclick="toggleWeek(true)">
+            <i class="far fa-calendar-alt" style="color:var(--accent-cyan)"></i>
+            OUTROS DIAS DA SEMANA
         </div>
-    </section>
+
+    </div>
 
     <div id="weekModal" class="week-modal">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="margin:0; font-weight: 800;">Escala Semanal</h2>
-            <i class="fas fa-times-circle" onclick="toggleWeek(false)" style="font-size: 2rem; opacity: 0.5;"></i>
+            <i class="fas fa-times-circle" onclick="toggleWeek(false)" style="font-size: 2rem; color: var(--accent-cyan);"></i>
         </div>
         <div id="week-list-container"></div>
     </div>
 
+    <div class="fab-container">
+        <button class="fab" style="background:#25d366" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
+        <button class="fab" style="background:var(--gradient)" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
-        // ... TODAS AS SUAS FUNÇÕES DO FIREBASE (config, launchApp, startApp, publish, etc) ...
-        // Certifique-se de manter o bloco firebaseConfig aqui igual ao seu original.
+        // Mantenha aqui as suas configurações do Firebase (firebaseConfig e inicialização)
         
         const diasSemana = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
@@ -152,11 +164,9 @@
             const hoje = diasSemana[new Date().getDay()];
             document.getElementById('label-hoje').innerText = hoje;
 
-            // Mantém todas as escutas ativas
             renderWeekList();
-            listenCarousel();
-            listenAlerts();
-            updateStats();
+            listenCarousel(); // Seus anúncios do Firebase
+            updateStats();    // Seus likes do Firebase
         }
 
         function renderWeekList() {
@@ -166,7 +176,7 @@
                 container.innerHTML += `
                     <div class="day-row" onclick="changePage('${d}'); toggleWeek(false)">
                         <span>${d}-feira</span>
-                        <i class="fas fa-chevron-right" style="color:var(--accent-cyan)"></i>
+                        <i class="fas fa-arrow-right"></i>
                     </div>`;
             });
         }
@@ -175,7 +185,13 @@
             document.getElementById('weekModal').style.display = show ? 'block' : 'none';
         }
 
-        // ... Mantenha as funções listenCarousel (ajustada para Swiper), publish, shareApp, etc.
+        function openToday() {
+            const hoje = diasSemana[new Date().getDay()];
+            changePage(hoje);
+        }
+
+        // --- AS DEMAIS FUNÇÕES (navigate, changePage, publish, listenCarousel) 
+        // permanecem iguais ao seu código original para não quebrar a lógica do banco.
     </script>
 </body>
 </html>
