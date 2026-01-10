@@ -34,7 +34,7 @@
             min-height: 100vh;
         }
 
-        /* Sidebar Customizada */
+        /* Sidebar */
         .sidebar { 
             width: var(--sidebar-width); 
             background: #0a0f1d; 
@@ -55,7 +55,6 @@
             align-items: center; 
             gap: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .nav-link { 
@@ -67,92 +66,62 @@
             display: flex; 
             align-items: center; 
             gap: 12px; 
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.3s;
             font-weight: 500;
         }
 
-        .nav-link:hover, .nav-link.active { 
-            background: var(--accent-glow); 
-            color: var(--accent); 
-            transform: translateX(5px);
-        }
+        .nav-link.active { background: var(--accent-glow); color: var(--accent); }
 
-        /* Área Principal */
+        /* Main Content */
         .main-content { flex: 1; margin-left: var(--sidebar-width); padding: 40px; }
         
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
 
-        /* Stats Cards */
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 35px; }
+        /* Metrics */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 35px; }
         .metric-card { 
             background: var(--bg-card); 
-            padding: 25px; 
-            border-radius: 24px; 
+            padding: 20px; 
+            border-radius: 20px; 
             border: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-            transition: 0.3s;
+            backdrop-filter: blur(10px);
         }
-        .metric-card:hover { border-color: var(--accent); transform: translateY(-5px); }
-        .metric-card span { color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-        .metric-card h3 { font-size: 2.2rem; margin: 10px 0 0; color: var(--text-main); font-weight: 800; }
+        .metric-card span { color: var(--text-muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .metric-card h3 { font-size: 1.8rem; margin: 8px 0 0; font-weight: 800; }
 
-        /* Grade do Painel */
-        .admin-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 25px; }
+        /* Grid */
+        .admin-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 25px; }
         .card { 
             background: var(--bg-card); 
-            border-radius: 28px; 
+            border-radius: 24px; 
             border: 1px solid var(--border); 
-            overflow: hidden; 
-            backdrop-filter: blur(12px);
             margin-bottom: 25px;
+            backdrop-filter: blur(10px);
         }
-        .card-header { padding: 22px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); }
-        .card-header h2 { font-size: 1rem; margin: 0; display: flex; align-items: center; gap: 12px; font-weight: 700; }
-        .card-body { padding: 25px; }
-
-        /* Ranking Design */
-        .rank-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            border-radius: 16px;
-            margin-bottom: 10px;
-            background: rgba(255,255,255,0.03);
-            transition: 0.2s;
-        }
-        .rank-item:hover { background: rgba(255,255,255,0.06); }
-        .rank-badge { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-
-        /* Tabelas */
-        .table-responsive { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { color: var(--text-muted); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; padding: 18px; border-bottom: 1px solid var(--border); }
-        td { padding: 18px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .card-header { padding: 20px 25px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .card-header h2 { font-size: 1rem; margin: 0; display: flex; align-items: center; gap: 10px; font-weight: 700; }
         
-        .avatar-circle { 
-            width: 38px; height: 38px; 
-            background: linear-gradient(135deg, #22d3ee, #0891b2); 
-            border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-weight: 800; color: #000; font-size: 0.9rem; 
-        }
+        /* Tables */
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        td { padding: 15px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.02); }
+
+        .img-thumb { width: 50px; height: 30px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border); }
 
         /* Inputs & Buttons */
         input { 
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); 
-            padding: 14px; border-radius: 14px; color: white; outline: none; margin-bottom: 15px;
+            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border); 
+            padding: 12px; border-radius: 12px; color: white; outline: none; margin-bottom: 10px; font-size: 0.8rem;
         }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        input:focus { border-color: var(--accent); }
         
-        .btn { padding: 12px 20px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
-        .btn-primary { background: var(--accent); color: #000; box-shadow: 0 4px 15px var(--accent-glow); }
-        .btn-primary:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .btn { padding: 10px 18px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 0.8rem; }
+        .btn-primary { background: var(--accent); color: #000; }
         .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
         .btn-danger:hover { background: var(--danger); color: white; }
 
-        .pulse-online { width: 10px; height: 10px; background: var(--success); border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .rank-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -161,40 +130,51 @@
         <h1><i class="fas fa-anchor"></i> BarcoApp</h1>
         <nav>
             <a href="#" class="nav-link active"><i class="fas fa-chart-pie"></i> Dashboard</a>
-            <a href="#" class="nav-link"><i class="fas fa-ship"></i> Escala Geral</a>
+            <a href="#" class="nav-link"><i class="fas fa-images"></i> Carrossel App</a>
             <a href="#" class="nav-link"><i class="fas fa-users"></i> Usuários</a>
-            <a href="#" class="nav-link"><i class="fas fa-star"></i> Favoritos</a>
         </nav>
     </div>
 
     <div class="main-content">
         <div class="header-top">
             <div>
-                <h1 style="margin:0; font-weight: 800;">Dashboard Pro</h1>
-                <p style="color: var(--text-muted); margin: 5px 0 0;">Bem-vindo de volta ao centro de controle.</p>
+                <h1 style="margin:0; font-weight: 800;">Painel de Controle</h1>
+                <p style="color: var(--text-muted); margin: 5px 0 0;">Gerencie imagens, links e escalas.</p>
             </div>
-            <div style="font-size: 0.85rem; color: var(--success); font-weight: 700; background: rgba(16, 185, 129, 0.1); padding: 10px 20px; border-radius: 50px;">
-                <span class="pulse-online"></span> SISTEMA ONLINE
+            <div style="font-size: 0.8rem; color: var(--success); font-weight: 700;">
+                <i class="fas fa-circle" style="font-size: 0.5rem; vertical-align: middle;"></i> SISTEMA ATIVO
             </div>
         </div>
 
         <div class="metrics-grid">
-            <div class="metric-card">
-                <span>Total de Usuários</span>
-                <h3 id="stat-users">0</h3>
-            </div>
-            <div class="metric-card">
-                <span>Barcos na Frota</span>
-                <h3 id="stat-boats">0</h3>
-            </div>
-            <div class="metric-card">
-                <span>Engajamento Total</span>
-                <h3 id="stat-likes">0</h3>
-            </div>
+            <div class="metric-card"><span>Usuários</span><h3 id="stat-users">0</h3></div>
+            <div class="metric-card"><span>Barcos</span><h3 id="stat-boats">0</h3></div>
+            <div class="metric-card"><span>Likes</span><h3 id="stat-likes">0</h3></div>
         </div>
 
         <div class="admin-grid">
             <div class="left-col">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-images" style="color:var(--accent)"></i> Carrossel do App (6 Slides)</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Miniatura</th>
+                                        <th>Link de Destino</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="carousel-table-body">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div class="card-header">
                         <h2><i class="fas fa-users" style="color:var(--accent)"></i> Usuários Cadastrados</h2>
@@ -207,7 +187,6 @@
                                         <th>Nome</th>
                                         <th>WhatsApp</th>
                                         <th>Pts</th>
-                                        <th>Ação</th>
                                     </tr>
                                 </thead>
                                 <tbody id="user-table-body"></tbody>
@@ -215,36 +194,28 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-ship" style="color:var(--accent)"></i> Escala Ativa</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Barco</th>
-                                        <th>Dia</th>
-                                        <th>Likes</th>
-                                        <th>Ação</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="boat-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="right-col">
-                <div class="card" style="border: 1px solid rgba(34, 211, 238, 0.3);">
-                    <div class="card-header" style="background: rgba(34, 211, 238, 0.05);">
-                        <h2><i class="fas fa-trophy" style="color: #fbbf24"></i> Ranking de Likes</h2>
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-trophy" style="color: #fbbf24"></i> Ranking de Engajamento</h2>
                     </div>
-                    <div class="card-body" id="user-ranking-body">
-                        </div>
+                    <div class="card-body" id="user-ranking-body"></div>
+                </div>
+
+                <div class="card" style="border: 1px solid var(--accent-glow)">
+                    <div class="card-header">
+                        <h2><i class="fas fa-plus-circle"></i> Novo Slide</h2>
+                    </div>
+                    <div class="card-body">
+                        <label style="font-size: 0.7rem; color: var(--text-muted);">URL DA IMAGEM</label>
+                        <input type="text" id="carousel-img" placeholder="https://...">
+                        <label style="font-size: 0.7rem; color: var(--text-muted);">LINK DE DESTINO</label>
+                        <input type="text" id="carousel-url" placeholder="https://...">
+                        <p style="font-size: 0.65rem; color: var(--warning); margin-bottom: 15px;">* O App exibirá os últimos 6 adicionados.</p>
+                        <button class="btn btn-primary" style="width: 100%" onclick="addCarouselItem()">Adicionar ao App</button>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -253,21 +224,7 @@
                     </div>
                     <div class="card-body">
                         <input type="text" id="alert-text" placeholder="Mensagem do alerta...">
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-primary" style="flex:1" onclick="updateAlert()">Ativar</button>
-                            <button class="btn btn-danger" onclick="clearAlert()"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-ad"></i> Banner de Anúncio</h2>
-                    </div>
-                    <div class="card-body">
-                        <input type="text" id="ad-img" placeholder="URL da Imagem">
-                        <input type="text" id="ad-url" placeholder="Link de Destino">
-                        <button class="btn btn-primary" style="width: 100%" onclick="updateAd()">Atualizar Banner</button>
+                        <button class="btn btn-primary" style="width: 100%" onclick="updateAlert()">Atualizar Alerta</button>
                     </div>
                 </div>
             </div>
@@ -275,7 +232,6 @@
     </div>
 
     <script>
-        // Configuração Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -295,73 +251,78 @@
 
                 renderUsers(data.usuarios_cadastrados, data.indicacoes);
                 renderBoats(data.barcos);
-                updateStats(data);
+                renderCarousel(data.config ? data.config.carrossel : null);
                 renderRanking(data.usuarios_cadastrados, data.indicacoes);
+                
+                if(data.usuarios_cadastrados) document.getElementById('stat-users').innerText = Object.keys(data.usuarios_cadastrados).length;
             });
         }
 
+        function renderCarousel(slides) {
+            const tbody = document.getElementById('carousel-table-body');
+            tbody.innerHTML = "";
+            if(!slides) return;
+
+            // Transforma em array e pega os últimos 6
+            const keys = Object.keys(slides).reverse().slice(0, 6);
+            
+            keys.forEach(key => {
+                const s = slides[key];
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${s.img}" class="img-thumb" onerror="this.src='https://via.placeholder.com/50x30'"></td>
+                        <td style="color:var(--text-muted); font-size:0.7rem;">${s.link || 'Sem link'}</td>
+                        <td><button class="btn btn-danger" style="padding:5px 10px" onclick="deleteSlide('${key}')"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+            });
+        }
+
+        function addCarouselItem() {
+            const img = document.getElementById('carousel-img').value;
+            const link = document.getElementById('carousel-url').value;
+            if(!img) return alert("URL da imagem obrigatória");
+            
+            rtdb.ref('config/carrossel').push({ img, link }).then(() => {
+                document.getElementById('carousel-img').value = "";
+                document.getElementById('carousel-url').value = "";
+            });
+        }
+
+        function deleteSlide(key) {
+            if(confirm("Remover este slide do carrossel?")) rtdb.ref(`config/carrossel/${key}`).remove();
+        }
+
+        // Funções de Apoio (Users, Boats, Alert)
         function renderUsers(users, invites) {
             const tbody = document.getElementById('user-table-body');
             tbody.innerHTML = "";
             for(let id in users) {
-                const u = users[id];
-                const totalInvites = invites && invites[id] ? Object.keys(invites[id]).length : 0;
-                tbody.innerHTML += `
-                    <tr>
-                        <td><div style="display:flex; align-items:center; gap:12px;"><div class="avatar-circle">${u.nome.charAt(0)}</div><b>${u.nome}</b></div></td>
-                        <td style="color:var(--text-muted)">${u.whatsapp}</td>
-                        <td><span style="color:var(--accent)">★ ${totalInvites}</span></td>
-                        <td><a href="https://wa.me/55${u.whatsapp}" target="_blank" class="btn btn-primary" style="padding: 6px 12px"><i class="fab fa-whatsapp"></i></a></td>
-                    </tr>`;
+                const total = invites && invites[id] ? Object.keys(invites[id]).length : 0;
+                tbody.innerHTML += `<tr><td><b>${users[id].nome}</b></td><td>${users[id].whatsapp}</td><td>${total}</td></tr>`;
             }
         }
 
         function renderRanking(users, invites) {
-            const rankingBody = document.getElementById('user-ranking-body');
-            let userList = [];
-
+            const rankDiv = document.getElementById('user-ranking-body');
+            let list = [];
             for(let id in users) {
-                const total = invites && invites[id] ? Object.keys(invites[id]).length : 0;
-                userList.push({ nome: users[id].nome, pontos: total });
+                const pts = invites && invites[id] ? Object.keys(invites[id]).length : 0;
+                list.push({ nome: users[id].nome, pts });
             }
-
-            // Ordena do maior para o menor
-            userList.sort((a, b) => b.pontos - a.pontos);
-
-            rankingBody.innerHTML = "";
-            userList.slice(0, 5).forEach((user, index) => {
-                let badge = index + 1;
-                if(index === 0) badge = "🥇";
-                if(index === 1) badge = "🥈";
-                if(index === 2) badge = "🥉";
-
-                rankingBody.innerHTML += `
-                    <div class="rank-item">
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            <div class="rank-badge">${badge}</div>
-                            <b style="font-size:0.9rem">${user.nome}</b>
-                        </div>
-                        <span style="color:var(--accent); font-weight:800">${user.pontos} Pts</span>
-                    </div>`;
+            list.sort((a,b) => b.pts - a.pts);
+            rankDiv.innerHTML = "";
+            list.slice(0, 3).forEach((u, i) => {
+                const medals = ["🥇","🥈","🥉"];
+                rankDiv.innerHTML += `<div class="rank-item"><span>${medals[i]} ${u.nome}</span><b>${u.pts} pts</b></div>`;
             });
         }
 
         function renderBoats(barcos) {
-            const tbody = document.getElementById('boat-table-body');
-            tbody.innerHTML = "";
             let bCount = 0; let lCount = 0;
             if(barcos) {
                 for(let dia in barcos) {
                     for(let key in barcos[dia]) {
-                        const b = barcos[dia][key];
-                        bCount++; lCount += (b.likes || 0);
-                        tbody.innerHTML += `
-                            <tr>
-                                <td><b>${b.name}</b></td>
-                                <td><span style="background:rgba(255,255,255,0.05); padding:5px 10px; border-radius:8px;">${dia}</span></td>
-                                <td style="color:var(--accent)">❤️ ${b.likes || 0}</td>
-                                <td><button class="btn btn-danger" onclick="deleteBoat('${dia}','${key}')"><i class="fas fa-trash"></i></button></td>
-                            </tr>`;
+                        bCount++; lCount += (barcos[dia][key].likes || 0);
                     }
                 }
             }
@@ -369,30 +330,9 @@
             document.getElementById('stat-likes').innerText = lCount;
         }
 
-        function updateStats(data) {
-            if(data.usuarios_cadastrados) {
-                document.getElementById('stat-users').innerText = Object.keys(data.usuarios_cadastrados).length;
-            }
-        }
-
         function updateAlert() {
-            const t = document.getElementById('alert-text').value;
-            rtdb.ref('config/alerta').set({ text: t, active: true }).then(() => alert("Alerta Ativo!"));
-        }
-
-        function clearAlert() {
-            rtdb.ref('config/alerta').remove();
-            document.getElementById('alert-text').value = "";
-        }
-
-        function updateAd() {
-            const img = document.getElementById('ad-img').value;
-            const url = document.getElementById('ad-url').value;
-            rtdb.ref('config/anuncio').set({ img: img, link: url, active: true }).then(() => alert("Banner Atualizado!"));
-        }
-
-        function deleteBoat(dia, key) {
-            if(confirm("Excluir barco?")) rtdb.ref(`barcos/${dia}/${key}`).remove();
+            const text = document.getElementById('alert-text').value;
+            rtdb.ref('config/alerta').set({ text, active: true }).then(() => alert("Alerta Atualizado!"));
         }
 
         initAdmin();
