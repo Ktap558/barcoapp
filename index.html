@@ -1,10 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BarcoApp | Oficial</title>
+
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "27900578-30bf-4465-b623-7997d8a6d003",
+        });
+      });
+    </script>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
