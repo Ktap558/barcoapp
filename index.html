@@ -58,9 +58,29 @@
 
         .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; }
         .form-label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
-        .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; }
-        .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
-        .boat-img { width: 100%; height: 110px; object-fit: cover; }
+        
+        /* FEED E CARDS MELHORADOS */
+        .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
+        .boat-card { 
+            background: var(--card-dark); border-radius: 24px; overflow: hidden; 
+            border: 1px solid rgba(255,255,255,0.08); position: relative; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        .boat-img-container { position: relative; width: 100%; height: 120px; }
+        .boat-img { width: 100%; height: 100%; object-fit: cover; }
+        .boat-overlay-name {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 20px 10px 5px 10px;
+            font-weight: 800; font-size: 0.85rem; color: #fff;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .route-box {
+            display: flex; align-items: center; justify-content: center;
+            gap: 6px; font-size: 0.65rem; font-weight: 700; color: var(--text-dim);
+            padding: 12px 5px; background: rgba(0,0,0,0.2);
+        }
+
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; }
         .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
         .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
@@ -152,6 +172,9 @@
             <i class="fas fa-camera" id="camera-icon" style="font-size:1.5rem; color:var(--accent-cyan);"></i>
         </div>
         <label class="form-label">Nome do Barco</label><input type="text" id="in-name" class="input-premium">
+        
+        <label class="form-label">Local de Saída (Porto/Cais)</label><input type="text" id="in-departure" class="input-premium" placeholder="Ex: Porto do Grego">
+
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             <div><label class="form-label">Origem</label><input type="text" id="in-origin" class="input-premium"></div>
             <div><label class="form-label">Destino</label><input type="text" id="in-destiny" class="input-premium"></div>
@@ -173,15 +196,21 @@
 
     <div id="boat-modal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" style="width:100%; height:180px; object-fit:cover; border-radius:30px 30px 0 0;">
-            <div style="padding:20px;">
-                <h2 id="modal-name" style="margin:0; color:var(--accent-cyan); font-size:1.3rem;"></h2>
-                <p id="modal-route" style="font-weight:700; font-size:0.9rem; margin:10px 0;"></p>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.75rem; background: rgba(0,0,0,0.2); padding:10px; border-radius:10px;">
-                    <div>Data: <span id="modal-date"></span></div>
-                    <div>Hora: <span id="modal-time"></span></div>
-                    <div style="color:var(--accent-green)">Passagem: <span id="modal-price-p"></span></div>
-                    <div style="color:var(--accent-yellow)">Camarote: <span id="modal-price-c"></span></div>
+            <img id="modal-img" style="width:100%; height:200px; object-fit:cover; border-radius:30px 30px 0 0;">
+            <div style="padding:25px;">
+                <h2 id="modal-name" style="margin:0; color:var(--accent-cyan); font-size:1.6rem; font-weight: 800;"></h2>
+                
+                <div id="modal-departure-box" style="margin-top: 5px; color: var(--accent-yellow); font-size: 0.75rem; font-weight: 700;">
+                   <i class="fas fa-anchor"></i> SAÍDA: <span id="modal-departure"></span>
+                </div>
+
+                <div id="modal-route" style="font-weight:800; font-size:1rem; margin:15px 0; padding:10px; background: rgba(255,255,255,0.05); border-radius: 10px; text-align: center;"></div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.75rem; background: rgba(0,0,0,0.3); padding:15px; border-radius:15px;">
+                    <div><i class="far fa-calendar"></i> <span id="modal-date"></span></div>
+                    <div><i class="far fa-clock"></i> <span id="modal-time"></span></div>
+                    <div style="color:var(--accent-green); font-weight: 800;">Passagem: <span id="modal-price-p"></span></div>
+                    <div style="color:var(--accent-yellow); font-weight: 800;">Camarote: <span id="modal-price-c"></span></div>
                 </div>
 
                 <div id="vote-section" style="display:flex; gap:10px; margin-top:20px; border-top:1px solid var(--glass); padding-top:15px;">
@@ -290,12 +319,18 @@
                     const saldo = (b.likes || 0) - (b.dislikes || 0);
                     feed.innerHTML += `
                         <div class="boat-card" onclick="openDetails('${key}')">
-                            <div style="position:absolute; top:5px; left:5px; background:var(--accent-green); color:#000; font-size:0.6rem; padding:2px 6px; border-radius:5px; font-weight:800;">R$ ${b.price_p}</div>
-                            <div style="position:absolute; top:5px; right:5px; background:rgba(0,0,0,0.6); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:5px; font-weight:800;"><i class="fas fa-heart"></i> ${saldo}</div>
-                            <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
-                            <div style="padding:10px;">
-                                <div style="font-weight:800; font-size:0.75rem; color:var(--accent-cyan); white-space:nowrap; overflow:hidden;">${b.name}</div>
-                                <div style="font-size:0.55rem; color:var(--text-dim);">${b.origin} ➔ ${b.destiny}</div>
+                            <div style="position:absolute; top:8px; left:8px; background:var(--accent-green); color:#000; font-size:0.6rem; padding:3px 8px; border-radius:8px; font-weight:800; z-index:10;">R$ ${b.price_p}</div>
+                            <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:0.6rem; padding:3px 8px; border-radius:8px; font-weight:800; z-index:10;"><i class="fas fa-heart"></i> ${saldo}</div>
+                            
+                            <div class="boat-img-container">
+                                <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
+                                <div class="boat-overlay-name">${b.name}</div>
+                            </div>
+                            
+                            <div class="route-box">
+                                <span>${b.origin}</span>
+                                <i class="fas fa-arrow-right" style="color:var(--accent-cyan); font-size:0.5rem"></i>
+                                <span>${b.destiny}</span>
                             </div>
                         </div>`;
                 });
@@ -307,7 +342,8 @@
                 const b = s.val();
                 document.getElementById('modal-img').src = b.img || 'https://via.placeholder.com/400';
                 document.getElementById('modal-name').innerText = b.name;
-                document.getElementById('modal-route').innerText = `${b.origin} ➔ ${b.destiny}`;
+                document.getElementById('modal-departure').innerText = b.departure || "Não informado";
+                document.getElementById('modal-route').innerHTML = `${b.origin} <i class="fas fa-arrow-right" style="color:var(--accent-cyan); font-size:0.8rem; margin:0 10px;"></i> ${b.destiny}`;
                 document.getElementById('modal-date').innerText = b.date;
                 document.getElementById('modal-time').innerText = b.time;
                 document.getElementById('modal-price-p').innerText = 'R$ ' + b.price_p;
@@ -322,29 +358,17 @@
             });
         }
 
-        // FUNÇÃO ATUALIZADA COM TRAVA DE SEGURANÇA (1 VOTO POR BARCO)
         function registerVote(boatKey, type) {
             if (!currentUser || !currentUser.phone) return alert("Erro de identificação!");
-
             const userPhone = currentUser.phone;
             const voteLockRef = rtdb.ref(`votos_registrados/${boatKey}/${userPhone}`);
-
-            // 1. Verifica se este telefone já votou neste barco
             voteLockRef.once('value', snapshot => {
                 if (snapshot.exists()) {
                     alert("Você já registrou sua opinião nesta embarcação!");
                 } else {
-                    // 2. Registra a trava de voto primeiro
-                    voteLockRef.set({
-                        voto: type,
-                        timestamp: Date.now()
-                    }).then(() => {
-                        // 3. Incrementa o contador no banco de dados (Transaction garante precisão)
+                    voteLockRef.set({ voto: type, timestamp: Date.now() }).then(() => {
                         const boatRef = rtdb.ref(`barcos/${currentDayPage}/${boatKey}/${type}`);
-                        boatRef.transaction(currentValue => {
-                            return (currentValue || 0) + 1;
-                        });
-                        
+                        boatRef.transaction(currentValue => (currentValue || 0) + 1);
                         alert("Obrigado pelo seu voto!");
                         closeModal();
                     });
@@ -385,6 +409,7 @@
 
             const boat = {
                 name: name,
+                departure: document.getElementById('in-departure').value,
                 origin: document.getElementById('in-origin').value,
                 destiny: document.getElementById('in-destiny').value,
                 date: dateVal,
@@ -409,10 +434,10 @@
                 currentImg = "";
                 document.getElementById('preview-img').style.display = 'none';
                 document.getElementById('camera-icon').style.display = 'block';
-                // Limpar campos
                 document.getElementById('in-name').value = "";
                 document.getElementById('in-origin').value = "";
                 document.getElementById('in-destiny').value = "";
+                document.getElementById('in-departure').value = "";
             });
         }
 
