@@ -16,147 +16,146 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-messaging-compat.js"></script>
 
     <style>
         :root {
-            --bg-dark: #0f172a; --card-dark: #1e293b; --accent-cyan: #22d3ee;
-            --accent-purple: #a855f7; --accent-green: #22c55e; --accent-yellow: #fbbf24;
-            --text-white: #f8fafc; --text-dim: #94a3b8; --glass: rgba(255, 255, 255, 0.05);
+            --bg-dark: #070b14;
+            --card-dark: #111827;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #a855f7;
+            --accent-green: #10b981;
+            --text-white: #f8fafc;
+            --text-dim: #94a3b8;
+            --glass: rgba(255, 255, 255, 0.03);
             --gradient: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
         }
+
         * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
-        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; font-size: 0.9rem; }
-        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
-        .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; padding-bottom: 150px; }
+        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; height: 100%; }
+
+        /* Estilização dos Botões da Semana (Grandes) */
+        .week-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            padding: 0 20px 120px 20px; /* Padding inferior para não cobrir o botão flutuante */
+        }
+
+        .day-btn {
+            width: 100%;
+            height: 70px;
+            background: var(--card-dark);
+            border: 1px solid var(--glass);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            color: var(--text-white);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .day-btn i {
+            font-size: 1.4rem;
+            color: var(--accent-cyan);
+        }
+
+        .day-btn:active {
+            transform: scale(0.97);
+            background: var(--glass);
+        }
+
+        .day-btn.special {
+            background: var(--gradient);
+            border: none;
+            height: 85px;
+            margin-top: 10px;
+        }
+
+        .day-btn.special i { color: white; }
+
+        /* Restante do Layout */
+        .input-premium { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--glass); background: #0c121d; color: white; outline: none; font-size: 1rem; }
+        .btn-main { width: 100%; padding: 18px; border-radius: 16px; border: none; background: var(--gradient); color: white; font-weight: 800; font-size: 1rem; cursor: pointer; }
+        
+        .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
+        .fab { width: 60px; height: 60px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+
+        .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px; }
         .boat-card { background: var(--card-dark); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass); position: relative; }
-        .boat-img { width: 100%; height: 110px; object-fit: cover; }
-        .price-tag { position: absolute; top: 8px; left: 8px; background: var(--accent-green); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; z-index: 5; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { background: var(--card-dark); width: 100%; max-width: 450px; border-radius: 30px; overflow-y: auto; max-height: 90vh; border: 1px solid var(--glass); }
-        .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; }
-        .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
-        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .boat-img { width: 100%; height: 120px; object-fit: cover; }
     </style>
 </head>
 <body>
 
-    <div id="global-alert" style="display:none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 1001;">
-        <i class="fas fa-bullhorn"></i> <span id="alert-text"></span>
-    </div>
-
     <section id="screen-welcome" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center;">
-        <h1 style="font-size:3rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;">BarcoApp</h1>
-        <p style="color:var(--text-dim); margin-bottom:40px;">Escala de embarcações e prêmios exclusivos.</p>
+        <div style="background: var(--gradient); width: 80px; height: 80px; border-radius: 22px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; transform: rotate(-10deg);">
+            <i class="fas fa-ship" style="font-size: 2.5rem; color: white; transform: rotate(10deg);"></i>
+        </div>
+        <h1 style="font-size:2.8rem; font-weight:900; margin:0; letter-spacing: -1px;">Barco<span style="color: var(--accent-cyan)">App</span></h1>
+        <p style="color:var(--text-dim); margin-bottom:40px; font-size: 0.9rem;">Tudo sobre a escala náutica da região.</p>
+        
         <div style="width:100%; max-width:350px;">
-            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome Completo" style="margin-bottom:15px;">
-            <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp (DDD + Número)" style="margin-bottom:20px;">
-            <button class="btn-main" onclick="launchApp()">ACESSAR SISTEMA</button>
+            <input type="text" id="user-name" class="input-premium" placeholder="Nome Completo" style="margin-bottom:12px;">
+            <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp" style="margin-bottom:20px;">
+            <button class="btn-main" onclick="launchApp()">ENTRAR NO SISTEMA</button>
         </div>
     </section>
 
     <section id="screen-main" style="display:none;">
-        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight:800; font-size:1.2rem;">⚓ Olá, <span id="display-user" style="color:var(--accent-cyan)"></span></span>
-            <i class="fas fa-bell" style="color:var(--text-dim)"></i>
+        <div style="padding:25px 20px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <small style="color: var(--text-dim); font-weight: 600; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 1px;">Bem-vindo de volta</small>
+                <div style="font-weight:800; font-size:1.5rem;">Olá, <span id="display-user" style="color:var(--accent-cyan)"></span>!</div>
+            </div>
+            <div style="width: 45px; height: 45px; background: var(--glass); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-user-circle" style="color:var(--text-dim); font-size: 1.2rem;"></i>
+            </div>
         </div>
 
-        <div style="padding: 0 20px;">
-            <div class="swiper-container mySwiper">
+        <div style="padding: 0 20px 10px 20px;">
+            <div class="swiper-container mySwiper" style="border-radius: 25px; height: 160px;">
                 <div class="swiper-wrapper" id="carousel-campaigns"></div>
                 <div class="swiper-pagination"></div>
             </div>
         </div>
 
-        <div style="background:var(--glass); margin:20px; padding:20px; border-radius:20px; border:1px solid var(--glass);">
-            <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-dim);">
-                <span>LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
-                <span id="percent-label">0%</span>
-            </div>
-            <div style="width:100%; height:6px; background:#000; border-radius:10px; margin:8px 0;">
-                <div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px;"></div>
-            </div>
+        <div style="padding: 20px; font-weight: 800; font-size: 0.8rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px;">
+            <i class="far fa-calendar-alt"></i> Escala da Semana
         </div>
 
-        <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:12px; padding:0 20px;">
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Segunda')">Segunda</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Terça')">Terça</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Quarta')">Quarta</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Quinta')">Quinta</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Sexta')">Sexta</button>
-            <button class="input-premium" style="background:var(--card-dark)" onclick="changePage('Sábado')">Sábado</button>
-            <button class="input-premium" style="background:var(--card-dark); grid-column:span 2; border:1px dashed var(--accent-purple); color:var(--accent-purple)" onclick="changePage('Domingo')">Domingo Especial</button>
+        <div class="week-grid">
+            <div class="day-btn" onclick="changePage('Segunda')"><span>Segunda-feira</span> <i class="fas fa-chevron-right"></i></div>
+            <div class="day-btn" onclick="changePage('Terça')"><span>Terça-feira</span> <i class="fas fa-chevron-right"></i></div>
+            <div class="day-btn" onclick="changePage('Quarta')"><span>Quarta-feira</span> <i class="fas fa-chevron-right"></i></div>
+            <div class="day-btn" onclick="changePage('Quinta')"><span>Quinta-feira</span> <i class="fas fa-chevron-right"></i></div>
+            <div class="day-btn" onclick="changePage('Sexta')"><span>Sexta-feira</span> <i class="fas fa-chevron-right"></i></div>
+            <div class="day-btn" onclick="changePage('Sábado')"><span>Sábado</span> <i class="fas fa-chevron-right"></i></div>
+            <div class="day-btn special" onclick="changePage('Domingo')">
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-size: 1.2rem;">Domingo Especial</span>
+                    <small style="font-weight: 400; opacity: 0.8;">Melhores ofertas</small>
+                </div>
+                <i class="fas fa-anchor"></i>
+            </div>
         </div>
 
         <div class="fab-container">
-            <button class="fab" style="background:var(--accent-green)" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
+            <button class="fab" style="background:#25d366" onclick="shareApp()"><i class="fab fa-whatsapp"></i></button>
             <button class="fab" style="background:var(--gradient)" onclick="navigate('screen-register')"><i class="fas fa-plus"></i></button>
         </div>
     </section>
 
-    <section id="screen-day-detail" style="display:none;">
-        <div style="padding:20px; display:flex; align-items:center; gap:15px;">
-            <button onclick="navigate('screen-main')" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fas fa-arrow-left"></i></button>
-            <h2 id="day-title" style="margin:0; text-transform:uppercase; color:var(--accent-cyan)"></h2>
+    <section id="screen-day-detail" style="display:none; min-height: 100vh; background: var(--bg-dark);">
+        <div style="padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top: 0; background: var(--bg-dark); z-index: 10;">
+            <button onclick="navigate('screen-main')" style="background:var(--glass); border:none; color:white; width: 40px; height: 40px; border-radius: 12px;"><i class="fas fa-arrow-left"></i></button>
+            <h2 id="day-title" style="margin:0; text-transform:uppercase; color:var(--accent-cyan); font-size: 1.2rem;"></h2>
         </div>
         <div class="feed" id="boat-feed"></div>
     </section>
-
-    <section id="screen-register" style="display:none; padding:20px; padding-bottom:100px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <button onclick="navigate('screen-main')" style="background:none; border:none; color:var(--text-dim);"><i class="fas fa-times"></i> Fechar</button>
-            <span style="font-weight:800; color:var(--accent-cyan)">REGISTRAR VIAGEM</span>
-        </div>
-        <div style="max-width:500px; margin:auto;">
-            <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
-            <div onclick="document.getElementById('file-input').click()" id="photo-drop" style="width:100%; height:180px; background:var(--card-dark); border-radius:20px; border:2px dashed var(--glass); display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; margin-bottom:20px;">
-                <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
-                <i class="fas fa-camera" id="camera-icon" style="font-size:2rem; color:var(--accent-cyan); margin-bottom:10px;"></i>
-                <span style="font-size:0.7rem; font-weight:700; color:var(--text-dim);">FOTO DA EMBARCAÇÃO</span>
-            </div>
-            <label class="form-label">Nome da Embarcação</label>
-            <input type="text" id="in-name" class="input-premium">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div><label class="form-label">Origem</label><input type="text" id="in-origin" class="input-premium"></div>
-                <div><label class="form-label">Destino</label><input type="text" id="in-destiny" class="input-premium"></div>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div><label class="form-label">Data</label><input type="date" id="in-date" class="input-premium"></div>
-                <div><label class="form-label">Horário</label><input type="time" id="in-time" class="input-premium"></div>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div><label class="form-label">Passagem</label><input type="number" id="in-price-p" class="input-premium"></div>
-                <div><label class="form-label">Camarote</label><input type="number" id="in-price-c" class="input-premium"></div>
-            </div>
-            <label class="form-label">Contatos</label>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="tel" id="in-tel-1" class="input-premium" placeholder="WhatsApp 1">
-                <input type="tel" id="in-tel-2" class="input-premium" placeholder="WhatsApp 2">
-            </div>
-            <button class="btn-main" onclick="publish()" style="margin-top:30px;">PUBLICAR NA ESCALA</button>
-        </div>
-    </section>
-
-    <div id="boat-modal" class="modal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" style="width:100%; height:200px; object-fit:cover;">
-            <div style="padding:20px;">
-                <h2 id="modal-name" style="margin:0; color:var(--accent-cyan);"></h2>
-                <p id="modal-route" style="font-weight:bold; margin:10px 0;"></p>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.8rem;">
-                    <div><b>Data:</b> <span id="modal-date"></span></div>
-                    <div><b>Hora:</b> <span id="modal-time"></span></div>
-                    <div style="color:var(--accent-green)"><b>Passagem:</b> <span id="modal-price-p"></span></div>
-                    <div style="color:var(--accent-yellow)"><b>Camarote:</b> <span id="modal-price-c"></span></div>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-                    <button id="btn-wa1" class="btn-main" style="background:#25d366; padding:10px; font-size:0.7rem;">ZAP 1</button>
-                    <button id="btn-wa2" class="btn-main" style="background:#128c7e; padding:10px; font-size:0.7rem;">ZAP 2</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
@@ -178,8 +177,7 @@
 
         function navigate(id) {
             document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-            const target = document.getElementById(id);
-            if(target) target.style.display = 'block';
+            document.getElementById(id).style.display = 'block';
             window.scrollTo(0,0);
         }
 
@@ -195,12 +193,9 @@
 
         function startApp() {
             if(!currentUser) return;
-            const display = document.getElementById('display-user');
-            if(display) display.innerText = currentUser.name.split(' ')[0];
+            document.getElementById('display-user').innerText = currentUser.name.split(' ')[0];
             navigate('screen-main');
-            listenAlerts();
             listenCarousel();
-            updateStats();
         }
 
         function listenCarousel() {
@@ -211,38 +206,10 @@
                 const data = s.val();
                 if(data) {
                     Object.values(data).forEach(slide => {
-                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="window.open('${slide.link}', '_blank')" style="width:100%; height:180px; object-fit:cover; border-radius:20px;"></div>`;
+                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="window.open('${slide.link}', '_blank')" style="width:100%; height:100%; object-fit:cover;"></div>`;
                     });
                     new Swiper(".mySwiper", { loop: true, autoplay: true, pagination: { el: ".swiper-pagination" } });
                 }
-            });
-        }
-
-        function listenAlerts() {
-            rtdb.ref('config/alerta').on('value', s => {
-                const div = document.getElementById('global-alert');
-                const data = s.val();
-                if(data && data.active) {
-                    div.style.display = 'block';
-                    document.getElementById('alert-text').innerText = data.text;
-                } else { div.style.display = 'none'; }
-            });
-        }
-
-        function updateStats() {
-            rtdb.ref('barcos').on('value', s => {
-                let l = 0; const d = s.val();
-                if(d) {
-                    Object.values(d).forEach(dia => {
-                        Object.values(dia).forEach(b => {
-                            if(b.registeredBy === currentUser.phone) l += (b.likes||0);
-                        });
-                    });
-                }
-                const p = Math.min((l/1000)*100, 100);
-                document.getElementById('total-likes-count').innerText = l;
-                document.getElementById('thermometer-bar').style.width = p+'%';
-                document.getElementById('percent-label').innerText = Math.floor(p) + '%';
             });
         }
 
@@ -258,104 +225,23 @@
             rtdb.ref('barcos/' + currentDayPage).on('value', s => {
                 feed.innerHTML = "";
                 const data = s.val();
-                if(!data) { feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:40px;'>Nenhuma embarcação.</p>"; return; }
+                if(!data) { feed.innerHTML = "<div style='grid-column: span 2; opacity: 0.5; text-align: center; padding-top: 50px;'>Sem barcos hoje.</div>"; return; }
                 Object.keys(data).forEach(key => {
                     const b = data[key];
                     feed.innerHTML += `
-                        <div class="boat-card" onclick="openDetails('${key}')">
-                            <div class="price-tag">R$ ${b.price_p}</div>
+                        <div class="boat-card">
                             <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
-                            <div style="padding:10px;">
-                                <span style="font-weight:800; font-size:0.75rem; color:var(--accent-cyan);">${b.name}</span><br>
-                                <small style="font-size:0.6rem; color:var(--text-dim);">${b.origin} ➔ ${b.destiny}</small>
+                            <div style="padding:12px;">
+                                <div style="font-weight:800; font-size:0.8rem; color:var(--accent-cyan);">${b.name}</div>
+                                <div style="font-size:0.6rem; opacity:0.7;">R$ ${b.price_p}</div>
                             </div>
                         </div>`;
                 });
             });
         }
 
-        function openDetails(key) {
-            rtdb.ref(`barcos/${currentDayPage}/${key}`).once('value', s => {
-                const b = s.val();
-                document.getElementById('modal-img').src = b.img || 'https://via.placeholder.com/400';
-                document.getElementById('modal-name').innerText = b.name;
-                document.getElementById('modal-route').innerText = `${b.origin} ➔ ${b.destiny}`;
-                document.getElementById('modal-date').innerText = b.date;
-                document.getElementById('modal-time').innerText = b.time;
-                document.getElementById('modal-price-p').innerText = 'R$ ' + b.price_p;
-                document.getElementById('modal-price-c').innerText = 'R$ ' + b.price_c;
-                document.getElementById('btn-wa1').onclick = () => window.open('https://wa.me/55'+b.tel1.replace(/\D/g,''));
-                document.getElementById('btn-wa2').onclick = () => window.open('https://wa.me/55'+b.tel2.replace(/\D/g,''));
-                document.getElementById('boat-modal').style.display = 'flex';
-            });
-        }
-
-        function closeModal() { document.getElementById('boat-modal').style.display = 'none'; }
-
-        // --- COMPRESSÃO DE IMAGEM ---
-        function processImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const max_size = 600; // Tamanho máximo para não travar o banco
-                        let w = img.width, h = img.height;
-                        if (w > h) { if (w > max_size) { h *= max_size / w; w = max_size; } }
-                        else { if (h > max_size) { w *= max_size / h; h = max_size; } }
-                        canvas.width = w; canvas.height = h;
-                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                        currentImg = canvas.toDataURL('image/jpeg', 0.7); // 70% de qualidade
-                        document.getElementById('preview-img').src = currentImg;
-                        document.getElementById('preview-img').style.display = 'block';
-                        document.getElementById('camera-icon').style.display = 'none';
-                    };
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function publish() {
-            const name = document.getElementById('in-name').value;
-            const dateVal = document.getElementById('in-date').value;
-            
-            if(!name || !dateVal) return alert("Nome e Data são obrigatórios!");
-
-            const boat = {
-                name: name,
-                origin: document.getElementById('in-origin').value,
-                destiny: document.getElementById('in-destiny').value,
-                date: dateVal,
-                time: document.getElementById('in-time').value,
-                price_p: document.getElementById('in-price-p').value,
-                price_c: document.getElementById('in-price-c').value,
-                tel1: document.getElementById('in-tel-1').value,
-                tel2: document.getElementById('in-tel-2').value,
-                img: currentImg,
-                likes: 0,
-                registeredBy: currentUser.phone
-            };
-
-            // Lógica correta de dia da semana
-            const dateParts = dateVal.split('-');
-            const dayIdx = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]).getDay();
-            const days = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
-            const dayName = days[dayIdx];
-
-            rtdb.ref('barcos/' + dayName).push(boat).then(() => {
-                alert("Publicado!");
-                navigate('screen-main');
-                // Limpar campos
-                currentImg = "";
-                document.getElementById('preview-img').style.display = 'none';
-                document.getElementById('camera-icon').style.display = 'block';
-            }).catch(e => alert("Erro ao salvar. Tente uma foto menor."));
-        }
-
         function shareApp() {
-            window.open("https://wa.me/?text=Confira a escala de barcos no BarcoApp: " + window.location.href);
+            window.open("https://wa.me/?text=Acesse a escala: " + window.location.href);
         }
 
         window.onload = () => { if(currentUser) startApp(); };
