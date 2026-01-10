@@ -287,7 +287,6 @@
                 }
                 Object.keys(data).forEach(key => {
                     const b = data[key];
-                    // Cálculo do saldo para exibir no card
                     const saldo = (b.likes || 0) - (b.dislikes || 0);
                     feed.innerHTML += `
                         <div class="boat-card" onclick="openDetails('${key}')">
@@ -314,7 +313,6 @@
                 document.getElementById('modal-price-p').innerText = 'R$ ' + b.price_p;
                 document.getElementById('modal-price-c').innerText = 'R$ ' + b.price_c;
                 
-                // Configuração dos botões de voto
                 document.getElementById('btn-like').onclick = () => registerVote(key, 'likes');
                 document.getElementById('btn-dislike').onclick = () => registerVote(key, 'dislikes');
 
@@ -324,14 +322,33 @@
             });
         }
 
-        // NOVA FUNÇÃO: Registro de Votos
-        function registerVote(key, type) {
-            const boatRef = rtdb.ref(`barcos/${currentDayPage}/${key}/${type}`);
-            boatRef.transaction(currentValue => {
-                return (currentValue || 0) + 1;
-            }).then(() => {
-                alert("Voto registrado com sucesso!");
-                closeModal();
+        // FUNÇÃO ATUALIZADA COM TRAVA DE SEGURANÇA (1 VOTO POR BARCO)
+        function registerVote(boatKey, type) {
+            if (!currentUser || !currentUser.phone) return alert("Erro de identificação!");
+
+            const userPhone = currentUser.phone;
+            const voteLockRef = rtdb.ref(`votos_registrados/${boatKey}/${userPhone}`);
+
+            // 1. Verifica se este telefone já votou neste barco
+            voteLockRef.once('value', snapshot => {
+                if (snapshot.exists()) {
+                    alert("Você já registrou sua opinião nesta embarcação!");
+                } else {
+                    // 2. Registra a trava de voto primeiro
+                    voteLockRef.set({
+                        voto: type,
+                        timestamp: Date.now()
+                    }).then(() => {
+                        // 3. Incrementa o contador no banco de dados (Transaction garante precisão)
+                        const boatRef = rtdb.ref(`barcos/${currentDayPage}/${boatKey}/${type}`);
+                        boatRef.transaction(currentValue => {
+                            return (currentValue || 0) + 1;
+                        });
+                        
+                        alert("Obrigado pelo seu voto!");
+                        closeModal();
+                    });
+                }
             });
         }
 
@@ -378,7 +395,7 @@
                 tel2: document.getElementById('in-tel-2').value,
                 img: currentImg,
                 likes: 0,
-                dislikes: 0, // Adicionado campo de deslikes
+                dislikes: 0,
                 registeredBy: currentUser.phone
             };
 
@@ -387,11 +404,15 @@
             const dName = diasSemana[dIdx];
 
             rtdb.ref('barcos/' + dName).push(boat).then(() => {
-                alert("Sucesso!");
+                alert("Viagem Publicada!");
                 navigate('screen-main');
                 currentImg = "";
                 document.getElementById('preview-img').style.display = 'none';
                 document.getElementById('camera-icon').style.display = 'block';
+                // Limpar campos
+                document.getElementById('in-name').value = "";
+                document.getElementById('in-origin').value = "";
+                document.getElementById('in-destiny').value = "";
             });
         }
 
@@ -427,7 +448,6 @@
                 if(d) {
                     Object.values(d).forEach(dia => {
                         Object.values(dia).forEach(b => {
-                            // O saldo total do usuário agora é Likes menos Dislikes
                             if(b.registeredBy === currentUser.phone) {
                                 l += ((b.likes || 0) - (b.dislikes || 0));
                             }
