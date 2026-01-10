@@ -35,7 +35,6 @@
             min-height: 100vh;
         }
 
-        /* Sidebar Modernizada */
         .sidebar { 
             width: var(--sidebar-width); 
             background: #010409; 
@@ -55,7 +54,6 @@
             align-items: center; 
             gap: 12px; 
             margin-bottom: 50px; 
-            letter-spacing: -1px;
         }
 
         .nav-group { margin-bottom: 30px; }
@@ -64,7 +62,6 @@
             font-size: 0.65rem; 
             text-transform: uppercase; 
             font-weight: 700; 
-            letter-spacing: 1px;
             margin-bottom: 15px;
             display: block;
             padding-left: 15px;
@@ -79,8 +76,7 @@
             text-decoration: none; 
             border-radius: 12px; 
             margin-bottom: 8px; 
-            transition: all 0.2s ease;
-            font-weight: 500;
+            transition: 0.2s;
             font-size: 0.9rem;
         }
 
@@ -89,23 +85,12 @@
             color: var(--primary); 
         }
 
-        .nav-item i { width: 20px; }
-
-        /* Área Principal */
         .main { 
             margin-left: var(--sidebar-width); 
             width: calc(100% - var(--sidebar-width)); 
             padding: 40px; 
         }
 
-        .header-top {
-            margin-bottom: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Stats Cards */
         .stats-row { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
@@ -119,54 +104,27 @@
             border-radius: 20px; 
             border: 1px solid var(--border); 
             position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease;
         }
 
-        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card small { color: var(--text-dim); text-transform: uppercase; font-size: 0.7rem; font-weight: 800; }
+        .stat-card h2 { margin: 8px 0 0; font-size: 2.2rem; font-weight: 800; }
 
-        .stat-card i {
-            position: absolute;
-            right: -10px;
-            bottom: -10px;
-            font-size: 4rem;
-            opacity: 0.05;
-            color: var(--primary);
-        }
-
-        .stat-card small { 
-            color: var(--text-dim); 
-            text-transform: uppercase; 
-            font-size: 0.7rem; 
-            font-weight: 800; 
-            letter-spacing: 0.5px;
-        }
-
-        .stat-card h2 { 
-            margin: 8px 0 0; 
-            font-size: 2.2rem; 
-            font-weight: 800;
-        }
-
-        /* Grid Layout */
         .dashboard-grid { 
             display: grid; 
             grid-template-columns: 1.6fr 1fr; 
             gap: 30px; 
         }
 
-        /* Painéis */
         .panel { 
             background: var(--bg-card); 
             border-radius: 24px; 
             border: 1px solid var(--border); 
             margin-bottom: 30px; 
             overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .panel-header { 
-            padding: 25px; 
+            padding: 20px 25px; 
             border-bottom: 1px solid var(--border); 
             display: flex; 
             justify-content: space-between; 
@@ -174,110 +132,53 @@
             background: rgba(255,255,255,0.01); 
         }
 
-        .panel-header h3 { 
-            margin: 0; 
-            font-size: 1rem; 
-            font-weight: 700;
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-        }
+        .panel-header h3 { margin: 0; font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
 
-        .panel-header i { color: var(--primary); }
-
-        .panel-body { padding: 20px; }
-
-        /* Tabelas */
         table { width: 100%; border-collapse: collapse; }
-        th { 
-            text-align: left; 
-            padding: 15px 12px; 
-            color: var(--text-dim); 
-            font-size: 0.65rem; 
-            text-transform: uppercase; 
-            font-weight: 800;
-            border-bottom: 1px solid var(--border); 
-        }
-        td { 
-            padding: 16px 12px; 
-            border-bottom: 1px solid rgba(255,255,255,0.03); 
-            font-size: 0.85rem; 
-            font-weight: 500;
-        }
+        th { text-align: left; padding: 15px 12px; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; }
 
-        /* Botões e Inputs */
         input { 
             width: 100%; 
             background: #020617; 
             border: 1px solid var(--border); 
-            padding: 14px; 
-            border-radius: 12px; 
+            padding: 12px; 
+            border-radius: 10px; 
             color: white; 
-            margin-bottom: 12px; 
-            outline: none; 
-            transition: 0.3s;
-            box-sizing: border-box;
-        }
-
-        input:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
-
-        .btn { 
-            padding: 12px 20px; 
-            border-radius: 12px; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: 700; 
-            transition: 0.3s; 
-            font-size: 0.85rem;
-        }
-
-        .btn-add { 
-            background: var(--primary); 
-            color: #000; 
-            width: 100%; 
-            margin-top: 5px; 
-            text-transform: uppercase;
-        }
-
-        .btn-add:hover { background: #fff; transform: scale(1.02); }
-
-        .btn-del { 
-            background: rgba(244, 63, 94, 0.1); 
-            color: var(--danger); 
-            padding: 8px 12px;
-        }
-
-        .btn-del:hover { background: var(--danger); color: white; }
-
-        /* Ranking e Carousel */
-        .rank-row { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 15px; 
-            background: #020617; 
-            border-radius: 14px; 
             margin-bottom: 10px; 
-            border: 1px solid var(--border);
+            outline: none; 
         }
 
-        .tag-dia { 
-            background: var(--primary-glow); 
-            color: var(--primary); 
-            padding: 4px 10px; 
-            border-radius: 6px; 
-            font-size: 0.65rem; 
-            font-weight: 800; 
-        }
+        .btn { padding: 12px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        .btn-add { background: var(--primary); color: #000; width: 100%; text-transform: uppercase; }
+        .btn-del { background: rgba(244, 63, 94, 0.1); color: var(--danger); }
 
+        /* Carousel Modernizado */
         .carousel-item {
-            background: #020617;
+            background: rgba(2, 6, 23, 0.5);
             padding: 15px;
             border-radius: 16px;
             margin-bottom: 15px;
             border: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
 
+        .carousel-preview {
+            width: 100px;
+            height: 60px;
+            border-radius: 8px;
+            background: #000;
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+
+        .carousel-inputs { flex: 1; }
+
+        .rank-row { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: #020617; border-radius: 14px; margin-bottom: 10px; }
+        .tag-dia { background: var(--primary-glow); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; }
+        
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
     </style>
@@ -290,44 +191,36 @@
         <div class="nav-group">
             <span class="nav-label">Geral</span>
             <a href="#" class="nav-item active"><i class="fas fa-th-large"></i> Dashboard</a>
-            <a href="#boats-section" class="nav-item"><i class="fas fa-anchor"></i> Gerenciar Escalas</a>
-            <a href="#users-section" class="nav-item"><i class="fas fa-users"></i> Base de Usuários</a>
+            <a href="#boats-section" class="nav-item"><i class="fas fa-anchor"></i> Escalas</a>
+            <a href="#users-section" class="nav-item"><i class="fas fa-users"></i> Usuários</a>
         </div>
 
         <div class="nav-group">
-            <span class="nav-label">Marketing</span>
-            <a href="#carousel-section" class="nav-item"><i class="fas fa-image"></i> Carrossel Publicitário</a>
-            <a href="#push-section" class="nav-item"><i class="fas fa-paper-plane"></i> Notificações Push</a>
+            <span class="nav-label">Configurações</span>
+            <a href="#carousel-section" class="nav-item"><i class="fas fa-images"></i> Marketing (Banner)</a>
         </div>
     </div>
 
     <div class="main">
         <div class="header-top">
-            <h2 style="margin:0; font-weight: 800; font-size: 1.8rem;">Visão Geral</h2>
-            <div style="color: var(--text-dim); font-size: 0.9rem;">
-                <i class="far fa-calendar-alt"></i> Atualizado em tempo real
-            </div>
+            <h2 style="margin:0; font-weight: 800; font-size: 1.8rem;">Controle de Operações</h2>
         </div>
 
         <div class="stats-row">
             <div class="stat-card">
-                <i class="fas fa-users"></i>
                 <small>Total Usuários</small>
                 <h2 id="total-users">0</h2>
             </div>
             <div class="stat-card">
-                <i class="fas fa-ship"></i>
                 <small>Barcos Ativos</small>
                 <h2 id="total-boats">0</h2>
             </div>
             <div class="stat-card">
-                <i class="fas fa-heart" style="color: var(--danger); opacity: 0.1;"></i>
-                <small>Engajamento (Likes)</small>
+                <small>Total Likes</small>
                 <h2 id="total-likes">0</h2>
             </div>
             <div class="stat-card">
-                <i class="fas fa-trophy" style="color: var(--warning); opacity: 0.1;"></i>
-                <small>Líder Ranking</small>
+                <small>Top Influencer</small>
                 <h2 id="top-user">-</h2>
             </div>
         </div>
@@ -336,18 +229,13 @@
             <div class="left-side">
                 <div class="panel" id="users-section">
                     <div class="panel-header">
-                        <h3><i class="fas fa-users"></i> Gestão de Usuários</h3>
-                        <span class="tag-dia" id="user-count-tag">0 online</span>
+                        <h3><i class="fas fa-users"></i> Usuários Cadastrados</h3>
+                        <span class="tag-dia" id="user-count-tag">0</span>
                     </div>
                     <div class="panel-body">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>WhatsApp</th>
-                                    <th>Indicados</th>
-                                    <th>Ações</th>
-                                </tr>
+                                <tr><th>Nome</th><th>WhatsApp</th><th>Pts</th><th>Ações</th></tr>
                             </thead>
                             <tbody id="users-list"></tbody>
                         </table>
@@ -356,17 +244,12 @@
 
                 <div class="panel" id="boats-section">
                     <div class="panel-header">
-                        <h3><i class="fas fa-calendar-day"></i> Monitor de Publicações</h3>
+                        <h3><i class="fas fa-calendar-day"></i> Escalas Publicadas</h3>
                     </div>
                     <div class="panel-body">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>Embarcação</th>
-                                    <th>Dia da Escala</th>
-                                    <th>Likes</th>
-                                    <th>Gestão</th>
-                                </tr>
+                                <tr><th>Barco</th><th>Dia</th><th>Likes</th><th>Ações</th></tr>
                             </thead>
                             <tbody id="boats-list"></tbody>
                         </table>
@@ -375,34 +258,24 @@
             </div>
 
             <div class="right-side">
-                <div class="panel" id="push-section" style="background: linear-gradient(145deg, #0f172a 0%, #020617 100%); border-color: var(--primary);">
-                    <div class="panel-header">
-                        <h3><i class="fas fa-broadcast-tower"></i> Push Global</h3>
-                    </div>
-                    <div class="panel-body">
-                        <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0;">Envie um alerta instantâneo para todos os usuários do app.</p>
-                        <input type="text" id="push-title" placeholder="Título impactante">
-                        <input type="text" id="push-msg" placeholder="Sua mensagem aqui...">
-                        <button class="btn btn-add" onclick="sendPush()"><i class="fas fa-paper-plane"></i> Disparar Agora</button>
-                    </div>
-                </div>
-
                 <div class="panel">
                     <div class="panel-header">
-                        <h3><i class="fas fa-medal"></i> Top 5 Influenciadores</h3>
+                        <h3><i class="fas fa-trophy"></i> Ranking de Indicações</h3>
                     </div>
-                    <div class="panel-body" id="ranking-list">
-                        </div>
+                    <div class="panel-body" id="ranking-list"></div>
                 </div>
 
                 <div class="panel" id="carousel-section">
                     <div class="panel-header">
-                        <h3><i class="fas fa-images"></i> Carrossel Publicitário</h3>
+                        <h3><i class="fas fa-images"></i> Banners do Aplicativo</h3>
+                        <span style="font-size: 0.7rem; color: var(--text-dim);">6 SLOTS</span>
                     </div>
                     <div class="panel-body">
-                        <div id="carousel-manager" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                        <div id="carousel-manager" style="max-height: 550px; overflow-y: auto; padding-right: 5px;">
                             </div>
-                        <button class="btn btn-add" style="background: #fff;" onclick="updateCarousel()">Salvar Configurações</button>
+                        <button class="btn btn-add" style="margin-top: 15px; background: #fff; color: #000;" onclick="updateCarousel()">
+                            <i class="fas fa-save"></i> Atualizar Banners
+                        </button>
                     </div>
                 </div>
             </div>
@@ -410,7 +283,6 @@
     </div>
 
     <script>
-        // Mesmas credenciais do seu Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -440,17 +312,14 @@
                 count++;
                 const pts = invites && invites[id] ? Object.keys(invites[id]).length : 0;
                 list.innerHTML += `<tr>
-                    <td><div style="display:flex; align-items:center; gap:8px;">
-                        <div style="width:30px; height:30px; background:var(--primary-glow); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:var(--primary); font-weight:800;">${users[id].nome.charAt(0)}</div>
-                        ${users[id].nome}
-                    </div></td>
-                    <td><i class="fab fa-whatsapp" style="color:#22c55e"></i> ${users[id].whatsapp}</td>
-                    <td><span style="font-weight:700; color:var(--primary)">${pts}</span></td>
+                    <td>${users[id].nome}</td>
+                    <td>${users[id].whatsapp}</td>
+                    <td><b>${pts}</b></td>
                     <td><button class="btn btn-del" onclick="deleteUser('${id}')"><i class="fas fa-trash"></i></button></td>
                 </tr>`;
             }
             document.getElementById('total-users').innerText = count;
-            document.getElementById('user-count-tag').innerText = count + ' Cadastrados';
+            document.getElementById('user-count-tag').innerText = count + ' Total';
         }
 
         function renderBoats(barcos) {
@@ -461,9 +330,9 @@
                     const b = barcos[dia][key];
                     bCount++; lCount += (b.likes || 0);
                     list.innerHTML += `<tr>
-                        <td><strong>${b.name}</strong></td>
+                        <td>${b.name}</td>
                         <td><span class="tag-dia">${dia}</span></td>
-                        <td><span style="color:var(--danger)">❤️ ${b.likes || 0}</span></td>
+                        <td>❤️ ${b.likes || 0}</td>
                         <td><button class="btn btn-del" onclick="deleteBoat('${dia}','${key}')">Remover</button></td>
                     </tr>`;
                 }
@@ -474,18 +343,26 @@
 
         function setupCarouselFields(current) {
             const container = document.getElementById('carousel-manager');
-            if (container.innerHTML !== "") return; // Evita resetar campos enquanto digita
+            if (container.innerHTML !== "") return; 
             
             for(let i=1; i<=6; i++) {
                 const img = current && current[`s${i}`] ? current[`s${i}`].img : "";
                 const link = current && current[`s${i}`] ? current[`s${i}`].link : "";
                 container.innerHTML += `
                     <div class="carousel-item">
-                        <small style="color:var(--primary); font-weight:800;">BANNER #${i}</small>
-                        <input type="text" id="img-${i}" placeholder="Link da Imagem (URL)" value="${img}" style="margin-top:8px">
-                        <input type="text" id="link-${i}" placeholder="Ação ao clicar (Link)" value="${link}">
+                        <img src="${img || 'https://via.placeholder.com/100x60?text=Sem+Imagem'}" id="prev-${i}" class="carousel-preview">
+                        <div class="carousel-inputs">
+                            <small style="color:var(--primary); font-weight:800; display:block; margin-bottom:5px;">SLOT #${i}</small>
+                            <input type="text" id="img-${i}" placeholder="URL da Imagem" value="${img}" oninput="updatePreview(${i}, this.value)">
+                            <input type="text" id="link-${i}" placeholder="Link (Opcional)" value="${link}">
+                        </div>
                     </div>`;
             }
+        }
+
+        function updatePreview(id, url) {
+            const img = document.getElementById(`prev-${id}`);
+            img.src = url || 'https://via.placeholder.com/100x60?text=Sem+Imagem';
         }
 
         function updateCarousel() {
@@ -496,11 +373,11 @@
                     link: document.getElementById(`link-${i}`).value
                 };
             }
-            db.ref('config/carrossel').set(carrossel).then(() => alert("Configurações de Marketing Atualizadas!"));
+            db.ref('config/carrossel').set(carrossel).then(() => alert("Banners atualizados com sucesso!"));
         }
 
-        function deleteUser(uid) { if(confirm("Deseja banir este usuário?")) db.ref(`usuarios_cadastrados/${uid}`).remove(); }
-        function deleteBoat(dia, key) { if(confirm("Remover esta publicação da escala?")) db.ref(`barcos/${dia}/${key}`).remove(); }
+        function deleteUser(uid) { if(confirm("Remover usuário?")) db.ref(`usuarios_cadastrados/${uid}`).remove(); }
+        function deleteBoat(dia, key) { if(confirm("Excluir escala?")) db.ref(`barcos/${dia}/${key}`).remove(); }
 
         function renderRanking(users, invites) {
             const div = document.getElementById('ranking-list');
@@ -510,31 +387,12 @@
                 arr.push({ nome: users[id].nome, pts });
             }
             arr.sort((a,b) => b.pts - a.pts);
-            
             if(arr.length > 0) document.getElementById('top-user').innerText = arr[0].nome.split(' ')[0];
-            
             div.innerHTML = arr.slice(0,5).map((u, i) => `
                 <div class="rank-row">
-                    <span style="font-weight:600;"><span style="color:var(--text-dim); margin-right:8px;">#${i+1}</span> ${u.nome}</span>
-                    <span style="background:var(--primary); color:#000; padding:2px 8px; border-radius:10px; font-size:0.7rem; font-weight:800;">${u.pts} PTS</span>
+                    <span>${i+1}º ${u.nome}</span>
+                    <span class="tag-dia">${u.pts} Pts</span>
                 </div>`).join('');
-        }
-
-        function sendPush() {
-            const title = document.getElementById('push-title').value;
-            const msg = document.getElementById('push-msg').value;
-            if(!title || !msg) return alert("Preencha título e mensagem!");
-            
-            db.ref('notificacoes_pendentes').push({ 
-                title, 
-                msg, 
-                timestamp: Date.now(),
-                sent: false
-            }).then(() => {
-                alert("Push enviado para a fila de processamento!");
-                document.getElementById('push-title').value = "";
-                document.getElementById('push-msg').value = "";
-            });
         }
 
         init();
