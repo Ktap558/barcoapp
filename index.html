@@ -212,15 +212,41 @@
         }
 
         window.onload = () => { if(currentUser) startApp(); };
-        if ('serviceWorker' in navigator) {
+       window.onload = () => { 
+    if(typeof currentUser !== 'undefined' && currentUser) startApp(); 
+};
+
+// --- REGISTRO DO VIGIA (SERVICE WORKER) ---
+if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./firebase-messaging-sw.js')
     .then(function(registration) {
-        console.log('Vigia do BarcoApp (Service Worker) ativo com sucesso!', registration);
+        console.log('Vigia do BarcoApp ativo!');
+        
+        const messaging = firebase.messaging();
+        
+        // SUA CHAVE VAPID CONFIGURADA
+        const vapidKey = "X8dPqkhjd4X26x3sdgSNwcIYJN8f-HyQMjEaPUCiCmw";
+
+        messaging.getToken({ vapidKey: vapidKey }).then((currentToken) => {
+            if (currentToken) {
+                console.log("Token do dispositivo:", currentToken);
+                // Salva o token no seu banco para podermos enviar alertas
+                if(currentUser) {
+                    firebase.database().ref('usuarios_cadastrados/' + currentUser.uid).update({
+                        fcmToken: currentToken
+                    });
+                }
+            }
+        }).catch((err) => {
+            console.log('Erro ao obter token:', err);
+        });
+
     }).catch(function(err) {
-        console.log('Falha ao registrar o vigia:', err);
+        console.error('Falha ao registrar o vigia:', err);
     });
 }
     </script>
 </body>
 </html>
+
 
