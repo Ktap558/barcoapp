@@ -90,7 +90,7 @@
         .btn-del { background: rgba(244, 63, 94, 0.1); color: var(--danger); padding: 8px 12px; }
         .btn-wa { background: #10b981; color: white; padding: 8px 12px; margin-right: 5px; }
 
-        /* Estilo do Carrossel que você pediu */
+        /* Estilo do Carrossel */
         .rank-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #020617; border-radius: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
         .img-preview { width: 60px; height: 35px; border-radius: 6px; object-fit: cover; background: #000; border: 1px solid var(--border); }
         .tag-dia { background: var(--primary-glow); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; }
@@ -113,7 +113,7 @@
         <div class="stats-row">
             <div class="stat-card"><small>Total Usuários</small><h2 id="total-users">0</h2></div>
             <div class="stat-card"><small>Barcos Ativos</small><h2 id="total-boats">0</h2></div>
-            <div class="stat-card"><small>Total Likes</small><h2 id="total-likes">0</h2></div>
+            <div class="stat-card"><small>Saldo de Likes</small><h2 id="total-likes">0</h2></div>
             <div class="stat-card"><small>Status</small><h2 style="color: var(--success); font-size: 1.5rem;">ONLINE</h2></div>
         </div>
 
@@ -123,7 +123,7 @@
                     <div class="panel-header"><h3><i class="fas fa-users"></i> Gestão de Usuários</h3></div>
                     <div class="panel-body">
                         <table>
-                            <thead><tr><th>Nome</th><th>WhatsApp</th><th>Pts</th><th>Ações</th></tr></thead>
+                            <thead><tr><th>Nome</th><th>WhatsApp</th><th>Saldo Likes</th><th>Ações</th></tr></thead>
                             <tbody id="users-list"></tbody>
                         </table>
                     </div>
@@ -133,7 +133,7 @@
                     <div class="panel-header"><h3><i class="fas fa-calendar-day"></i> Escalas Ativas</h3></div>
                     <div class="panel-body">
                         <table>
-                            <thead><tr><th>Embarcação</th><th>Dia</th><th>Likes</th><th>Gestão</th></tr></thead>
+                            <thead><tr><th>Embarcação</th><th>Dia</th><th>Likes / Desl.</th><th>Gestão</th></tr></thead>
                             <tbody id="boats-list"></tbody>
                         </table>
                     </div>
@@ -162,7 +162,7 @@
                 </div>
 
                 <div class="panel">
-                    <div class="panel-header"><h3><i class="fas fa-trophy"></i> Top Influenciadores</h3></div>
+                    <div class="panel-header"><h3><i class="fas fa-trophy"></i> Ranking de Popularidade</h3></div>
                     <div class="panel-body" id="ranking-list"></div>
                 </div>
             </div>
@@ -186,23 +186,47 @@
             db.ref().on('value', snapshot => {
                 const data = snapshot.val();
                 if(!data) return;
-                renderUsers(data.usuarios_cadastrados, data.indicacoes);
+                
+                // Processamento global de votos por usuário para o ranking e lista
+                const userStats = calculateUserStats(data.barcos, data.usuarios_cadastrados);
+                
+                renderUsers(data.usuarios_cadastrados, userStats);
                 renderBoats(data.barcos);
                 renderCarousel(data.config ? data.config.carrossel : null);
-                renderRanking(data.usuarios_cadastrados, data.indicacoes);
+                renderRanking(userStats);
             });
         }
 
-        function renderUsers(users, invites) {
+        // Nova lógica para calcular pontos baseada em Likes - Deslikes
+        function calculateUserStats(barcos, usuarios) {
+            let stats = {};
+            // Inicializa todos com zero
+            for(let id in usuarios) { stats[id] = { nome: usuarios[id].nome, saldo: 0 }; }
+
+            if(barcos) {
+                for(let dia in barcos) {
+                    for(let key in barcos[dia]) {
+                        const b = barcos[dia][key];
+                        if(b.registeredBy && stats[b.registeredBy]) {
+                            const saldoBarco = (b.likes || 0) - (b.dislikes || 0);
+                            stats[b.registeredBy].saldo += saldoBarco;
+                        }
+                    }
+                }
+            }
+            return stats;
+        }
+
+        function renderUsers(users, stats) {
             const list = document.getElementById('users-list');
             list.innerHTML = ""; let count = 0;
             for(let id in users) {
                 count++;
-                const pts = invites && invites[id] ? Object.keys(invites[id]).length : 0;
+                const saldo = stats[id] ? stats[id].saldo : 0;
                 list.innerHTML += `<tr>
                     <td><b>${users[id].nome}</b></td>
                     <td>${users[id].whatsapp}</td>
-                    <td><span style="color:var(--primary)">${pts}</span></td>
+                    <td><span style="color:${saldo >= 0 ? 'var(--primary)' : 'var(--danger)'}">${saldo}</span></td>
                     <td>
                         <button class="btn btn-wa" onclick="window.open('https://wa.me/55${users[id].whatsapp}')"><i class="fab fa-whatsapp"></i></button>
                         <button class="btn btn-del" onclick="deleteUser('${id}')"><i class="fas fa-user-slash"></i></button>
@@ -214,26 +238,31 @@
 
         function renderBoats(barcos) {
             const list = document.getElementById('boats-list');
-            list.innerHTML = ""; let bCount = 0; let lCount = 0;
+            list.innerHTML = ""; let bCount = 0; let totalSaldoGlobal = 0;
             if(barcos) {
                 for(let dia in barcos) {
                     for(let key in barcos[dia]) {
                         const b = barcos[dia][key];
-                        bCount++; lCount += (b.likes || 0);
+                        bCount++; 
+                        const saldo = (b.likes || 0) - (b.dislikes || 0);
+                        totalSaldoGlobal += saldo;
+
                         list.innerHTML += `<tr>
                             <td>${b.name}</td>
                             <td><span class="tag-dia">${dia}</span></td>
-                            <td>❤️ ${b.likes || 0}</td>
+                            <td>
+                                <span style="color:var(--success)">+${b.likes || 0}</span> / 
+                                <span style="color:var(--danger)">-${b.dislikes || 0}</span>
+                            </td>
                             <td><button class="btn btn-del" onclick="deleteBoat('${dia}','${key}')">Remover</button></td>
                         </tr>`;
                     }
                 }
             }
             document.getElementById('total-boats').innerText = bCount;
-            document.getElementById('total-likes').innerText = lCount;
+            document.getElementById('total-likes').innerText = totalSaldoGlobal;
         }
 
-        // --- CARROSSEL: LISTAR E EXCLUIR ---
         function renderCarousel(slides) {
             const container = document.getElementById('carousel-manager');
             container.innerHTML = "";
@@ -266,18 +295,16 @@
             if(confirm("Remover imagem do carrossel?")) db.ref(`config/carrossel/${key}`).remove();
         }
 
-        function renderRanking(users, invites) {
+        function renderRanking(stats) {
             const div = document.getElementById('ranking-list');
-            let arr = [];
-            for(let id in users) {
-                const pts = invites && invites[id] ? Object.keys(invites[id]).length : 0;
-                arr.push({ nome: users[id].nome, pts });
-            }
-            arr.sort((a,b) => b.pts - a.pts);
+            let arr = Object.values(stats);
+            
+            arr.sort((a,b) => b.saldo - a.saldo);
+            
             div.innerHTML = arr.slice(0,5).map((u, i) => `
                 <div class="rank-row">
                     <span>${i+1}º ${u.nome}</span>
-                    <span class="tag-dia">${u.pts} PTS</span>
+                    <span class="tag-dia">${u.saldo} LIKES</span>
                 </div>`).join('');
         }
 
