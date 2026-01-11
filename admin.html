@@ -157,7 +157,10 @@
                     <div class="panel-header"><h3><i class="fas fa-broadcast-tower"></i> Alerta no App</h3></div>
                     <div class="panel-body">
                         <input type="text" id="alert-msg" placeholder="Texto que aparece no topo...">
-                        <button class="btn btn-add" style="background: var(--warning);" onclick="pushAlert()">Atualizar Alerta</button>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" style="background: var(--warning); color: #000; flex: 2; font-weight: 800;" onclick="pushAlert()">ATUALIZAR ALERTA</button>
+                            <button class="btn" style="background: var(--danger); color: #fff; flex: 1; font-weight: 800;" onclick="removeAlert()">REMOVER</button>
+                        </div>
                     </div>
                 </div>
 
@@ -187,9 +190,12 @@
                 const data = snapshot.val();
                 if(!data) return;
                 
-                // Processamento global de votos por usuário para o ranking e lista
+                // Carregar texto do alerta atual no input para conveniência
+                if(data.config && data.config.alerta && data.config.alerta.active) {
+                    document.getElementById('alert-msg').value = data.config.alerta.text;
+                }
+
                 const userStats = calculateUserStats(data.barcos, data.usuarios_cadastrados);
-                
                 renderUsers(data.usuarios_cadastrados, userStats);
                 renderBoats(data.barcos);
                 renderCarousel(data.config ? data.config.carrossel : null);
@@ -197,12 +203,9 @@
             });
         }
 
-        // Nova lógica para calcular pontos baseada em Likes - Deslikes
         function calculateUserStats(barcos, usuarios) {
             let stats = {};
-            // Inicializa todos com zero
             for(let id in usuarios) { stats[id] = { nome: usuarios[id].nome, saldo: 0 }; }
-
             if(barcos) {
                 for(let dia in barcos) {
                     for(let key in barcos[dia]) {
@@ -246,7 +249,6 @@
                         bCount++; 
                         const saldo = (b.likes || 0) - (b.dislikes || 0);
                         totalSaldoGlobal += saldo;
-
                         list.innerHTML += `<tr>
                             <td>${b.name}</td>
                             <td><span class="tag-dia">${dia}</span></td>
@@ -267,7 +269,6 @@
             const container = document.getElementById('carousel-manager');
             container.innerHTML = "";
             if(!slides) return;
-
             Object.keys(slides).reverse().slice(0,6).forEach(key => {
                 const s = slides[key];
                 container.innerHTML += `
@@ -298,9 +299,7 @@
         function renderRanking(stats) {
             const div = document.getElementById('ranking-list');
             let arr = Object.values(stats);
-            
             arr.sort((a,b) => b.saldo - a.saldo);
-            
             div.innerHTML = arr.slice(0,5).map((u, i) => `
                 <div class="rank-row">
                     <span>${i+1}º ${u.nome}</span>
@@ -308,9 +307,20 @@
                 </div>`).join('');
         }
 
+        // FUNÇÕES DE ALERTA ATUALIZADAS
         function pushAlert() {
             const text = document.getElementById('alert-msg').value;
-            db.ref('config/alerta').set({ text, active: true }).then(() => alert("Alerta Atualizado!"));
+            if(!text) return alert("Digite uma mensagem antes de atualizar!");
+            db.ref('config/alerta').set({ text, active: true }).then(() => alert("Alerta Ativado no App!"));
+        }
+
+        function removeAlert() {
+            if(confirm("Deseja remover o alerta de todos os usuários?")) {
+                db.ref('config/alerta').set({ text: "", active: false }).then(() => {
+                    document.getElementById('alert-msg').value = "";
+                    alert("Alerta removido com sucesso!");
+                });
+            }
         }
 
         function deleteUser(uid) { if(confirm("Excluir usuário?")) db.ref(`usuarios_cadastrados/${uid}`).remove(); }
