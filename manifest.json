@@ -1,9 +1,24 @@
 {
   "id": "com.barcoapp.logistica",
-  "short_name": "BarcoApp",
   "name": "BarcoApp - Logística Fluvial",
-  "description": "Escala oficial de embarcações e logística fluvial.",
+  "short_name": "BarcoApp",
+  "description": "Escala oficial de embarcações e logística fluvial. Gerencie transportes e horários com precisão.",
+  "lang": "pt-BR",
+  "dir": "ltr",
   "categories": ["business", "productivity", "utilities"],
+  "iarc_rating_id": "",
+  "start_url": "index.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a",
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
   "icons": [
     {
       "src": "logo.png",
@@ -28,10 +43,19 @@
       "label": "BarcoApp Desktop"
     }
   ],
-  "start_url": "index.html",
-  "display": "standalone",
-  "orientation": "portrait",
-  "theme_color": "#0f172a",
-  "background_color": "#0f172a",
-  "prefer_related_applications": false
+  "shortcuts": [
+    {
+      "name": "Ver Escala",
+      "url": "/index.html",
+      "description": "Abre a lista de embarcações"
+    },
+    {
+      "name": "Painel Admin",
+      "url": "/admin.html",
+      "description": "Acesso administrativo"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
