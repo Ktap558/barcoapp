@@ -1,21 +1,40 @@
 {
   "short_name": "BarcoApp",
   "name": "BarcoApp - Logística Fluvial",
+  "description": "Escala oficial de embarcações e logística fluvial.",
   "icons": [
     {
       "src": "logo.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tela Inicial do BarcoApp"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "BarcoApp Desktop"
     }
   ],
   "start_url": "index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "theme_color": "#0f172a",
   "background_color": "#0f172a"
 }
