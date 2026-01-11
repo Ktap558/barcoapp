@@ -48,12 +48,12 @@
   "shortcuts": [
     {
       "name": "Ver Escala",
-      "url": "/index.html",
+      "url": "index.html",
       "description": "Abre a lista de embarcações"
     },
     {
       "name": "Painel Admin",
-      "url": "/admin.html",
+      "url": "admin.html",
       "description": "Acesso administrativo"
     }
   ],
@@ -71,7 +71,7 @@
     "preferred_width": 400
   },
   "note_taking": {
-    "new_note_url": "/index.html?new_note"
+    "new_note_url": "index.html?new_note"
   },
   "icons": [
     {
