@@ -7,8 +7,10 @@
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="logo.png">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -59,7 +61,6 @@
         .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; }
         .form-label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
         
-        /* FEED E CARDS MELHORADOS */
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
         .boat-card { 
             background: var(--card-dark); border-radius: 24px; overflow: hidden; 
@@ -489,6 +490,17 @@
         function shareApp() {
             const url = window.location.href;
             window.open("https://wa.me/?text=Confira a escala de barcos no BarcoApp: " + url);
+        }
+
+        // --- CÓDIGO DO SERVICE WORKER (PARA O APK FUNCIONAR) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('BarcoApp: Service Worker Registrado!', reg.scope);
+                }).catch(err => {
+                    console.log('Erro ao registrar Service Worker:', err);
+                });
+            });
         }
 
         window.onload = () => { if(currentUser) startApp(); };
