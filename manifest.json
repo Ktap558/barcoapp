@@ -10,14 +10,16 @@
   "start_url": "index.html",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "tabbed", "standalone", "minimal-ui"],
+  "display_override": ["tabbed", "window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "portrait",
   "theme_color": "#0f172a",
   "background_color": "#0f172a",
   "related_applications": [],
   "prefer_related_applications": false,
   "scope_extensions": [
-    { "origin": "ktap558.github.io" }
+    {
+      "origin": "https://ktap558.github.io"
+    }
   ],
   "launch_handler": {
     "client_mode": "focus-existing"
