@@ -14,7 +14,12 @@
   "orientation": "portrait",
   "theme_color": "#0f172a",
   "background_color": "#0f172a",
-  "related_applications": [],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://ktap558.github.io/manifest.json"
+    }
+  ],
   "prefer_related_applications": false,
   "scope_extensions": [
     {
@@ -24,18 +29,6 @@
   "launch_handler": {
     "client_mode": "focus-existing"
   },
-  "file_handlers": [
-    {
-      "action": "/index.html",
-      "accept": {
-        "text/plain": [".txt", ".csv"]
-      }
-    }
-  ],
-  "protocol_handlers": [
-    { "protocol": "mailto", "url": "/index.html?mail=%s" },
-    { "protocol": "sms", "url": "/index.html?sms=%s" }
-  ],
   "share_target": {
     "action": "/index.html",
     "method": "GET",
@@ -57,28 +50,18 @@
       "description": "Acesso administrativo"
     }
   ],
-  "widgets": [
-    {
-      "name": "BarcoApp Widget",
-      "tag": "barco-widget",
-      "ms_ac_template": "widget.json",
-      "icons": [
-        { "src": "logo.png", "sizes": "512x512", "type": "image/png" }
-      ]
-    }
-  ],
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "note_taking": {
-    "new_note_url": "index.html?new_note"
-  },
   "icons": [
     {
       "src": "logo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "screenshots": [
