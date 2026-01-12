@@ -27,21 +27,24 @@
             --gradient: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
         }
         * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; height: 100%; }
+        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-white); overflow-x: hidden; height: 100%; scroll-behavior: smooth; }
         
-        .main-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 30px; }
-        
+        /* Containers */
+        .main-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 100px; }
         .showcase-container { margin: 20px 0; padding-left: 20px; }
         .showcase-swiper { overflow: visible !important; } 
-        
+
+        /* Botões */
         .btn-open-week {
             background: var(--gradient); border: none;
             margin: 10px 20px; padding: 18px; border-radius: 20px;
             display: flex; align-items: center; justify-content: center; gap: 10px;
             font-weight: 800; color: #000; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(34, 211, 238, 0.2);
+            box-shadow: 0 10px 20px rgba(34, 211, 238, 0.15);
         }
+        .btn-open-week:active { transform: scale(0.96); }
 
+        /* Modais */
         .week-modal {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 75%;
             background: #0f172a; border-top: 3px solid var(--accent-cyan);
@@ -49,13 +52,16 @@
             box-shadow: 0 -10px 40px rgba(0,0,0,0.8); overflow-y: auto;
         }
         .day-row {
-            padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex; justify-content: space-between; align-items: center; font-weight: 700;
         }
 
-        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #070b14; color: white; outline: none; }
+        /* Inputs Premium */
+        .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #0c121e; color: white; outline: none; font-size: 1rem; }
+        .input-premium:focus { border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(34, 211, 238, 0.1); }
         .form-label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 5px; text-transform: uppercase; margin-top: 15px;}
         
+        /* Cards de Barco */
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
         .boat-card { 
             background: var(--card-dark); border-radius: 24px; overflow: hidden; 
@@ -63,12 +69,12 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             height: 100%;
         }
-        .boat-img-container { position: relative; width: 100%; height: 120px; }
+        .boat-img-container { position: relative; width: 100%; height: 120px; background: #1f2937; }
         .boat-img { width: 100%; height: 100%; object-fit: cover; }
         .boat-overlay-name {
             position: absolute; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            padding: 20px 10px 5px 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.95));
+            padding: 20px 10px 8px 10px;
             font-weight: 800; font-size: 0.85rem; color: #fff;
             text-transform: uppercase; letter-spacing: 0.5px;
         }
@@ -78,11 +84,14 @@
             padding: 12px 5px; background: rgba(0,0,0,0.2);
         }
 
+        /* Elementos Fixos */
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; }
+        .btn-main:active { opacity: 0.8; transform: scale(0.98); }
         .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
-        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .fab { width: 56px; height: 56px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { background: var(--card-dark); width: 100%; max-width: 450px; border-radius: 30px; overflow-y: auto; max-height: 90vh; }
+        .modal-content { background: var(--card-dark); width: 100%; max-width: 450px; border-radius: 30px; overflow-y: auto; max-height: 90vh; border: 1px solid var(--glass); }
         
         .day-tag-float {
             position: absolute; top: 8px; left: 8px; background: var(--accent-cyan);
@@ -92,40 +101,42 @@
 </head>
 <body>
 
-    <div id="global-alert" style="display:none; background: var(--accent-yellow); color: #000; padding: 12px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 1001;">
+    <div id="global-alert" style="display:none; background: var(--accent-yellow); color: #000; padding: 14px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 1001; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
         <i class="fas fa-bullhorn"></i> <span id="alert-text"></span>
     </div>
 
     <section id="screen-welcome" style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center;">
-        <h1 style="font-size:3rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0;">BarcoApp</h1>
-        <p style="color:var(--text-dim); margin-bottom:40px;">Escala oficial de embarcações.</p>
+        <h1 style="font-size:3.5rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0; letter-spacing: -2px;">BarcoApp</h1>
+        <p style="color:var(--text-dim); margin-bottom:40px; font-weight: 500;">Sua escala oficial de embarcações.</p>
         <div style="width:100%; max-width:350px;">
-            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome" style="margin-bottom:10px;">
-            <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp" style="margin-bottom:20px;">
-            <button class="btn-main" onclick="launchApp()">ENTRAR</button>
+            <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome" style="margin-bottom:12px;">
+            <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp com DDD" style="margin-bottom:25px;">
+            <button class="btn-main" onclick="launchApp()">ENTRAR NO APP</button>
         </div>
     </section>
 
     <section id="screen-main" style="display:none;" class="main-container">
-        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-weight:800;">⚓ Olá, <span id="display-user" style="color:var(--accent-cyan)"></span></span>
-            <i class="fas fa-ship" style="color:var(--accent-cyan)"></i>
+        <div style="padding:25px 20px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:800; font-size: 1.1rem;">⚓ Olá, <span id="display-user" style="color:var(--accent-cyan)"></span></span>
+            <div style="background: var(--glass); padding: 8px 12px; border-radius: 12px;">
+                <i class="fas fa-ship" style="color:var(--accent-cyan)"></i>
+            </div>
         </div>
 
         <div style="padding: 0 20px;">
-            <div class="swiper-container mySwiper" style="border-radius: 20px; overflow: hidden;">
+            <div class="swiper-container mySwiper" style="border-radius: 24px; overflow: hidden; height: 160px; background: var(--card-dark);">
                 <div class="swiper-wrapper" id="carousel-campaigns"></div>
                 <div class="swiper-pagination"></div>
             </div>
         </div>
 
-        <div style="background:var(--glass); margin:20px; padding:15px; border-radius:20px; border:1px solid var(--glass);">
-            <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:var(--text-dim); font-weight: 800;">
-                <span>PONTOS DE LIKES: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
+        <div style="background:var(--glass); margin:20px; padding:18px; border-radius:24px; border:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-dim); font-weight: 800; margin-bottom: 10px;">
+                <span>SEUS PONTOS: <b id="total-likes-count" style="color:var(--accent-cyan)">0</b></span>
                 <span id="percent-label">0%</span>
             </div>
-            <div style="width:100%; height:6px; background:#000; border-radius:10px; margin:8px 0;">
-                <div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px;"></div>
+            <div style="width:100%; height:8px; background:#000; border-radius:10px;">
+                <div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px; transition: width 1s ease-in-out;"></div>
             </div>
         </div>
 
@@ -134,7 +145,7 @@
         </div>
 
         <div class="showcase-container">
-            <h3 style="margin: 0 0 15px 0; font-size: 0.9rem; letter-spacing: 1px; color: var(--text-dim);">EM DESTAQUE</h3>
+            <h3 style="margin: 0 0 15px 0; font-size: 0.8rem; letter-spacing: 1.5px; color: var(--text-dim); font-weight: 800;">EM DESTAQUE</h3>
             <div class="swiper-container showcaseSwiper">
                 <div class="swiper-wrapper" id="dynamic-showcase-wrapper"></div>
             </div>
@@ -147,74 +158,88 @@
     </section>
 
     <div id="weekModal" class="week-modal">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="margin:0">Escala Semanal</h3>
-            <i class="fas fa-times" onclick="toggleWeek(false)" style="font-size: 1.5rem; opacity: 0.5;"></i>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h3 style="margin:0; font-size: 1.4rem;">Escala Semanal</h3>
+            <div onclick="toggleWeek(false)" style="padding: 10px; opacity: 0.6;"><i class="fas fa-times" style="font-size: 1.5rem;"></i></div>
         </div>
-        <div id="week-list-container"></div>
+        <div id="week-list-container" style="display: flex; flex-direction: column; gap: 5px;"></div>
     </div>
 
-    <section id="screen-day-detail" style="display:none;">
-        <div style="padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top:0; background: var(--bg-dark); z-index:100;">
-            <button onclick="navigate('screen-main')" style="background:none; border:none; color:white; font-size:1.2rem;"><i class="fas fa-arrow-left"></i></button>
-            <h2 id="day-title" style="margin:0; text-transform:uppercase; color:var(--accent-cyan); font-size: 1.1rem;"></h2>
+    <section id="screen-day-detail" style="display:none; min-height: 100vh;">
+        <div style="padding:20px; display:flex; align-items:center; gap:15px; position: sticky; top:0; background: var(--bg-dark); z-index:100; border-bottom: 1px solid var(--glass);">
+            <button onclick="navigate('screen-main')" style="background:none; border:none; color:white; font-size:1.2rem; padding: 5px;"><i class="fas fa-arrow-left"></i></button>
+            <h2 id="day-title" style="margin:0; text-transform:uppercase; color:var(--accent-cyan); font-size: 1.1rem; letter-spacing: 1px;"></h2>
         </div>
         <div class="feed" id="boat-feed"></div>
     </section>
 
     <section id="screen-register" style="display:none; padding:20px; padding-bottom:100px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <button onclick="navigate('screen-main')" style="background:none; border:none; color:var(--text-dim);"><i class="fas fa-times"></i></button>
-            <span style="font-weight:800; color:var(--accent-cyan)">PUBLICAR VIAGEM</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+            <button onclick="navigate('screen-main')" style="background:none; border:none; color:var(--text-dim); font-size: 1.2rem;"><i class="fas fa-times"></i></button>
+            <span style="font-weight:800; color:var(--accent-cyan); letter-spacing: 1px;">PUBLICAR VIAGEM</span>
         </div>
+        
         <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
-        <div onclick="document.getElementById('file-input').click()" style="width:100%; height:150px; background:var(--card-dark); border-radius:20px; border:2px dashed var(--glass); display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:20px;">
-            <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none; border-radius:18px;">
-            <i class="fas fa-camera" id="camera-icon" style="font-size:1.5rem; color:var(--accent-cyan);"></i>
+        <div onclick="document.getElementById('file-input').click()" style="width:100%; height:180px; background:var(--card-dark); border-radius:24px; border:2px dashed rgba(34, 211, 238, 0.3); display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:20px; overflow: hidden;">
+            <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
+            <div id="camera-prompt" style="text-align: center;">
+                <i class="fas fa-camera" style="font-size:2rem; color:var(--accent-cyan); margin-bottom: 10px;"></i>
+                <p style="font-size: 0.7rem; font-weight: 700; color: var(--text-dim); margin: 0;">ADICIONAR FOTO DO BARCO</p>
+            </div>
         </div>
-        <label class="form-label">Nome do Barco</label><input type="text" id="in-name" class="input-premium">
-        <label class="form-label">Local de Saída (Porto/Cais)</label><input type="text" id="in-departure" class="input-premium">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+
+        <label class="form-label">Nome da Embarcação</label><input type="text" id="in-name" class="input-premium" placeholder="Ex: Comandante Souza">
+        <label class="form-label">Local de Saída (Porto)</label><input type="text" id="in-departure" class="input-premium" placeholder="Ex: Porto de Manaus">
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <div><label class="form-label">Origem</label><input type="text" id="in-origin" class="input-premium"></div>
             <div><label class="form-label">Destino</label><input type="text" id="in-destiny" class="input-premium"></div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div><label class="form-label">Data</label><input type="date" id="in-date" class="input-premium"></div>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div><label class="form-label">Data de Saída</label><input type="date" id="in-date" class="input-premium"></div>
             <div><label class="form-label">Horário</label><input type="time" id="in-time" class="input-premium"></div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div><label class="form-label">Passagem</label><input type="number" id="in-price-p" class="input-premium"></div>
-            <div><label class="form-label">Camarote</label><input type="number" id="in-price-c" class="input-premium"></div>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div><label class="form-label">Passagem (R$)</label><input type="number" id="in-price-p" class="input-premium"></div>
+            <div><label class="form-label">Camarote (R$)</label><input type="number" id="in-price-c" class="input-premium"></div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <div><label class="form-label">WhatsApp 1</label><input type="tel" id="in-tel-1" class="input-premium"></div>
-            <div><label class="form-label">WhatsApp 2</label><input type="tel" id="in-tel-2" class="input-premium"></div>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div><label class="form-label">Contato 1</label><input type="tel" id="in-tel-1" class="input-premium"></div>
+            <div><label class="form-label">Contato 2</label><input type="tel" id="in-tel-2" class="input-premium"></div>
         </div>
-        <button class="btn-main" onclick="publish()" style="margin-top:25px;">PUBLICAR AGORA</button>
+        
+        <button class="btn-main" onclick="publish()" style="margin-top:30px; padding: 20px; font-size: 1rem;">PUBLICAR AGORA</button>
     </section>
 
     <div id="boat-modal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" style="width:100%; height:200px; object-fit:cover; border-radius:30px 30px 0 0;">
+            <img id="modal-img" style="width:100%; height:220px; object-fit:cover; border-radius:30px 30px 0 0; background: #1f2937;">
             <div style="padding:25px;">
                 <h2 id="modal-name" style="margin:0; color:var(--accent-cyan); font-size:1.6rem; font-weight: 800;"></h2>
-                <div id="modal-departure-box" style="margin-top: 5px; color: var(--accent-yellow); font-size: 0.75rem; font-weight: 700;">
+                <div id="modal-departure-box" style="margin-top: 8px; color: var(--accent-yellow); font-size: 0.8rem; font-weight: 700;">
                     <i class="fas fa-anchor"></i> SAÍDA: <span id="modal-departure"></span>
                 </div>
-                <div id="modal-route" style="font-weight:800; font-size:1rem; margin:15px 0; padding:10px; background: rgba(255,255,255,0.05); border-radius: 10px; text-align: center;"></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.75rem; background: rgba(0,0,0,0.3); padding:15px; border-radius:15px;">
-                    <div><i class="far fa-calendar"></i> <span id="modal-date"></span></div>
-                    <div><i class="far fa-clock"></i> <span id="modal-time"></span></div>
+                
+                <div id="modal-route" style="font-weight:800; font-size:1rem; margin:20px 0; padding:15px; background: rgba(255,255,255,0.03); border-radius: 16px; text-align: center; border: 1px solid var(--glass);"></div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; font-size:0.8rem; background: rgba(0,0,0,0.4); padding:18px; border-radius:20px;">
+                    <div><i class="far fa-calendar" style="color:var(--accent-cyan)"></i> <span id="modal-date"></span></div>
+                    <div><i class="far fa-clock" style="color:var(--accent-cyan)"></i> <span id="modal-time"></span></div>
                     <div style="color:var(--accent-green); font-weight: 800;">Passagem: <span id="modal-price-p"></span></div>
                     <div style="color:var(--accent-yellow); font-weight: 800;">Camarote: <span id="modal-price-c"></span></div>
                 </div>
-                <div id="vote-section" style="display:flex; gap:10px; margin-top:20px; border-top:1px solid var(--glass); padding-top:15px;">
-                    <button id="btn-like" class="btn-main" style="background:var(--accent-green); flex:1; padding:12px; font-size:0.7rem;"><i class="fas fa-thumbs-up"></i> GOSTEI</button>
-                    <button id="btn-dislike" class="btn-main" style="background:#ef4444; flex:1; padding:12px; font-size:0.7rem;"><i class="fas fa-thumbs-down"></i> NÃO GOSTEI</button>
+
+                <div id="vote-section" style="display:flex; gap:10px; margin-top:20px; border-top:1px solid var(--glass); padding-top:20px;">
+                    <button id="btn-like" class="btn-main" style="background:var(--accent-green); flex:1; padding:14px; font-size:0.75rem; color:#000;"><i class="fas fa-thumbs-up"></i> GOSTEI</button>
+                    <button id="btn-dislike" class="btn-main" style="background:#ef4444; flex:1; padding:14px; font-size:0.75rem;"><i class="fas fa-thumbs-down"></i> NÃO GOSTEI</button>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-                    <button id="btn-wa1" class="btn-main" style="background:#25d366; padding:12px; font-size:0.7rem;"><i class="fab fa-whatsapp"></i> ZAP 1</button>
-                    <button id="btn-wa2" class="btn-main" style="background:#128c7e; padding:12px; font-size:0.7rem;"><i class="fab fa-whatsapp"></i> ZAP 2</button>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
+                    <button id="btn-wa1" class="btn-main" style="background:#25d366; padding:14px; font-size:0.75rem; color:#000;"><i class="fab fa-whatsapp"></i> ZAP 1</button>
+                    <button id="btn-wa2" class="btn-main" style="background:#128c7e; padding:14px; font-size:0.75rem;"><i class="fab fa-whatsapp"></i> ZAP 2</button>
                 </div>
             </div>
         </div>
@@ -222,6 +247,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
+        // CONFIGURAÇÃO FIREBASE (MANTIDA ORIGINAL)
         const firebaseConfig = {
             apiKey: "AIzaSyDe8vErlAxcDpYqZygWcZAaWT1vGX1P_BM",
             authDomain: "barcoapp-c0f00.firebaseapp.com",
@@ -239,6 +265,7 @@
         let currentDayPage = "";
         const diasSemana = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
+        // FUNÇÕES DE NAVEGAÇÃO
         function navigate(id) {
             document.querySelectorAll('section').forEach(s => s.style.display = 'none');
             const el = document.getElementById(id);
@@ -250,7 +277,7 @@
         function launchApp() {
             const n = document.getElementById('user-name').value.trim();
             const p = document.getElementById('user-phone').value.replace(/\D/g,'');
-            if(n.length < 3 || p.length < 8) return alert("Preencha corretamente!");
+            if(n.length < 3 || p.length < 8) return alert("Preencha seu nome e WhatsApp corretamente!");
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
             rtdb.ref('usuarios_cadastrados/' + p).update({ nome: n, whatsapp: p });
@@ -268,6 +295,7 @@
             updateStats();
         }
 
+        // DESTAQUES
         function listenDynamicShowcase() {
             rtdb.ref('barcos').on('value', snapshot => {
                 const wrapper = document.getElementById('dynamic-showcase-wrapper');
@@ -281,16 +309,16 @@
                         const b = boats[boatId];
                         const slide = document.createElement('div');
                         slide.className = 'swiper-slide';
-                        slide.style.width = '160px';
+                        slide.style.width = '165px';
                         slide.innerHTML = `
                             <div class="boat-card" onclick="openDirectDetails('${dayName}', '${boatId}')">
                                 <div class="day-tag-float">${dayName}</div>
-                                <div class="boat-img-container" style="height: 100px;">
+                                <div class="boat-img-container" style="height: 110px;">
                                     <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
-                                    <div class="boat-overlay-name" style="font-size:0.6rem; padding: 10px 5px;">${b.name}</div>
+                                    <div class="boat-overlay-name" style="font-size:0.65rem; padding: 12px 8px;">${b.name}</div>
                                 </div>
-                                <div class="route-box" style="font-size: 0.5rem; padding: 8px 2px;">
-                                    ${b.origin} <i class="fas fa-arrow-right"></i> ${b.destiny}
+                                <div class="route-box" style="font-size: 0.55rem; padding: 10px 4px;">
+                                    ${b.origin} <i class="fas fa-arrow-right" style="font-size: 0.5rem; color:var(--accent-cyan)"></i> ${b.destiny}
                                 </div>
                             </div>
                         `;
@@ -315,7 +343,11 @@
             const container = document.getElementById('week-list-container');
             container.innerHTML = "";
             diasSemana.forEach(d => {
-                container.innerHTML += `<div class="day-row" onclick="changePage('${d}'); toggleWeek(false)"><span>${d}</span><i class="fas fa-chevron-right" style="color:var(--accent-cyan)"></i></div>`;
+                container.innerHTML += `
+                    <div class="day-row" onclick="changePage('${d}'); toggleWeek(false)">
+                        <span>${d}</span>
+                        <i class="fas fa-chevron-right" style="color:var(--accent-cyan); font-size: 0.8rem;"></i>
+                    </div>`;
             });
         }
 
@@ -333,14 +365,14 @@
             rtdb.ref('barcos/' + currentDayPage).on('value', s => {
                 feed.innerHTML = "";
                 const data = s.val();
-                if(!data) { feed.innerHTML = "<p style='grid-column:span 2; text-align:center; padding:50px; opacity:0.5;'>Nenhum barco.</p>"; return; }
+                if(!data) { feed.innerHTML = "<div style='grid-column:span 2; text-align:center; padding:80px 20px; opacity:0.4;'><i class='fas fa-anchor' style='font-size:2rem; margin-bottom:10px;'></i><p>Nenhuma embarcação para este dia.</p></div>"; return; }
                 Object.keys(data).forEach(key => {
                     const b = data[key];
                     const saldo = (b.likes || 0) - (b.dislikes || 0);
                     feed.innerHTML += `
                         <div class="boat-card" onclick="openDetails('${key}')">
                             <div style="position:absolute; top:8px; left:8px; background:var(--accent-green); color:#000; font-size:0.6rem; padding:3px 8px; border-radius:8px; font-weight:800; z-index:10;">R$ ${b.price_p}</div>
-                            <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; font-size:0.6rem; padding:3px 8px; border-radius:8px; font-weight:800; z-index:10;"><i class="fas fa-heart"></i> ${saldo}</div>
+                            <div style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.7); color:#fff; font-size:0.6rem; padding:3px 8px; border-radius:8px; font-weight:800; z-index:10;"><i class="fas fa-heart" style="color:#ef4444"></i> ${saldo}</div>
                             <div class="boat-img-container"><img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img"><div class="boat-overlay-name">${b.name}</div></div>
                             <div class="route-box"><span>${b.origin}</span><i class="fas fa-arrow-right" style="color:var(--accent-cyan); font-size:0.5rem"></i><span>${b.destiny}</span></div>
                         </div>`;
@@ -354,18 +386,17 @@
                 if(!b) return;
                 document.getElementById('modal-img').src = b.img || 'https://via.placeholder.com/400';
                 document.getElementById('modal-name').innerText = b.name;
-                // CORREÇÃO: Mostrando Local de Saída
                 document.getElementById('modal-departure').innerText = b.departure || "Não informado";
                 document.getElementById('modal-route').innerHTML = `${b.origin} <i class="fas fa-arrow-right" style="color:var(--accent-cyan); font-size:0.8rem; margin:0 10px;"></i> ${b.destiny}`;
                 document.getElementById('modal-date').innerText = b.date;
                 document.getElementById('modal-time').innerText = b.time;
                 document.getElementById('modal-price-p').innerText = 'R$ ' + b.price_p;
                 document.getElementById('modal-price-c').innerText = 'R$ ' + b.price_c;
+                
                 document.getElementById('btn-like').onclick = () => registerVote(key, 'likes');
                 document.getElementById('btn-dislike').onclick = () => registerVote(key, 'dislikes');
                 
-                // MENSAGEM PERSONALIZADA WHATSAPP
-                const customMsg = encodeURIComponent("BarcoApp Conheça: https://sites.google.com/view/navegpurus/home\n\n\"Olá! Tudo bem? Tenho interesse em viajar nesse barco.\"");
+                const customMsg = encodeURIComponent("BarcoApp Conheça: https://sites.google.com/view/navegpurus/home\n\n\"Olá! Vi seu barco no BarcoApp e gostaria de mais informações.\"");
                 
                 document.getElementById('btn-wa1').onclick = () => window.open(`https://wa.me/55${b.tel1.replace(/\D/g,'')}?text=${customMsg}`);
                 document.getElementById('btn-wa2').onclick = () => window.open(`https://wa.me/55${b.tel2.replace(/\D/g,'')}?text=${customMsg}`);
@@ -375,15 +406,15 @@
         }
 
         function registerVote(boatKey, type) {
-            if (!currentUser || !currentUser.phone) return alert("Erro!");
+            if (!currentUser || !currentUser.phone) return alert("Erro de identificação!");
             const userPhone = currentUser.phone;
             const voteLockRef = rtdb.ref(`votos_registrados/${boatKey}/${userPhone}`);
             voteLockRef.once('value', snapshot => {
-                if (snapshot.exists()) { alert("Já votou!"); } 
+                if (snapshot.exists()) { alert("Você já avaliou este barco!"); } 
                 else {
                     voteLockRef.set({ voto: type, timestamp: Date.now() }).then(() => {
                         rtdb.ref(`barcos/${currentDayPage}/${boatKey}/${type}`).transaction(v => (v || 0) + 1);
-                        alert("Voto registrado!");
+                        alert("Obrigado pela avaliação!");
                         closeModal();
                     });
                 }
@@ -392,6 +423,7 @@
 
         function closeModal() { document.getElementById('boat-modal').style.display = 'none'; }
 
+        // PROCESSAMENTO DE IMAGEM (OTIMIZADO)
         function processImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -400,15 +432,16 @@
                     img.src = e.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        let w = img.width, h = img.height, max = 600;
+                        let w = img.width, h = img.height, max = 800; // Aumentei um pouco a qualidade
                         if (w > h) { if (w > max) { h *= max / w; w = max; } }
                         else { if (h > max) { w *= max / h; h = max; } }
                         canvas.width = w; canvas.height = h;
-                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
                         currentImg = canvas.toDataURL('image/jpeg', 0.7);
                         document.getElementById('preview-img').src = currentImg;
                         document.getElementById('preview-img').style.display = 'block';
-                        document.getElementById('camera-icon').style.display = 'none';
+                        document.getElementById('camera-prompt').style.display = 'none';
                     };
                 };
                 reader.readAsDataURL(input.files[0]);
@@ -418,7 +451,8 @@
         function publish() {
             const name = document.getElementById('in-name').value;
             const dateVal = document.getElementById('in-date').value;
-            if(!name || !dateVal) return alert("Preencha Nome e Data!");
+            if(!name || !dateVal) return alert("Por favor, preencha o Nome do Barco e a Data!");
+            
             const boat = {
                 name: name,
                 departure: document.getElementById('in-departure').value,
@@ -431,17 +465,24 @@
                 tel1: document.getElementById('in-tel-1').value,
                 tel2: document.getElementById('in-tel-2').value,
                 img: currentImg,
-                likes: 0, dislikes: 0, registeredBy: currentUser.phone
+                likes: 0, dislikes: 0, registeredBy: currentUser.phone,
+                timestamp: Date.now()
             };
+
             const dp = dateVal.split('-');
             const dName = diasSemana[new Date(dp[0], dp[1]-1, dp[2]).getDay()];
+            
             rtdb.ref('barcos/' + dName).push(boat).then(() => {
-                alert("Publicado!");
+                alert("Viagem publicada com sucesso!");
                 navigate('screen-main');
+                // Limpa formulário
+                document.getElementById('preview-img').style.display = 'none';
+                document.getElementById('camera-prompt').style.display = 'block';
                 currentImg = "";
             });
         }
 
+        // LISTENERS
         function listenCarousel() {
             rtdb.ref('config/carrossel').on('value', s => {
                 const wrapper = document.getElementById('carousel-campaigns');
@@ -450,9 +491,9 @@
                 const data = s.val();
                 if(data) {
                     Object.values(data).forEach(slide => {
-                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="window.open('${slide.link}', '_blank')" style="width:100%; height:160px; object-fit:cover;"></div>`;
+                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" onclick="if('${slide.link}') window.open('${slide.link}', '_blank')" style="width:100%; height:100%; object-fit:cover; border-radius: 24px;"></div>`;
                     });
-                    new Swiper(".mySwiper", { loop: true, autoplay: { delay: 3000 }, pagination: { el: ".swiper-pagination" } });
+                    new Swiper(".mySwiper", { loop: true, autoplay: { delay: 4000 }, pagination: { el: ".swiper-pagination", clickable: true } });
                 }
             });
         }
@@ -487,12 +528,10 @@
 
         function shareApp() {
             const url = window.location.href;
-            window.open("https://wa.me/?text=Confira a escala de barcos no BarcoApp: " + url);
+            window.open("https://wa.me/?text=🚢 Confira a escala atualizada de embarcações no BarcoApp: " + url);
         }
 
         window.onload = () => { if(currentUser) startApp(); };
     </script>
 </body>
 </html>
-
-
