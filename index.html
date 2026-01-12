@@ -260,32 +260,25 @@
             const detailScreen = document.getElementById('screen-day-detail');
             const exitModal = document.getElementById('exit-modal');
 
-            // 1. Prioridade: Se o modal de saída estiver aberto, fecha ele
             if (exitModal.style.display === 'flex') {
                 closeExitModal();
             } 
-            // 2. Se o modal de detalhes do barco estiver aberto, fecha ele
             else if (boatModal.style.display === 'flex') {
                 boatModal.style.display = 'none';
             } 
-            // 3. Se o modal da agenda semanal estiver aberto, fecha ele
             else if (weekModal.style.display === 'block') {
                 weekModal.style.display = 'none';
             }
-            // 4. Se estiver em telas secundárias, volta para a principal
             else if (registerScreen.style.display === 'block' || detailScreen.style.display === 'block') {
                 navigate('screen-main');
             }
-            // 5. Se estiver na tela principal, pergunta se quer sair
             else if (document.getElementById('screen-main').style.display === 'flex') {
                 showExitModal();
             }
         }
 
-        // Intercepta o botão voltar do Android
         window.onpopstate = function() {
             handleBackAction();
-            // Mantém o usuário "preso" no histórico para o próximo clique
             history.pushState(null, null, window.location.pathname);
         };
 
@@ -298,9 +291,7 @@
         }
 
         function confirmExitApp() {
-            // Em APKs, window.close costuma funcionar ou mata a WebView
             window.close();
-            // Fallback para navegadores
             alert("Use o botão Home do seu celular para minimizar.");
             closeExitModal();
         }
@@ -319,7 +310,6 @@
             if(id === 'screen-main') el.style.display = 'flex';
             else el.style.display = 'block';
             window.scrollTo(0,0);
-            // Sempre que navegar, garante um estado no histórico para o botão voltar funcionar
             history.pushState(null, null, window.location.pathname);
         }
 
@@ -463,7 +453,6 @@
                 document.getElementById('btn-wa1').onclick = () => window.open(`https://wa.me/55${b.tel1.replace(/\D/g,'')}?text=Vi seu barco no BarcoApp!`);
                 document.getElementById('btn-wa2').onclick = () => window.open(`https://wa.me/55${b.tel2.replace(/\D/g,'')}?text=Vi seu barco no BarcoApp!`);
                 document.getElementById('boat-modal').style.display = 'flex';
-                // Cria estado para o botão voltar fechar o modal
                 history.pushState(null, null, window.location.pathname);
             });
         }
@@ -516,6 +505,7 @@
             rtdb.ref('barcos/' + dName).push(boat).then(() => { alert("Publicado com sucesso!"); navigate('screen-main'); });
         }
 
+        // --- ATUALIZAÇÃO SEGURA DO CARROSSEL ---
         function listenCarousel() {
             rtdb.ref('config/carrossel').on('value', s => {
                 const wrapper = document.getElementById('carousel-campaigns');
@@ -523,7 +513,13 @@
                 const data = s.val();
                 if(data) {
                     Object.values(data).forEach(slide => {
-                        wrapper.innerHTML += `<div class="swiper-slide"><img src="${slide.img}" style="width:100%; height:100%; object-fit:cover;"></div>`;
+                        // Verificamos se existe o campo 'link'. Se existir, adicionamos o clique.
+                        const clickAttr = slide.link ? `onclick="window.open('${slide.link}', '_blank')"` : "";
+                        
+                        wrapper.innerHTML += `
+                            <div class="swiper-slide" ${clickAttr} style="cursor:pointer">
+                                <img src="${slide.img}" style="width:100%; height:100%; object-fit:cover;">
+                            </div>`;
                     });
                     new Swiper(".mySwiper", { loop: true, autoplay: { delay: 4000 }, pagination: { el: ".swiper-pagination" } });
                 }
@@ -557,11 +553,9 @@
         function shareApp() { window.open("https://wa.me/?text=🚢 BarcoApp: " + window.location.href); }
         
         window.onload = () => { 
-            // Inicializa o histórico para o botão voltar não fechar o app de primeira
             history.pushState(null, null, window.location.pathname);
             if(currentUser) startApp(); 
         };
     </script>
 </body>
 </html>
-
