@@ -353,8 +353,12 @@
                 document.getElementById('btn-like').onclick = () => registerVote(key, 'likes');
                 document.getElementById('btn-dislike').onclick = () => registerVote(key, 'dislikes');
 
-                document.getElementById('btn-wa1').onclick = () => window.open('https://wa.me/55'+b.tel1.replace(/\D/g,''));
-                document.getElementById('btn-wa2').onclick = () => window.open('https://wa.me/55'+b.tel2.replace(/\D/g,''));
+                // MENSAGEM PADRONIZADA COM O LINK DO GOOGLE SITES
+                const msgZap = encodeURIComponent("BarcoApp\nConheça: https://sites.google.com/view/navegpurus/home\n\n\"Olá! Tudo bem?\nPoderia me passar informações sobre esta embarcação?\nTenho interesse e gostaria de saber mais detalhes.\"");
+
+                document.getElementById('btn-wa1').onclick = () => window.open(`https://wa.me/55${b.tel1.replace(/\D/g,'')}?text=${msgZap}`);
+                document.getElementById('btn-wa2').onclick = () => window.open(`https://wa.me/55${b.tel2.replace(/\D/g,'')}?text=${msgZap}`);
+                
                 document.getElementById('boat-modal').style.display = 'flex';
             });
         }
@@ -492,7 +496,6 @@
             window.open("https://wa.me/?text=Confira a escala de barcos no BarcoApp: " + url);
         }
 
-        // --- CÓDIGO DO SERVICE WORKER (PARA O APK FUNCIONAR) ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
