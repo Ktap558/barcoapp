@@ -7,10 +7,10 @@
   "dir": "ltr",
   "categories": ["business", "productivity", "utilities"],
   "iarc_rating_id": "e542866b-e3a1-424a-9e19-58d082269a8b",
-  "start_url": "index.html",
-  "scope": "/",
+  "start_url": "https://ktap558.github.io/index.html",
+  "scope": "https://ktap558.github.io/",
   "display": "standalone",
-  "display_override": ["standalone", "window-controls-overlay", "minimal-ui"],
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
   "orientation": "portrait",
   "theme_color": "#0f172a",
   "background_color": "#0f172a",
@@ -41,12 +41,12 @@
   "shortcuts": [
     {
       "name": "Ver Escala",
-      "url": "index.html",
+      "url": "/index.html",
       "description": "Abre a lista de embarcações"
     },
     {
       "name": "Painel Admin",
-      "url": "admin.html",
+      "url": "/admin.html",
       "description": "Acesso administrativo"
     }
   ],
@@ -94,11 +94,5 @@
         "application/pdf": [".pdf"]
       }
     }
-  ],
-  "note_taking": {
-    "new_note_url": "/index.html?mode=new-note"
-  },
-  "edge_side_panel": {
-    "preferred_width": 400
-  }
+  ]
 }
