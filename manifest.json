@@ -10,7 +10,7 @@
   "start_url": "index.html",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["tabbed", "window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": ["standalone", "window-controls-overlay", "minimal-ui"],
   "orientation": "portrait",
   "theme_color": "#0f172a",
   "background_color": "#0f172a",
@@ -79,6 +79,26 @@
       "form_factor": "wide",
       "label": "BarcoApp Desktop"
     }
-  ]
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+barcoapp",
+      "url": "/index.html?query=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/index.html",
+      "accept": {
+        "image/*": [".jpg", ".jpeg", ".png"],
+        "application/pdf": [".pdf"]
+      }
+    }
+  ],
+  "note_taking": {
+    "new_note_url": "/index.html?mode=new-note"
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }
-
