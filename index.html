@@ -40,13 +40,28 @@
             box-shadow: 0 10px 20px rgba(34, 211, 238, 0.15);
         }
 
-        .search-wrapper { margin: 5px 20px 15px 20px; position: relative; }
+        .search-wrapper { margin: 5px 20px 15px 20px; position: relative; z-index: 1005; }
         .search-bar {
             width: 100%; background: var(--card-dark); border: 1px solid var(--glass);
             padding: 16px 20px 16px 45px; border-radius: 18px; color: white;
             font-family: inherit; font-size: 0.9rem; outline: none;
         }
         .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--accent-cyan); }
+
+        /* LISTA DE RESULTADOS DA BUSCA */
+        .search-results-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: #111827; border: 1px solid var(--glass);
+            border-radius: 18px; margin-top: 8px; max-height: 250px;
+            overflow-y: auto; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .search-item {
+            padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .search-item:active { background: var(--glass); }
+        .search-item span:first-child { color: var(--accent-cyan); font-weight: 800; font-size: 0.85rem; }
+        .search-item span:last-child { color: var(--text-dim); font-size: 0.7rem; }
 
         .week-modal {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 75%;
@@ -72,7 +87,6 @@
         .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #0c121e; color: white; outline: none; }
         .btn-close-modal { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; z-index: 10; cursor: pointer;}
 
-        /* ESTILO DO MODAL DE AVISO (SUBSTITUI O ALERT) */
         #custom-alert {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center;
@@ -161,6 +175,7 @@
         <div class="search-wrapper">
             <i class="fas fa-search search-icon"></i>
             <input type="text" id="main-search" class="search-bar" placeholder="Buscar barco ou cidade..." onkeyup="filterShowcase(this.value)">
+            <div id="search-dropdown" class="search-results-dropdown"></div>
         </div>
 
         <div class="btn-open-week" onclick="toggleWeek(true)">
@@ -273,9 +288,9 @@
         let currentImg = "";
         let currentDayPage = "";
         let showcaseSwiperInstance = null;
+        let allBoatsLocal = []; // Armazenamento local para busca rápida
         const diasSemana = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
-        // --- FUNÇÕES DE ALERTA PERSONALIZADO (NOVO) ---
         function openCustomAlert(msg, title = "Sucesso!") {
             document.getElementById('alert-title').innerText = title;
             document.getElementById('alert-msg').innerText = msg;
@@ -372,6 +387,7 @@
             rtdb.ref('barcos').on('value', snapshot => {
                 const wrapper = document.getElementById('dynamic-showcase-wrapper');
                 wrapper.innerHTML = "";
+                allBoatsLocal = []; // Limpa cache de busca
                 const allDays = snapshot.val();
                 if(!allDays) return;
 
@@ -379,6 +395,10 @@
                     const boats = allDays[dayName];
                     Object.keys(boats).forEach(boatId => {
                         const b = boats[boatId];
+                        b.id = boatId;
+                        b.dia = dayName;
+                        allBoatsLocal.push(b); // Adiciona ao cache
+
                         const slide = document.createElement('div');
                         slide.className = 'swiper-slide boat-slide-item';
                         slide.style.width = '195px';
@@ -403,15 +423,45 @@
             });
         }
 
+        // FUNÇÃO DE BUSCA ATUALIZADA COM DROPDOWN
         function filterShowcase(query) {
             const term = query.toLowerCase();
+            const dropdown = document.getElementById('search-dropdown');
+            
+            // Filtro original do swiper (mantido)
             document.querySelectorAll('.boat-slide-item').forEach(s => {
                 s.style.display = s.getAttribute('data-search').includes(term) ? 'block' : 'none';
             });
-            if(showcaseSwiperInstance) {
-                showcaseSwiperInstance.update();
-                showcaseSwiperInstance.slideTo(0);
+            if(showcaseSwiperInstance) showcaseSwiperInstance.update();
+
+            // Lógica do Dropdown flutuante
+            if(term.length > 0) {
+                const matches = allBoatsLocal.filter(b => 
+                    b.name.toLowerCase().includes(term) || 
+                    b.origin.toLowerCase().includes(term) || 
+                    b.destiny.toLowerCase().includes(term)
+                ).slice(0, 8); // Limita a 8 resultados para não ocupar tudo
+
+                if(matches.length > 0) {
+                    dropdown.innerHTML = matches.map(b => `
+                        <div class="search-item" onclick="selectSearchItem('${b.dia}', '${b.id}')">
+                            <span>${b.name}</span>
+                            <span>${b.dia} • ${b.origin} x ${b.destiny}</span>
+                        </div>
+                    `).join('');
+                    dropdown.style.display = 'block';
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            } else {
+                dropdown.style.display = 'none';
             }
+        }
+
+        function selectSearchItem(day, id) {
+            document.getElementById('main-search').value = "";
+            document.getElementById('search-dropdown').style.display = 'none';
+            openDirectDetails(day, id);
         }
 
         function openDirectDetails(day, key) { currentDayPage = day; openDetails(key); }
