@@ -72,7 +72,18 @@
         .input-premium { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass); background: #0c121e; color: white; outline: none; }
         .btn-close-modal { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; z-index: 10; cursor: pointer;}
 
-        /* ESTILO DO MODAL DE SAÍDA (APK) */
+        /* ESTILO DO MODAL DE AVISO (SUBSTITUI O ALERT) */
+        #custom-alert {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .alert-card {
+            background: var(--card-dark); width: 85%; max-width: 320px; padding: 30px;
+            border-radius: 30px; text-align: center; border: 1px solid var(--accent-cyan);
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.2);
+        }
+
         #exit-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center;
@@ -88,6 +99,15 @@
     </style>
 </head>
 <body>
+
+    <div id="custom-alert">
+        <div class="alert-card">
+            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--accent-green); margin-bottom: 15px;"></i>
+            <h3 id="alert-title" style="margin:0;">Sucesso!</h3>
+            <p id="alert-msg" style="color: var(--text-dim); font-size: 0.9rem; margin-top: 10px;"></p>
+            <button class="btn-main" onclick="closeCustomAlert()" style="margin-top: 20px;">OK</button>
+        </div>
+    </div>
 
     <div id="global-alert" style="display:none; background: var(--accent-yellow); color: #000; padding: 14px; font-weight: 800; text-align: center; font-size: 0.75rem; position: sticky; top: 0; z-index: 1001;">
         <i class="fas fa-bullhorn"></i> <span id="alert-text"></span>
@@ -255,14 +275,28 @@
         let showcaseSwiperInstance = null;
         const diasSemana = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
+        // --- FUNÇÕES DE ALERTA PERSONALIZADO (NOVO) ---
+        function openCustomAlert(msg, title = "Sucesso!") {
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('custom-alert').style.display = 'flex';
+        }
+        function closeCustomAlert() {
+            document.getElementById('custom-alert').style.display = 'none';
+        }
+
         function handleBackAction() {
             const boatModal = document.getElementById('boat-modal');
             const weekModal = document.getElementById('weekModal');
             const registerScreen = document.getElementById('screen-register');
             const detailScreen = document.getElementById('screen-day-detail');
             const exitModal = document.getElementById('exit-modal');
+            const customAlert = document.getElementById('custom-alert');
 
-            if (exitModal.style.display === 'flex') {
+            if (customAlert.style.display === 'flex') {
+                closeCustomAlert();
+            }
+            else if (exitModal.style.display === 'flex') {
                 closeExitModal();
             } 
             else if (boatModal.style.display === 'flex') {
@@ -294,7 +328,7 @@
 
         function confirmExitApp() {
             window.close();
-            alert("Use o botão Home do seu celular para minimizar.");
+            openCustomAlert("Use o botão Home do seu celular para minimizar.", "Aviso");
             closeExitModal();
         }
 
@@ -316,7 +350,7 @@
         function launchApp() {
             const n = document.getElementById('user-name').value.trim();
             const p = document.getElementById('user-phone').value.replace(/\D/g,'');
-            if(n.length < 3 || p.length < 8) return alert("Preencha seu nome e WhatsApp!");
+            if(n.length < 3 || p.length < 8) return openCustomAlert("Preencha seu nome e WhatsApp!", "Erro");
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
             rtdb.ref('usuarios_cadastrados/' + p).update({ nome: n, whatsapp: p });
@@ -460,10 +494,10 @@
         function registerVote(boatKey, type) {
             const voteLockRef = rtdb.ref(`votos_registrados/${boatKey}/${currentUser.phone}`);
             voteLockRef.once('value', snap => {
-                if (snap.exists()) return alert("Você já avaliou este barco!");
+                if (snap.exists()) return openCustomAlert("Você já avaliou este barco!", "Aviso");
                 voteLockRef.set({ voto: type }).then(() => {
                     rtdb.ref(`barcos/${currentDayPage}/${boatKey}/${type}`).transaction(v => (v || 0) + 1);
-                    alert("Obrigado por avaliar!");
+                    openCustomAlert("Obrigado por avaliar!", "Voto Registrado");
                     closeModal();
                 });
             });
@@ -492,7 +526,7 @@
         function publish() {
             const name = document.getElementById('in-name').value;
             const dateVal = document.getElementById('in-date').value;
-            if(!name || !dateVal) return alert("Preencha Nome e Data!");
+            if(!name || !dateVal) return openCustomAlert("Preencha Nome e Data!", "Erro");
             const boat = {
                 name, departure: document.getElementById('in-departure').value,
                 origin: document.getElementById('in-origin').value, destiny: document.getElementById('in-destiny').value,
@@ -502,7 +536,10 @@
                 img: currentImg, likes: 0, dislikes: 0, registeredBy: currentUser.phone
             };
             const dName = diasSemana[new Date(dateVal.split('-')[0], dateVal.split('-')[1]-1, dateVal.split('-')[2]).getDay()];
-            rtdb.ref('barcos/' + dName).push(boat).then(() => { alert("Publicado com sucesso!"); navigate('screen-main'); });
+            rtdb.ref('barcos/' + dName).push(boat).then(() => { 
+                openCustomAlert("Publicado com sucesso!"); 
+                navigate('screen-main'); 
+            });
         }
 
         function listenCarousel() {
