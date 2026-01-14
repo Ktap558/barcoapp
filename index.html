@@ -48,7 +48,6 @@
         }
         .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--accent-cyan); }
 
-        /* LISTA DE RESULTADOS DA BUSCA */
         .search-results-dropdown {
             position: absolute; top: 100%; left: 0; right: 0;
             background: #111827; border: 1px solid var(--glass);
@@ -288,7 +287,7 @@
         let currentImg = "";
         let currentDayPage = "";
         let showcaseSwiperInstance = null;
-        let allBoatsLocal = []; // Armazenamento local para busca rápida
+        let allBoatsLocal = [];
         const diasSemana = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
         function openCustomAlert(msg, title = "Sucesso!") {
@@ -296,9 +295,7 @@
             document.getElementById('alert-msg').innerText = msg;
             document.getElementById('custom-alert').style.display = 'flex';
         }
-        function closeCustomAlert() {
-            document.getElementById('custom-alert').style.display = 'none';
-        }
+        function closeCustomAlert() { document.getElementById('custom-alert').style.display = 'none'; }
 
         function handleBackAction() {
             const boatModal = document.getElementById('boat-modal');
@@ -308,24 +305,12 @@
             const exitModal = document.getElementById('exit-modal');
             const customAlert = document.getElementById('custom-alert');
 
-            if (customAlert.style.display === 'flex') {
-                closeCustomAlert();
-            }
-            else if (exitModal.style.display === 'flex') {
-                closeExitModal();
-            } 
-            else if (boatModal.style.display === 'flex') {
-                boatModal.style.display = 'none';
-            } 
-            else if (weekModal.style.display === 'block') {
-                weekModal.style.display = 'none';
-            }
-            else if (registerScreen.style.display === 'block' || detailScreen.style.display === 'block') {
-                navigate('screen-main');
-            }
-            else if (document.getElementById('screen-main').style.display === 'flex') {
-                showExitModal();
-            }
+            if (customAlert.style.display === 'flex') closeCustomAlert();
+            else if (exitModal.style.display === 'flex') closeExitModal();
+            else if (boatModal.style.display === 'flex') boatModal.style.display = 'none';
+            else if (weekModal.style.display === 'block') weekModal.style.display = 'none';
+            else if (registerScreen.style.display === 'block' || detailScreen.style.display === 'block') navigate('screen-main');
+            else if (document.getElementById('screen-main').style.display === 'flex') showExitModal();
         }
 
         window.onpopstate = function() {
@@ -333,19 +318,9 @@
             history.pushState(null, null, window.location.pathname);
         };
 
-        function showExitModal() {
-            document.getElementById('exit-modal').style.display = 'flex';
-        }
-
-        function closeExitModal() {
-            document.getElementById('exit-modal').style.display = 'none';
-        }
-
-        function confirmExitApp() {
-            window.close();
-            openCustomAlert("Use o botão Home do seu celular para minimizar.", "Aviso");
-            closeExitModal();
-        }
+        function showExitModal() { document.getElementById('exit-modal').style.display = 'flex'; }
+        function closeExitModal() { document.getElementById('exit-modal').style.display = 'none'; }
+        function confirmExitApp() { window.close(); closeExitModal(); }
 
         function formatDateBR(dateStr) {
             if(!dateStr) return "";
@@ -387,18 +362,14 @@
             rtdb.ref('barcos').on('value', snapshot => {
                 const wrapper = document.getElementById('dynamic-showcase-wrapper');
                 wrapper.innerHTML = "";
-                allBoatsLocal = []; // Limpa cache de busca
+                allBoatsLocal = [];
                 const allDays = snapshot.val();
                 if(!allDays) return;
-
                 Object.keys(allDays).forEach(dayName => {
                     const boats = allDays[dayName];
                     Object.keys(boats).forEach(boatId => {
-                        const b = boats[boatId];
-                        b.id = boatId;
-                        b.dia = dayName;
-                        allBoatsLocal.push(b); // Adiciona ao cache
-
+                        const b = boats[boatId]; b.id = boatId; b.dia = dayName;
+                        allBoatsLocal.push(b);
                         const slide = document.createElement('div');
                         slide.className = 'swiper-slide boat-slide-item';
                         slide.style.width = '195px';
@@ -410,52 +381,30 @@
                                     <img src="${b.img || 'https://via.placeholder.com/150'}" class="boat-img">
                                     <div class="boat-overlay-name" style="font-size:0.75rem;">${b.name}</div>
                                 </div>
-                                <div class="route-box">
-                                    ${b.origin} <i class="fas fa-arrow-right" style="color:var(--accent-cyan)"></i> ${b.destiny}
-                                </div>
+                                <div class="route-box">${b.origin} <i class="fas fa-arrow-right" style="color:var(--accent-cyan)"></i> ${b.destiny}</div>
                             </div>`;
                         wrapper.appendChild(slide);
                     });
                 });
-
                 if(showcaseSwiperInstance) showcaseSwiperInstance.destroy();
                 showcaseSwiperInstance = new Swiper(".showcaseSwiper", { slidesPerView: "auto", spaceBetween: 15, freeMode: true, observer: true, observeParents: true });
             });
         }
 
-        // FUNÇÃO DE BUSCA ATUALIZADA COM DROPDOWN
         function filterShowcase(query) {
             const term = query.toLowerCase();
             const dropdown = document.getElementById('search-dropdown');
-            
-            // Filtro original do swiper (mantido)
             document.querySelectorAll('.boat-slide-item').forEach(s => {
                 s.style.display = s.getAttribute('data-search').includes(term) ? 'block' : 'none';
             });
             if(showcaseSwiperInstance) showcaseSwiperInstance.update();
-
-            // Lógica do Dropdown flutuante
             if(term.length > 0) {
-                const matches = allBoatsLocal.filter(b => 
-                    b.name.toLowerCase().includes(term) || 
-                    b.origin.toLowerCase().includes(term) || 
-                    b.destiny.toLowerCase().includes(term)
-                ).slice(0, 8); // Limita a 8 resultados para não ocupar tudo
-
+                const matches = allBoatsLocal.filter(b => b.name.toLowerCase().includes(term) || b.origin.toLowerCase().includes(term) || b.destiny.toLowerCase().includes(term)).slice(0, 8);
                 if(matches.length > 0) {
-                    dropdown.innerHTML = matches.map(b => `
-                        <div class="search-item" onclick="selectSearchItem('${b.dia}', '${b.id}')">
-                            <span>${b.name}</span>
-                            <span>${b.dia} • ${b.origin} x ${b.destiny}</span>
-                        </div>
-                    `).join('');
+                    dropdown.innerHTML = matches.map(b => `<div class="search-item" onclick="selectSearchItem('${b.dia}', '${b.id}')"><span>${b.name}</span><span>${b.dia} • ${b.origin} x ${b.destiny}</span></div>`).join('');
                     dropdown.style.display = 'block';
-                } else {
-                    dropdown.style.display = 'none';
-                }
-            } else {
-                dropdown.style.display = 'none';
-            }
+                } else dropdown.style.display = 'none';
+            } else dropdown.style.display = 'none';
         }
 
         function selectSearchItem(day, id) {
@@ -504,7 +453,8 @@
             });
         }
 
-        function shareBoat(boat) {
+        // --- FUNÇÃO DE COMPARTILHAMENTO COM IMAGEM (NOVA) ---
+        async function shareBoat(boat) {
             const dataBR = formatDateBR(boat.date);
             const text = `🚢 *Escala de Embarcação no BarcoApp*\n\n` +
                          `🛳 *Barco:* ${boat.name}\n` +
@@ -513,10 +463,29 @@
                          `📅 *Data:* ${dataBR} às ${boat.time}\n` +
                          `💰 *Passagem:* R$ ${boat.price_p}\n` +
                          `🛌 *Camarote:* R$ ${boat.price_c}\n\n` +
-                         `📲 Confira mais no BarcoApp: ${window.location.href}`;
-            
-            if (navigator.share) navigator.share({ title: 'BarcoApp', text: text, url: window.location.href });
-            else window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+                         `📲 Confira no BarcoApp: ${window.location.href}`;
+
+            try {
+                // Tenta compartilhar com imagem se disponível e suportado
+                if (boat.img && navigator.canShare && navigator.share) {
+                    const blob = await (await fetch(boat.img)).blob();
+                    const file = new File([blob], 'barco.jpg', { type: 'image/jpeg' });
+                    
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'BarcoApp',
+                            text: text
+                        });
+                        return;
+                    }
+                }
+                // Se não suportar arquivos, compartilha apenas texto
+                if (navigator.share) await navigator.share({ title: 'BarcoApp', text: text });
+                else window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+            } catch (err) {
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+            }
         }
 
         function openDetails(key) {
@@ -586,10 +555,7 @@
                 img: currentImg, likes: 0, dislikes: 0, registeredBy: currentUser.phone
             };
             const dName = diasSemana[new Date(dateVal.split('-')[0], dateVal.split('-')[1]-1, dateVal.split('-')[2]).getDay()];
-            rtdb.ref('barcos/' + dName).push(boat).then(() => { 
-                openCustomAlert("Publicado com sucesso!"); 
-                navigate('screen-main'); 
-            });
+            rtdb.ref('barcos/' + dName).push(boat).then(() => { openCustomAlert("Publicado com sucesso!"); navigate('screen-main'); });
         }
 
         function listenCarousel() {
@@ -600,10 +566,7 @@
                 if(data) {
                     Object.values(data).forEach(slide => {
                         const clickAttr = slide.link ? `onclick="window.open('${slide.link}', '_blank')"` : "";
-                        wrapper.innerHTML += `
-                            <div class="swiper-slide" ${clickAttr} style="cursor:pointer">
-                                <img src="${slide.img}" style="width:100%; height:100%; object-fit:cover;">
-                            </div>`;
+                        wrapper.innerHTML += `<div class="swiper-slide" ${clickAttr} style="cursor:pointer"><img src="${slide.img}" style="width:100%; height:100%; object-fit:cover;"></div>`;
                     });
                     new Swiper(".mySwiper", { loop: true, autoplay: { delay: 4000 }, pagination: { el: ".swiper-pagination" } });
                 }
@@ -635,11 +598,7 @@
         }
 
         function shareApp() { window.open("https://wa.me/?text=🚢 BarcoApp: " + window.location.href); }
-        
-        window.onload = () => { 
-            history.pushState(null, null, window.location.pathname);
-            if(currentUser) startApp(); 
-        };
+        window.onload = () => { history.pushState(null, null, window.location.pathname); if(currentUser) startApp(); };
     </script>
 </body>
 </html>
