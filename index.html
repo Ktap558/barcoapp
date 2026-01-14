@@ -221,6 +221,11 @@
                         <i class="fab fa-whatsapp"></i> ZAP 2
                     </button>
                 </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button id="btn-report" style="background: none; border: none; color: #ef4444; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">
+                        <i class="fas fa-exclamation-triangle"></i> DENUNCIAR CONTEÚDO IMPRÓPRIO
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -453,7 +458,6 @@
             });
         }
 
-        // --- FUNÇÃO DE COMPARTILHAMENTO COM IMAGEM (NOVA) ---
         async function shareBoat(boat) {
             const dataBR = formatDateBR(boat.date);
             const text = `🚢 *Escala de Embarcação no BarcoApp*\n\n` +
@@ -466,7 +470,6 @@
                          `📲 Confira no BarcoApp: ${window.location.href}`;
 
             try {
-                // Tenta compartilhar com imagem se disponível e suportado
                 if (boat.img && navigator.canShare && navigator.share) {
                     const blob = await (await fetch(boat.img)).blob();
                     const file = new File([blob], 'barco.jpg', { type: 'image/jpeg' });
@@ -480,7 +483,6 @@
                         return;
                     }
                 }
-                // Se não suportar arquivos, compartilha apenas texto
                 if (navigator.share) await navigator.share({ title: 'BarcoApp', text: text });
                 else window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
             } catch (err) {
@@ -488,6 +490,7 @@
             }
         }
 
+        // --- FUNÇÃO openDetails PRESERVADA E ATUALIZADA COM O BOTÃO DENUNCIAR ---
         function openDetails(key) {
             rtdb.ref(`barcos/${currentDayPage}/${key}`).once('value', s => {
                 const b = s.val();
@@ -500,11 +503,30 @@
                 document.getElementById('modal-time').innerText = "⏰ Hora: " + b.time;
                 document.getElementById('modal-price-p').innerText = "🎟 Passagem: R$ " + b.price_p;
                 document.getElementById('modal-price-c').innerText = "🛌 Camarote: R$ " + b.price_c;
+                
+                // Eventos originais preservados
                 document.getElementById('btn-like').onclick = () => registerVote(key, 'likes');
                 document.getElementById('btn-dislike').onclick = () => registerVote(key, 'dislikes');
                 document.getElementById('btn-share-post').onclick = () => shareBoat(b);
                 document.getElementById('btn-wa1').onclick = () => window.open(`https://wa.me/55${b.tel1.replace(/\D/g,'')}?text=Vi seu barco no BarcoApp!`);
                 document.getElementById('btn-wa2').onclick = () => window.open(`https://wa.me/55${b.tel2.replace(/\D/g,'')}?text=Vi seu barco no BarcoApp!`);
+                
+                // NOVO EVENTO DE DENÚNCIA
+                document.getElementById('btn-report').onclick = () => {
+                    const motivo = prompt("Por que você está denunciando este conteúdo? (Ex: Foto imprópria, Dados falsos, Golpe)");
+                    if (motivo) {
+                        rtdb.ref(`denuncias/${key}`).push({
+                            denunciante: currentUser.phone,
+                            motivo: motivo,
+                            data: new Date().toISOString(),
+                            barco: b.name
+                        }).then(() => {
+                            openCustomAlert("Denúncia enviada para análise. Obrigado por ajudar a manter a comunidade segura!", "Sucesso");
+                            closeModal();
+                        });
+                    }
+                };
+
                 document.getElementById('boat-modal').style.display = 'flex';
                 history.pushState(null, null, window.location.pathname);
             });
