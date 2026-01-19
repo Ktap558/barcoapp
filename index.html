@@ -595,16 +595,44 @@
 
         async function shareBoat(boat) {
             const dataBR = formatDateBR(boat.date);
-            const text = `🚢 *Escala de Embarcação no BarcoApp*\n\n🛳 *Barco:* ${boat.name}\n📍 *Saída:* ${boat.departure}\n🛣 *Rota:* ${boat.origin} x ${boat.destiny}\n📅 *Data:* ${dataBR} às ${boat.time}\n💰 *Passagem:* R$ ${boat.price_p}\n\n📲 Confira no BarcoApp: ${window.location.href}`;
+            
+            // AQUI ESTÁ A MUDANÇA: O texto termina com a frase fixa, SEM O LINK.
+            const text = ` *Escala de Embarcação no BarcoApp*\n\n` + 
+                         ` *Barco:* ${boat.name}\n` +
+                         ` *Saída:* ${boat.departure}\n` +
+                         ` *Rota:* ${boat.origin} x ${boat.destiny}\n` +
+                         ` *Data:* ${dataBR} às ${boat.time}\n` +
+                         ` *Passagem:* R$ ${boat.price_p}\n\n` +
+                         ` *Baixe nosso App na PlayStore!*`; 
+
             try {
+                // Tenta compartilhar com a FOTO
                 if (boat.img && navigator.canShare && navigator.share) {
                     const blob = await (await fetch(boat.img)).blob();
                     const file = new File([blob], 'barco.jpg', { type: 'image/jpeg' });
-                    if (navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: 'BarcoApp', text: text }); return; }
+                    
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'BarcoApp',
+                            text: text
+                        });
+                        return;
+                    }
                 }
-                if (navigator.share) await navigator.share({ title: 'BarcoApp', text: text });
-                else window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
-            } catch (err) { window.open(`https://wa.me/?text=${encodeURIComponent(text)}`); }
+                
+                // Se não der foto, tenta só texto nativo
+                if (navigator.share) {
+                    await navigator.share({ title: 'Baixe Nosso Aplicativo BarcoApp', text: text });
+                } else {
+                    // Se não for celular moderno, abre o WhatsApp Web
+                    // Note que 'text' aqui JÁ NÃO TEM o link, então ele envia limpo.
+                    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+                }
+            } catch (err) {
+                // Fallback final de segurança
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+            }
         }
 
         let currentModalKey = "";
@@ -721,3 +749,4 @@
     <style>@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }</style>
 </body>
 </html>
+
