@@ -743,10 +743,13 @@
             });
         }
 
-        function shareApp() { window.open("https://wa.me/?text=🚢 BarcoApp: " + window.location.href); }
+        function shareApp() { 
+    window.open("https://wa.me/?text= Baixe nosso aplicativo BarcoApp! Disponível na Play Store."); 
+}
         window.onload = () => { history.pushState(null, null, window.location.pathname); if(currentUser) startApp(); };
     </script>
     <style>@keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }</style>
 </body>
 </html>
+
 
