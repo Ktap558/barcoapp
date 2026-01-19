@@ -7,7 +7,6 @@
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#020617">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.png">
@@ -21,130 +20,60 @@
 
     <style>
         :root {
-            --bg-dark: #020617; 
-            --bg-card: #1e293b;
-            --accent-cyan: #22d3ee;
-            --accent-blue: #3b82f6;
-            --accent-purple: #a855f7;
-            --accent-green: #22c55e; 
-            --accent-yellow: #fbbf24;
-            --text-white: #f8fafc; 
-            --text-dim: #94a3b8; 
-            --glass: rgba(255, 255, 255, 0.08);
-            --gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-            --glow: 0 0 20px rgba(34, 211, 238, 0.15);
+            --bg-dark: #020617; --bg-card: #1e293b; --accent-cyan: #22d3ee; --accent-green: #22c55e; 
+            --accent-purple: #a855f7; --accent-yellow: #fbbf24; --text-white: #f8fafc; --text-dim: #94a3b8; 
+            --glass: rgba(255, 255, 255, 0.08); --gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); --glow: 0 0 20px rgba(34, 211, 238, 0.15);
         }
-
         * { transition: all 0.2s ease; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(180deg, #0f172a 0%, #020617 100%); color: var(--text-white); overflow-x: hidden; height: 100%; scroll-behavior: smooth; }
         
-        body, html { 
-            margin: 0; padding: 0; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
-            color: var(--text-white); 
-            overflow-x: hidden; height: 100%; scroll-behavior: smooth; 
+        select {
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            background-color: var(--bg-card); color: white;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2322d3ee%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; padding-right: 30px !important;
         }
+        select option { background-color: #1e293b; color: #fff; padding: 10px; }
 
-        body::before {
-            content: ''; position: fixed; top: -100px; left: -100px;
-            width: 300px; height: 300px; background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%);
-            z-index: -1; pointer-events: none;
-        }
-        
         .main-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 100px; }
         .showcase-container { margin: 25px 0; padding-left: 20px; }
-        
-        .btn-open-week {
-            background: var(--gradient); border: none;
-            margin: 10px 20px; padding: 18px; border-radius: 20px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            font-weight: 800; color: #fff; cursor: pointer;
-            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.25);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        /* Estrelas de Avaliação */
+        .btn-open-week { background: var(--gradient); border: none; margin: 10px 20px; padding: 18px; border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 800; color: #fff; cursor: pointer; box-shadow: 0 10px 25px rgba(6, 182, 212, 0.25); }
         .rating-container { display: flex; justify-content: center; gap: 8px; margin: 15px 0; }
         .fa-star { font-size: 1.8rem; color: #475569; cursor: pointer; transition: color 0.2s; }
         .fa-star.checked { color: var(--accent-yellow); text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
-
         .search-wrapper { margin: 5px 20px 15px 20px; position: relative; z-index: 1005; }
-        .search-bar {
-            width: 100%; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--glass);
-            padding: 16px 20px 16px 45px; border-radius: 18px; color: white;
-            font-family: inherit; font-size: 0.9rem; outline: none;
-            backdrop-filter: blur(10px);
-        }
+        .search-bar { width: 100%; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--glass); padding: 16px 20px 16px 45px; border-radius: 18px; color: white; font-family: inherit; font-size: 0.9rem; outline: none; backdrop-filter: blur(10px); }
         .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--accent-cyan); }
-
-        .search-results-dropdown {
-            position: absolute; top: 100%; left: 0; right: 0;
-            background: #1e293b; border: 1px solid var(--glass);
-            border-radius: 18px; margin-top: 8px; max-height: 250px;
-            overflow-y: auto; display: none; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            z-index: 2000;
-        }
+        .search-results-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; border: 1px solid var(--glass); border-radius: 18px; margin-top: 8px; max-height: 250px; overflow-y: auto; display: none; box-shadow: 0 20px 40px rgba(0,0,0,0.6); z-index: 2000; }
         .search-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 4px; }
         .search-item:active { background: var(--glass); }
         .search-item span:first-child { color: var(--accent-cyan); font-weight: 700; font-size: 0.9rem; }
         .search-item span:last-child { color: var(--text-dim); font-size: 0.75rem; }
-
-        .week-modal {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 80%;
-            background: #1e293b; border-top: 1px solid var(--accent-cyan);
-            border-radius: 30px 30px 0 0; z-index: 2000; padding: 25px;
-            box-shadow: 0 -10px 50px rgba(0,0,0,0.8); overflow-y: auto;
-        }
-        .day-row { 
-            padding: 22px; background: rgba(255,255,255,0.03); 
-            border-radius: 16px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center; 
-            font-weight: 700; border: 1px solid transparent;
-        }
+        .week-modal { display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 80%; background: #1e293b; border-top: 1px solid var(--accent-cyan); border-radius: 30px 30px 0 0; z-index: 2000; padding: 25px; box-shadow: 0 -10px 50px rgba(0,0,0,0.8); overflow-y: auto; }
+        .day-row { padding: 22px; background: rgba(255,255,255,0.03); border-radius: 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; border: 1px solid transparent; }
         .day-row:active { border-color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1); }
-
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
-        .boat-card { 
-            background: var(--bg-card); border-radius: 24px; overflow: hidden; 
-            border: 1px solid var(--glass); position: relative; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3); height: 100%; 
-        }
+        .boat-card { background: var(--bg-card); border-radius: 24px; overflow: hidden; border: 1px solid var(--glass); position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.3); height: 100%; }
         .boat-img-container { position: relative; width: 100%; height: 130px; background: #0f172a; }
         .boat-img { width: 100%; height: 100%; object-fit: cover; }
-        .boat-overlay-name { 
-            position: absolute; bottom: 0; left: 0; right: 0; 
-            background: linear-gradient(to top, rgba(2,6,23, 1), transparent); 
-            padding: 30px 10px 10px 10px; font-weight: 800; font-size: 0.8rem; 
-            color: #fff; text-transform: uppercase; text-shadow: 0 2px 4px #000;
-        }
-        .route-box { 
-            display: flex; align-items: center; justify-content: center; gap: 6px; 
-            font-size: 0.7rem; font-weight: 700; color: var(--text-dim); 
-            padding: 12px 8px; background: rgba(0,0,0,0.2); 
-        }
-
+        .boat-overlay-name { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(2,6,23, 1), transparent); padding: 30px 10px 10px 10px; font-weight: 800; font-size: 0.8rem; color: #fff; text-transform: uppercase; text-shadow: 0 2px 4px #000; }
+        .route-box { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.7rem; font-weight: 700; color: var(--text-dim); padding: 12px 8px; background: rgba(0,0,0,0.2); }
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; box-shadow: var(--glow); }
         .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
         .fab { width: 60px; height: 60px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2,6,23,0.95); z-index: 3000; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(5px); }
         .modal-content { background: var(--bg-card); width: 100%; max-width: 450px; border-radius: 30px; overflow-y: auto; max-height: 90vh; border: 1px solid var(--glass); position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        
         .day-tag-float { position: absolute; top: 10px; left: 10px; background: var(--accent-cyan); color: #000; font-size: 0.6rem; padding: 4px 10px; border-radius: 8px; font-weight: 800; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .input-premium { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid var(--glass); background: rgba(15, 23, 42, 0.6); color: white; outline: none; }
         .input-premium:focus { border-color: var(--accent-cyan); }
-        
         .btn-close-modal { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; z-index: 10; cursor: pointer;}
-
         #custom-alert { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .alert-card { background: var(--bg-card); width: 85%; max-width: 320px; padding: 30px; border-radius: 30px; text-align: center; border: 1px solid var(--accent-cyan); box-shadow: var(--glow); }
-
         #exit-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .exit-card { background: var(--bg-card); width: 85%; max-width: 320px; padding: 30px; border-radius: 30px; text-align: center; border: 1px solid var(--glass); }
         .exit-btn-group { display: flex; gap: 10px; margin-top: 20px; }
         .btn-exit-yes { background: #ef4444; color: white; border: none; flex: 1; padding: 15px; border-radius: 15px; font-weight: 800; }
         .btn-exit-no { background: var(--glass); color: white; border: none; flex: 1; padding: 15px; border-radius: 15px; font-weight: 800; }
-        
         .price-badge { font-weight: 800; color: var(--accent-green); background: rgba(34, 197, 94, 0.1); padding: 5px 10px; border-radius: 8px; font-size: 0.9rem; }
     </style>
 </head>
@@ -386,7 +315,7 @@
         let currentDayPage = "";
         let showcaseSwiperInstance = null;
         let allBoatsLocal = [];
-        let userSavedBoats = {}; 
+        let globalBoats = {}; // LISTA GLOBAL DE BARCOS
         const diasSemana = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
         // --- VALIDADE 4 HORAS ---
@@ -441,7 +370,6 @@
             if(n.length < 3 || p.length < 8) return openCustomAlert("Preencha seu nome e WhatsApp!", "Erro");
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
-            // Cria usuário se não existir, mantendo saldo antigo se houver
             rtdb.ref('usuarios_cadastrados/' + p).update({ nome: n, whatsapp: p });
             startApp();
         }
@@ -455,17 +383,20 @@
             listenCarousel();
             listenDynamicShowcase();
             updateStats();
-            loadSavedBoats();
+            // CARREGA A LISTA GLOBAL PARA O SELETOR
+            loadGlobalBoats();
         }
 
-        function loadSavedBoats() {
+        // --- CARREGAR BARCOS DA LISTA GLOBAL ---
+        function loadGlobalBoats() {
             const selector = document.getElementById('boat-selector');
-            rtdb.ref('meus_barcos_cadastrados/' + currentUser.phone).on('value', snap => {
-                userSavedBoats = snap.val() || {};
+            // AGORA BUSCA EM 'embarcacoes_globais'
+            rtdb.ref('embarcacoes_globais').on('value', snap => {
+                globalBoats = snap.val() || {};
                 selector.innerHTML = '<option value="">Selecione sua embarcação...</option>';
-                if (userSavedBoats) {
-                    Object.keys(userSavedBoats).forEach(key => {
-                        selector.innerHTML += `<option value="${key}">${userSavedBoats[key].nome}</option>`;
+                if (globalBoats) {
+                    Object.keys(globalBoats).forEach(key => {
+                        selector.innerHTML += `<option value="${key}">${globalBoats[key].nome}</option>`;
                     });
                 }
                 selector.innerHTML += `<option value="OUTROS">➕ Cadastrar Novo (Outros)</option>`;
@@ -481,15 +412,15 @@
                 manualInput.style.display = 'block';
                 autoPreview.style.display = 'none';
                 currentImg = "";
-                document.getElementById('in-name').value = ""; // Limpa hidden
+                document.getElementById('in-name').value = ""; 
             } else if (val) {
                 manualInput.style.display = 'none';
                 autoPreview.style.display = 'flex';
-                const barco = userSavedBoats[val];
+                // PEGA DA LISTA GLOBAL
+                const barco = globalBoats[val];
                 currentImg = barco.img;
                 document.getElementById('preview-img-auto').src = currentImg;
                 
-                // Preenche os hiddens
                 document.getElementById('in-name').value = barco.nome;
                 document.getElementById('in-tel-1').value = barco.tel1;
                 document.getElementById('in-tel-2').value = barco.tel2;
@@ -526,9 +457,7 @@
         }
 
         function publish() {
-            // Verifica se está no modo manual para pegar os valores corretos
             const isManual = document.getElementById('boat-selector').value === 'OUTROS';
-            
             let name, tel1, tel2;
             
             if(isManual) {
@@ -536,7 +465,7 @@
                 tel1 = document.getElementById('manual-tel-1').value;
                 tel2 = document.getElementById('manual-tel-2').value;
             } else {
-                name = document.getElementById('in-name').value; // Pega do hidden preenchido
+                name = document.getElementById('in-name').value;
                 tel1 = document.getElementById('in-tel-1').value;
                 tel2 = document.getElementById('in-tel-2').value;
             }
@@ -556,14 +485,23 @@
                 time: document.getElementById('in-time').value,
                 price_p: document.getElementById('in-price-p').value, 
                 price_c: document.getElementById('in-price-c').value,
-                tel1: tel1, 
-                tel2: tel2,
-                img: currentImg, 
+                tel1: tel1, tel2: tel2, img: currentImg, 
                 likes: 0, 
                 registeredBy: currentUser.phone
             };
             
             const dName = diasSemana[new Date(dateVal.split('-')[0], dateVal.split('-')[1]-1, dateVal.split('-')[2]).getDay()];
+            
+            // SE FOR MANUAL (OUTROS), SALVA NA LISTA GLOBAL TAMBÉM
+            if(isManual) {
+                rtdb.ref('embarcacoes_globais').push({
+                    nome: name,
+                    img: currentImg,
+                    tel1: tel1,
+                    tel2: tel2
+                });
+            }
+
             rtdb.ref('barcos/' + dName).push(boat).then(() => { 
                 openCustomAlert("Viagem publicada!"); 
                 navigate('screen-main'); 
@@ -669,7 +607,6 @@
             } catch (err) { window.open(`https://wa.me/?text=${encodeURIComponent(text)}`); }
         }
 
-        // --- SISTEMA DE LIKE PERSISTENTE & AVALIAÇÃO ---
         let currentModalKey = "";
         let currentPublisherPhone = "";
 
@@ -677,7 +614,7 @@
             currentModalKey = key;
             rtdb.ref(`barcos/${currentDayPage}/${key}`).once('value', s => {
                 const b = s.val();
-                currentPublisherPhone = b.registeredBy; // Guardar quem postou para dar o like pra ele
+                currentPublisherPhone = b.registeredBy; 
                 const dataBR = formatDateBR(b.date);
                 
                 document.getElementById('modal-img').src = b.img || 'https://via.placeholder.com/400';
@@ -689,7 +626,6 @@
                 document.getElementById('modal-price-p').innerText = "🎟 R$ " + b.price_p;
                 document.getElementById('modal-price-c').innerText = "🛌 R$ " + b.price_c;
                 
-                // Resetar estrelas visualmente
                 updateStarsUI(0);
 
                 document.getElementById('btn-like').onclick = () => registerLike(key, b.registeredBy);
@@ -708,7 +644,6 @@
             });
         }
 
-        // Lógica de Estrelas
         function rateStar(rating) {
             updateStarsUI(rating);
             const rateLockRef = rtdb.ref(`avaliacoes_registradas/${currentModalKey}/${currentUser.phone}`);
@@ -730,21 +665,15 @@
             }
         }
 
-        // Lógica de LIKE PERSISTENTE (O pulo do gato)
         function registerLike(boatKey, publisherPhone) {
             const voteLockRef = rtdb.ref(`votos_registrados/${boatKey}/${currentUser.phone}`);
             voteLockRef.once('value', snap => {
                 if (snap.exists()) return openCustomAlert("Você já curtiu esta viagem!", "Ops!");
-                
                 voteLockRef.set({ voto: 'like' }).then(() => {
-                    // 1. Aumenta like visual no barco
                     rtdb.ref(`barcos/${currentDayPage}/${boatKey}/likes`).transaction(v => (v || 0) + 1);
-                    
-                    // 2. Aumenta SALDO GERAL do DONO do barco (Persistente)
                     if(publisherPhone) {
                         rtdb.ref(`usuarios_cadastrados/${publisherPhone}/saldo_likes`).transaction(v => (v || 0) + 1);
                     }
-                    
                     openCustomAlert("Curtida registrada! Você ajudou o comandante.", "Voto Confirmado");
                     closeModal();
                 });
@@ -775,14 +704,11 @@
             });
         }
 
-        // ATUALIZAÇÃO DE STATS: Agora lê o saldo persistente do usuário
         function updateStats() {
-            // Escuta APENAS o saldo do usuário logado
             rtdb.ref(`usuarios_cadastrados/${currentUser.phone}/saldo_likes`).on('value', s => {
                 let likes = s.val() || 0;
                 const meta = 500;
                 const p = Math.min((likes / meta) * 100, 100);
-                
                 document.getElementById('total-likes-count').innerText = likes;
                 document.getElementById('thermometer-bar').style.width = p + '%';
                 document.getElementById('percent-label').innerText = Math.floor(p) + '% (Meta: 500)';
