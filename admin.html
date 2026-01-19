@@ -120,7 +120,7 @@
     <div class="main">
         <div class="stats-row">
             <div class="stat-card"><small>Total Usuários</small><h2 id="total-users">0</h2></div>
-            <div class="stat-card"><small>Fichas Cadastradas</small><h2 id="total-fixed-boats">0</h2></div>
+            <div class="stat-card"><small>Frota Global</small><h2 id="total-global-boats">0</h2></div>
             <div class="stat-card"><small>Escalas Ativas</small><h2 id="total-boats">0</h2></div>
             <div class="stat-card"><small>Status</small><h2 style="color: var(--success); font-size: 1.5rem;">ONLINE</h2></div>
         </div>
@@ -130,7 +130,7 @@
                 
                 <div class="panel" id="register-boat-section" style="border-color: var(--success);">
                     <div class="panel-header">
-                        <h3 style="color: var(--success);"><i class="fas fa-file-signature"></i> Cadastrar Ficha de Embarcação</h3>
+                        <h3 style="color: var(--success);"><i class="fas fa-globe-americas"></i> Cadastro Global de Embarcações</h3>
                     </div>
                     <div class="panel-body" style="padding: 25px;">
                         <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
@@ -142,21 +142,20 @@
                                 </div>
                             </div>
                             <div>
-                                <input type="tel" id="reg-owner" placeholder="WhatsApp do Dono (Ex: 97999999999)">
-                                <input type="text" id="reg-name" placeholder="Nome da Embarcação">
+                                <input type="text" id="reg-name" placeholder="Nome da Embarcação" style="margin-top: 20px;">
                             </div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <input type="tel" id="reg-tel1" placeholder="WhatsApp Contato 1">
                             <input type="tel" id="reg-tel2" placeholder="WhatsApp Contato 2">
                         </div>
-                        <button class="btn btn-add" style="background: var(--success); color: #fff;" onclick="saveFixedBoat()">Salvar Ficha Técnica</button>
+                        <button class="btn btn-add" style="background: var(--success); color: #fff;" onclick="saveGlobalBoat()">Salvar na Lista Global</button>
                         
                         <div style="margin-top: 30px;">
-                            <h4 style="color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Fichas Cadastradas</h4>
+                            <h4 style="color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Frota Cadastrada (Visível para Todos)</h4>
                             <table style="margin-top: 10px;">
-                                <thead><tr><th>Dono</th><th>Barco</th><th>Ações</th></tr></thead>
-                                <tbody id="fixed-boats-list"></tbody>
+                                <thead><tr><th>Foto</th><th>Barco / Contato</th><th>Ações</th></tr></thead>
+                                <tbody id="global-boats-list"></tbody>
                             </table>
                         </div>
                     </div>
@@ -238,16 +237,17 @@
                     document.getElementById('alert-msg').value = data.config.alerta.text;
                 }
 
-                // Passamos os usuários diretamente para renderizar, pois o saldo agora é fixo no user
                 renderUsers(data.usuarios_cadastrados);
                 renderBoats(data.barcos);
                 renderCarousel(data.config ? data.config.carrossel : null);
                 renderRanking(data.usuarios_cadastrados);
-                renderFixedBoats(data.meus_barcos_cadastrados);
+                
+                // AGORA LÊ DA LISTA GLOBAL
+                renderGlobalBoats(data.embarcacoes_globais);
             });
         }
 
-        // --- CADASTRO DE FICHAS ---
+        // --- SISTEMA DE CADASTRO GLOBAL ---
         function processImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -272,18 +272,17 @@
             }
         }
 
-        function saveFixedBoat() {
-            const owner = document.getElementById('reg-owner').value.replace(/\D/g,'');
+        function saveGlobalBoat() {
             const name = document.getElementById('reg-name').value;
             const tel1 = document.getElementById('reg-tel1').value;
             const tel2 = document.getElementById('reg-tel2').value;
 
-            if(!owner || !name || !currentUploadImg) return alert("Preencha Dono (Zap), Nome e Foto!");
+            if(!name || !currentUploadImg) return alert("Preencha Nome e Foto!");
 
-            db.ref(`meus_barcos_cadastrados/${owner}`).push({
+            db.ref('embarcacoes_globais').push({
                 nome: name, img: currentUploadImg, tel1: tel1, tel2: tel2
             }).then(() => {
-                alert("Ficha técnica cadastrada com sucesso!");
+                alert("Barco adicionado à lista global!");
                 document.getElementById('reg-name').value = "";
                 document.getElementById('preview-img').style.display = 'none';
                 document.getElementById('upload-text').style.display = 'block';
@@ -291,48 +290,44 @@
             });
         }
 
-        function renderFixedBoats(allBoats) {
-            const list = document.getElementById('fixed-boats-list');
+        function renderGlobalBoats(globalList) {
+            const list = document.getElementById('global-boats-list');
             list.innerHTML = "";
             let count = 0;
-            if(allBoats) {
-                for(let owner in allBoats) {
-                    const userBoats = allBoats[owner];
-                    for(let key in userBoats) {
-                        count++;
-                        const b = userBoats[key];
-                        list.innerHTML += `
-                            <tr>
-                                <td>${owner}</td>
-                                <td style="display:flex; align-items:center; gap:10px;">
-                                    <img src="${b.img}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
-                                    ${b.nome}
-                                </td>
-                                <td><button class="btn btn-del" onclick="deleteFixedBoat('${owner}', '${key}')"><i class="fas fa-trash"></i></button></td>
-                            </tr>
-                        `;
-                    }
-                }
+            if(globalList) {
+                Object.keys(globalList).forEach(key => {
+                    count++;
+                    const b = globalList[key];
+                    list.innerHTML += `
+                        <tr>
+                            <td><img src="${b.img}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;"></td>
+                            <td>
+                                <b>${b.nome}</b><br>
+                                <span style="font-size:0.75rem; color:var(--text-dim);">${b.tel1} / ${b.tel2}</span>
+                            </td>
+                            <td><button class="btn btn-del" onclick="deleteGlobalBoat('${key}')"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                    `;
+                });
             }
-            document.getElementById('total-fixed-boats').innerText = count;
+            document.getElementById('total-global-boats').innerText = count;
         }
 
-        function deleteFixedBoat(owner, key) {
-            if(confirm("Excluir esta ficha técnica?")) db.ref(`meus_barcos_cadastrados/${owner}/${key}`).remove();
+        function deleteGlobalBoat(key) {
+            if(confirm("Excluir este barco da lista global? Isso afeta o cadastro de todos os usuários.")) {
+                db.ref(`embarcacoes_globais/${key}`).remove();
+            }
         }
 
-        // --- GESTÃO DE USUÁRIOS (Lendo saldo_likes direto) ---
+        // --- SISTEMAS EXISTENTES (PRESERVADOS) ---
         function renderUsers(users) {
             const list = document.getElementById('users-list');
             list.innerHTML = ""; let count = 0;
             if(!users) return;
-            
             for(let id in users) {
                 count++;
                 const u = users[id];
-                // Agora lemos direto do perfil do usuário, não calculamos mais na hora
                 const saldo = u.saldo_likes || 0; 
-                
                 list.innerHTML += `<tr>
                     <td><b>${u.nome}</b></td>
                     <td>${u.whatsapp}</td>
@@ -346,7 +341,6 @@
             document.getElementById('total-users').innerText = count;
         }
 
-        // --- RENDERIZAÇÃO DE BARCOS (Com Média de Estrelas) ---
         function renderBoats(barcos) {
             const list = document.getElementById('boats-list');
             list.innerHTML = ""; let bCount = 0;
@@ -355,15 +349,12 @@
                     for(let key in barcos[dia]) {
                         const b = barcos[dia][key];
                         bCount++; 
-                        
-                        // Cálculo da Média de Estrelas
                         let media = 0;
                         if(b.ratingCount && b.ratingCount > 0) {
                             media = (b.ratingSum / b.ratingCount).toFixed(1);
                         } else {
                             media = "N/A";
                         }
-
                         list.innerHTML += `<tr>
                             <td>${b.name}</td>
                             <td><span class="tag-dia">${dia}</span></td>
@@ -407,19 +398,13 @@
             });
         }
 
-        function deleteSlide(key) { if(confirm("Remover?")) db.ref(`config/carrossel/${key}`).remove(); }
+        function deleteSlide(key) { if(confirm("Remover imagem do carrossel?")) db.ref(`config/carrossel/${key}`).remove(); }
 
-        // --- RANKING (Baseado no saldo_likes) ---
         function renderRanking(users) {
             const div = document.getElementById('ranking-list');
             if(!users) return;
-            
-            // Converte objeto users em array para ordenar
             let arr = Object.values(users);
-            
-            // Ordena pelo saldo_likes
             arr.sort((a,b) => (b.saldo_likes || 0) - (a.saldo_likes || 0));
-            
             div.innerHTML = arr.slice(0,5).map((u, i) => `
                 <div class="rank-row">
                     <span>${i+1}º ${u.nome}</span>
