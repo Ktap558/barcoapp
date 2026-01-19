@@ -21,7 +21,6 @@
 
     <style>
         :root {
-            /* Identidade Visual Premium */
             --bg-dark: #020617; 
             --bg-card: #1e293b;
             --accent-cyan: #22d3ee;
@@ -52,11 +51,9 @@
             z-index: -1; pointer-events: none;
         }
         
-        /* Estrutura */
         .main-container { display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 100px; }
         .showcase-container { margin: 25px 0; padding-left: 20px; }
         
-        /* Botões */
         .btn-open-week {
             background: var(--gradient); border: none;
             margin: 10px 20px; padding: 18px; border-radius: 20px;
@@ -66,7 +63,11 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Barra de Busca */
+        /* Estrelas de Avaliação */
+        .rating-container { display: flex; justify-content: center; gap: 8px; margin: 15px 0; }
+        .fa-star { font-size: 1.8rem; color: #475569; cursor: pointer; transition: color 0.2s; }
+        .fa-star.checked { color: var(--accent-yellow); text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
+
         .search-wrapper { margin: 5px 20px 15px 20px; position: relative; z-index: 1005; }
         .search-bar {
             width: 100%; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--glass);
@@ -83,15 +84,11 @@
             overflow-y: auto; display: none; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
             z-index: 2000;
         }
-        .search-item {
-            padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex; flex-direction: column; gap: 4px;
-        }
+        .search-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 4px; }
         .search-item:active { background: var(--glass); }
         .search-item span:first-child { color: var(--accent-cyan); font-weight: 700; font-size: 0.9rem; }
         .search-item span:last-child { color: var(--text-dim); font-size: 0.75rem; }
 
-        /* Modais */
         .week-modal {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 80%;
             background: #1e293b; border-top: 1px solid var(--accent-cyan);
@@ -106,7 +103,6 @@
         }
         .day-row:active { border-color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1); }
 
-        /* Feed e Cards */
         .feed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
         .boat-card { 
             background: var(--bg-card); border-radius: 24px; overflow: hidden; 
@@ -127,7 +123,6 @@
             padding: 12px 8px; background: rgba(0,0,0,0.2); 
         }
 
-        /* UI Genérica */
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--gradient); color: white; font-weight: 800; cursor: pointer; box-shadow: var(--glow); }
         .fab-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 999; }
         .fab { width: 60px; height: 60px; border-radius: 50%; border: none; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
@@ -141,7 +136,6 @@
         
         .btn-close-modal { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; z-index: 10; cursor: pointer;}
 
-        /* Alertas */
         #custom-alert { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .alert-card { background: var(--bg-card); width: 85%; max-width: 320px; padding: 30px; border-radius: 30px; text-align: center; border: 1px solid var(--accent-cyan); box-shadow: var(--glow); }
 
@@ -185,10 +179,8 @@
         <div style="margin-bottom: 30px; animation: float 6s ease-in-out infinite;">
              <i class="fas fa-anchor" style="font-size: 4rem; color: var(--accent-cyan); filter: drop-shadow(0 0 15px rgba(34,211,238,0.5));"></i>
         </div>
-        
         <h1 style="font-size:3rem; font-weight:900; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0; letter-spacing: -1px;">BarcoApp</h1>
         <p style="color:var(--text-dim); margin-bottom:40px; font-size: 1.1rem;">Sua escala oficial de embarcações.</p>
-        
         <div style="width:100%; max-width:350px;">
             <input type="text" id="user-name" class="input-premium" placeholder="Seu Nome" style="margin-bottom:12px;" maxlength="25">
             <input type="tel" id="user-phone" class="input-premium" placeholder="WhatsApp com DDD" style="margin-bottom:25px;" maxlength="15">
@@ -222,7 +214,6 @@
                 </div>
                 <i class="fas fa-trophy" style="color: var(--accent-yellow); font-size: 1.8rem;"></i>
             </div>
-            
             <div style="width:100%; height:10px; background:rgba(255,255,255,0.1); border-radius:10px; overflow: hidden;">
                 <div id="thermometer-bar" style="height:100%; width:0%; background:var(--gradient); border-radius:10px; transition: width 1s ease-in-out; box-shadow: 0 0 10px var(--accent-cyan);"></div>
             </div>
@@ -266,6 +257,17 @@
                 <div id="modal-departure-text" style="color: var(--accent-yellow); font-size: 0.9rem; margin-bottom: 15px; font-weight: 700; display:flex; align-items:center; gap:8px;"></div>
                 <div id="modal-route" style="font-weight:800; padding:18px; background: rgba(34, 211, 238, 0.05); border-radius: 18px; text-align: center; border: 1px solid rgba(34, 211, 238, 0.2); color: #fff; margin-bottom: 15px; font-size: 1.1rem;"></div>
                 
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <p style="margin:0 0 5px 0; font-size: 0.75rem; color: var(--text-dim); font-weight: 700;">AVALIE ESTA EMBARCAÇÃO</p>
+                    <div class="rating-container" id="stars-wrapper">
+                        <i class="fas fa-star" onclick="rateStar(1)"></i>
+                        <i class="fas fa-star" onclick="rateStar(2)"></i>
+                        <i class="fas fa-star" onclick="rateStar(3)"></i>
+                        <i class="fas fa-star" onclick="rateStar(4)"></i>
+                        <i class="fas fa-star" onclick="rateStar(5)"></i>
+                    </div>
+                </div>
+
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom: 20px; font-size: 0.9rem; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 18px;">
                     <div id="modal-date" style="color: var(--text-dim);"></div>
                     <div id="modal-time" style="color: var(--text-dim);"></div>
@@ -273,12 +275,13 @@
                     <div id="modal-price-c" class="price-badge" style="color: var(--accent-purple);"></div>
                 </div>
                 
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button id="btn-like" class="btn-main" style="background:rgba(34, 197, 94, 0.2); border: 1px solid var(--accent-green); color:var(--accent-green); flex:1; box-shadow:none;"><i class="far fa-thumbs-up"></i> GOSTEI</button>
-                    <button id="btn-dislike" class="btn-main" style="background:rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color:#ef4444; flex:1; box-shadow:none;"><i class="far fa-thumbs-down"></i></button>
+                <div style="margin-top:10px; margin-bottom: 15px;">
+                    <button id="btn-like" class="btn-main" style="background:rgba(34, 197, 94, 0.2); border: 1px solid var(--accent-green); color:var(--accent-green); width: 100%; box-shadow:none;">
+                        <i class="far fa-thumbs-up"></i> CURTIR E APOIAR (Ganhe Pontos)
+                    </button>
                 </div>
                 
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                     <button id="btn-wa1" class="btn-main" style="background:#25d366; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px;"><i class="fab fa-whatsapp"></i> ZAP 1</button>
                     <button id="btn-wa2" class="btn-main" style="background:#128c7e; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px;"><i class="fab fa-whatsapp"></i> ZAP 2</button>
                 </div>
@@ -317,6 +320,7 @@
             <select id="boat-selector" onchange="fillBoatData()" class="input-premium" style="background: var(--bg-card); margin-top: 5px;">
                 <option value="">-- Carregando barcos... --</option>
             </select>
+            <p style="font-size:0.6rem; color: var(--text-dim); margin-top:5px;">*Seus dados (Foto e Telefone) serão carregados automaticamente.</p>
         </div>
 
         <div id="auto-preview-container" style="display:none; flex-direction:column; align-items:center; margin-bottom:20px;">
@@ -324,6 +328,12 @@
             <p style="color:var(--accent-cyan); font-size:0.8rem; margin-top:5px; font-weight:700;"><i class="fas fa-check-circle"></i> Barco identificado!</p>
         </div>
 
+        <div style="display:none;">
+            <input type="text" id="in-name"> 
+            <input type="tel" id="in-tel-1">
+            <input type="tel" id="in-tel-2">
+        </div>
+        
         <div id="manual-boat-input" style="display:none; margin-bottom: 15px;">
             <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
             <div onclick="document.getElementById('file-input').click()" style="width:100%; height:150px; background:var(--bg-card); border-radius:20px; border:2px dashed rgba(34, 211, 238, 0.3); display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:15px; overflow: hidden; position: relative;">
@@ -333,11 +343,11 @@
                     <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 5px;">Foto do Barco Novo</p>
                 </div>
             </div>
-            <input type="text" id="in-name" class="input-premium" placeholder="Nome da Embarcação" style="margin-bottom: 10px;" maxlength="30">
-            <input type="tel" id="in-tel-1" class="input-premium" placeholder="WhatsApp 1" style="margin-bottom: 10px;" maxlength="15">
-            <input type="tel" id="in-tel-2" class="input-premium" placeholder="WhatsApp 2 (Opcional)" maxlength="15">
+            <input type="text" id="manual-name" class="input-premium" placeholder="Nome da Embarcação" style="margin-bottom: 10px;" maxlength="30">
+            <input type="tel" id="manual-tel-1" class="input-premium" placeholder="WhatsApp 1" style="margin-bottom: 10px;" maxlength="15">
+            <input type="tel" id="manual-tel-2" class="input-premium" placeholder="WhatsApp 2 (Opcional)" maxlength="15">
         </div>
-        
+
         <div style="display: flex; flex-direction: column; gap: 12px;">
             <input type="text" id="in-departure" class="input-premium" placeholder="Local de Saída (Ex: Porto Manaus Moderna)" maxlength="40">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -431,6 +441,7 @@
             if(n.length < 3 || p.length < 8) return openCustomAlert("Preencha seu nome e WhatsApp!", "Erro");
             currentUser = { name: n, phone: p };
             localStorage.setItem('barco_user_data', JSON.stringify(currentUser));
+            // Cria usuário se não existir, mantendo saldo antigo se houver
             rtdb.ref('usuarios_cadastrados/' + p).update({ nome: n, whatsapp: p });
             startApp();
         }
@@ -447,7 +458,6 @@
             loadSavedBoats();
         }
 
-        // --- CARREGAR BARCOS DO USUÁRIO ---
         function loadSavedBoats() {
             const selector = document.getElementById('boat-selector');
             rtdb.ref('meus_barcos_cadastrados/' + currentUser.phone).on('value', snap => {
@@ -458,41 +468,32 @@
                         selector.innerHTML += `<option value="${key}">${userSavedBoats[key].nome}</option>`;
                     });
                 }
-                // Adiciona opção "Outros" no final
                 selector.innerHTML += `<option value="OUTROS">➕ Cadastrar Novo (Outros)</option>`;
             });
         }
 
-        // --- LÓGICA DE ALTERNÂNCIA (FIXO vs OUTROS) ---
         function fillBoatData() {
             const val = document.getElementById('boat-selector').value;
             const manualInput = document.getElementById('manual-boat-input');
             const autoPreview = document.getElementById('auto-preview-container');
 
             if(val === 'OUTROS') {
-                // Modo Manual
                 manualInput.style.display = 'block';
                 autoPreview.style.display = 'none';
-                currentImg = ""; // Limpa imagem anterior
-                document.getElementById('in-name').value = "";
-                document.getElementById('in-tel-1').value = "";
-                document.getElementById('in-tel-2').value = "";
-                // Remove readonly/hidden do manual (os campos estão visíveis na div manual)
+                currentImg = "";
+                document.getElementById('in-name').value = ""; // Limpa hidden
             } else if (val) {
-                // Modo Automático (Barco Salvo)
                 manualInput.style.display = 'none';
                 autoPreview.style.display = 'flex';
-                
                 const barco = userSavedBoats[val];
                 currentImg = barco.img;
                 document.getElementById('preview-img-auto').src = currentImg;
                 
-                // Preenche inputs ocultos para envio
+                // Preenche os hiddens
                 document.getElementById('in-name').value = barco.nome;
                 document.getElementById('in-tel-1').value = barco.tel1;
                 document.getElementById('in-tel-2').value = barco.tel2;
             } else {
-                // Seleção Vazia
                 manualInput.style.display = 'none';
                 autoPreview.style.display = 'none';
             }
@@ -502,7 +503,6 @@
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 if(file.size > 5 * 1024 * 1024) return openCustomAlert("Imagem muito grande!", "Erro");
-                
                 const reader = new FileReader();
                 reader.onload = e => {
                     const img = new Image();
@@ -513,10 +513,8 @@
                         const scaleSize = MAX_WIDTH / img.width;
                         canvas.width = MAX_WIDTH;
                         canvas.height = img.height * scaleSize;
-                        
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
                         currentImg = canvas.toDataURL('image/jpeg', 0.5);
                         document.getElementById('preview-img-manual').src = currentImg;
                         document.getElementById('preview-img-manual').style.display = 'block';
@@ -528,7 +526,21 @@
         }
 
         function publish() {
-            const name = document.getElementById('in-name').value;
+            // Verifica se está no modo manual para pegar os valores corretos
+            const isManual = document.getElementById('boat-selector').value === 'OUTROS';
+            
+            let name, tel1, tel2;
+            
+            if(isManual) {
+                name = document.getElementById('manual-name').value;
+                tel1 = document.getElementById('manual-tel-1').value;
+                tel2 = document.getElementById('manual-tel-2').value;
+            } else {
+                name = document.getElementById('in-name').value; // Pega do hidden preenchido
+                tel1 = document.getElementById('in-tel-1').value;
+                tel2 = document.getElementById('in-tel-2').value;
+            }
+
             const dateVal = document.getElementById('in-date').value;
             
             if(!name) return openCustomAlert("Selecione um barco ou digite o nome!", "Atenção");
@@ -544,10 +556,10 @@
                 time: document.getElementById('in-time').value,
                 price_p: document.getElementById('in-price-p').value, 
                 price_c: document.getElementById('in-price-c').value,
-                tel1: document.getElementById('in-tel-1').value, 
-                tel2: document.getElementById('in-tel-2').value,
+                tel1: tel1, 
+                tel2: tel2,
                 img: currentImg, 
-                likes: 0, dislikes: 0, 
+                likes: 0, 
                 registeredBy: currentUser.phone
             };
             
@@ -558,7 +570,6 @@
             });
         }
 
-        // --- SISTEMA DE LISTAGEM, CARROSSEL E ALERTAS ---
         function listenDynamicShowcase() {
             rtdb.ref('barcos').on('value', snapshot => {
                 const wrapper = document.getElementById('dynamic-showcase-wrapper');
@@ -658,10 +669,17 @@
             } catch (err) { window.open(`https://wa.me/?text=${encodeURIComponent(text)}`); }
         }
 
+        // --- SISTEMA DE LIKE PERSISTENTE & AVALIAÇÃO ---
+        let currentModalKey = "";
+        let currentPublisherPhone = "";
+
         function openDetails(key) {
+            currentModalKey = key;
             rtdb.ref(`barcos/${currentDayPage}/${key}`).once('value', s => {
                 const b = s.val();
+                currentPublisherPhone = b.registeredBy; // Guardar quem postou para dar o like pra ele
                 const dataBR = formatDateBR(b.date);
+                
                 document.getElementById('modal-img').src = b.img || 'https://via.placeholder.com/400';
                 document.getElementById('modal-name').innerText = b.name;
                 document.getElementById('modal-departure-text').innerHTML = `<i class="fas fa-map-marker-alt"></i> SAÍDA: ${b.departure || "Não informado"}`;
@@ -670,13 +688,17 @@
                 document.getElementById('modal-time').innerText = "⏰ " + b.time;
                 document.getElementById('modal-price-p').innerText = "🎟 R$ " + b.price_p;
                 document.getElementById('modal-price-c').innerText = "🛌 R$ " + b.price_c;
-                document.getElementById('btn-like').onclick = () => registerVote(key, 'likes');
-                document.getElementById('btn-dislike').onclick = () => registerVote(key, 'dislikes');
+                
+                // Resetar estrelas visualmente
+                updateStarsUI(0);
+
+                document.getElementById('btn-like').onclick = () => registerLike(key, b.registeredBy);
                 document.getElementById('btn-share-post').onclick = () => shareBoat(b);
                 document.getElementById('btn-wa1').onclick = () => window.open(`https://wa.me/55${b.tel1.replace(/\D/g,'')}?text=Vi seu barco no BarcoApp!`);
                 document.getElementById('btn-wa2').onclick = () => window.open(`https://wa.me/55${b.tel2.replace(/\D/g,'')}?text=Vi seu barco no BarcoApp!`);
+                
                 document.getElementById('btn-report').onclick = () => {
-                    const motivo = prompt("Denúncia (Ex: Golpe, Dados falsos):");
+                    const motivo = prompt("Motivo da denúncia:");
                     if (motivo) {
                         rtdb.ref(`denuncias/${key}`).push({ denunciante: currentUser.phone, motivo: motivo, data: new Date().toISOString(), barco: b.name }).then(() => { openCustomAlert("Denúncia enviada!", "Sucesso"); closeModal(); });
                     }
@@ -686,13 +708,44 @@
             });
         }
 
-        function registerVote(boatKey, type) {
+        // Lógica de Estrelas
+        function rateStar(rating) {
+            updateStarsUI(rating);
+            const rateLockRef = rtdb.ref(`avaliacoes_registradas/${currentModalKey}/${currentUser.phone}`);
+            rateLockRef.once('value', snap => {
+                if (snap.exists()) return openCustomAlert("Você já avaliou este barco!", "Obrigado");
+                rateLockRef.set({ rating: rating }).then(() => {
+                    rtdb.ref(`barcos/${currentDayPage}/${currentModalKey}/ratingSum`).transaction(s => (s || 0) + rating);
+                    rtdb.ref(`barcos/${currentDayPage}/${currentModalKey}/ratingCount`).transaction(c => (c || 0) + 1);
+                    openCustomAlert(`Você avaliou com ${rating} estrelas!`, "Avaliado");
+                });
+            });
+        }
+
+        function updateStarsUI(rating) {
+            const stars = document.getElementById('stars-wrapper').children;
+            for(let i=0; i<stars.length; i++) {
+                if(i < rating) stars[i].classList.add('checked');
+                else stars[i].classList.remove('checked');
+            }
+        }
+
+        // Lógica de LIKE PERSISTENTE (O pulo do gato)
+        function registerLike(boatKey, publisherPhone) {
             const voteLockRef = rtdb.ref(`votos_registrados/${boatKey}/${currentUser.phone}`);
             voteLockRef.once('value', snap => {
-                if (snap.exists()) return openCustomAlert("Você já avaliou este barco!", "Ops!");
-                voteLockRef.set({ voto: type }).then(() => {
-                    rtdb.ref(`barcos/${currentDayPage}/${boatKey}/${type}`).transaction(v => (v || 0) + 1);
-                    openCustomAlert("Voto Confirmado!", "Obrigado");
+                if (snap.exists()) return openCustomAlert("Você já curtiu esta viagem!", "Ops!");
+                
+                voteLockRef.set({ voto: 'like' }).then(() => {
+                    // 1. Aumenta like visual no barco
+                    rtdb.ref(`barcos/${currentDayPage}/${boatKey}/likes`).transaction(v => (v || 0) + 1);
+                    
+                    // 2. Aumenta SALDO GERAL do DONO do barco (Persistente)
+                    if(publisherPhone) {
+                        rtdb.ref(`usuarios_cadastrados/${publisherPhone}/saldo_likes`).transaction(v => (v || 0) + 1);
+                    }
+                    
+                    openCustomAlert("Curtida registrada! Você ajudou o comandante.", "Voto Confirmado");
                     closeModal();
                 });
             });
@@ -722,13 +775,15 @@
             });
         }
 
+        // ATUALIZAÇÃO DE STATS: Agora lê o saldo persistente do usuário
         function updateStats() {
-            rtdb.ref('barcos').on('value', s => {
-                let l = 0; const d = s.val();
-                if(d) { Object.values(d).forEach(dia => { Object.values(dia).forEach(b => { if(b.registeredBy === currentUser.phone) { l += ((b.likes || 0) - (b.dislikes || 0)); } }); }); }
-                if(l < 0) l = 0;
-                const p = Math.min((l / 500) * 100, 100);
-                document.getElementById('total-likes-count').innerText = l;
+            // Escuta APENAS o saldo do usuário logado
+            rtdb.ref(`usuarios_cadastrados/${currentUser.phone}/saldo_likes`).on('value', s => {
+                let likes = s.val() || 0;
+                const meta = 500;
+                const p = Math.min((likes / meta) * 100, 100);
+                
+                document.getElementById('total-likes-count').innerText = likes;
                 document.getElementById('thermometer-bar').style.width = p + '%';
                 document.getElementById('percent-label').innerText = Math.floor(p) + '% (Meta: 500)';
             });
