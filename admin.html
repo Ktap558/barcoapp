@@ -100,6 +100,8 @@
         .upload-area { width: 100%; height: 100px; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; cursor: pointer; overflow: hidden; }
         .upload-area:hover { border-color: var(--primary); }
         
+        .star-rating { color: var(--warning); font-size: 0.8rem; }
+        
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
     </style>
@@ -161,7 +163,7 @@
                 </div>
 
                 <div class="panel" id="users-section">
-                    <div class="panel-header"><h3><i class="fas fa-users"></i> Gestão de Usuários</h3></div>
+                    <div class="panel-header"><h3><i class="fas fa-users"></i> Gestão de Usuários (Rank 500)</h3></div>
                     <div class="panel-body">
                         <table>
                             <thead><tr><th>Nome</th><th>WhatsApp</th><th>Saldo Likes</th><th>Ações</th></tr></thead>
@@ -174,7 +176,7 @@
                     <div class="panel-header"><h3><i class="fas fa-calendar-day"></i> Escalas Ativas (Viagens)</h3></div>
                     <div class="panel-body">
                         <table>
-                            <thead><tr><th>Embarcação</th><th>Dia</th><th>Likes / Desl.</th><th>Gestão</th></tr></thead>
+                            <thead><tr><th>Embarcação</th><th>Dia</th><th>Avaliação</th><th>Gestão</th></tr></thead>
                             <tbody id="boats-list"></tbody>
                         </table>
                     </div>
@@ -236,18 +238,16 @@
                     document.getElementById('alert-msg').value = data.config.alerta.text;
                 }
 
-                const userStats = calculateUserStats(data.barcos, data.usuarios_cadastrados);
-                renderUsers(data.usuarios_cadastrados, userStats);
+                // Passamos os usuários diretamente para renderizar, pois o saldo agora é fixo no user
+                renderUsers(data.usuarios_cadastrados);
                 renderBoats(data.barcos);
                 renderCarousel(data.config ? data.config.carrossel : null);
-                renderRanking(userStats);
-                
-                // Renderizar Fichas de Barcos (Nova Função)
+                renderRanking(data.usuarios_cadastrados);
                 renderFixedBoats(data.meus_barcos_cadastrados);
             });
         }
 
-        // --- SISTEMA DE CADASTRO DE FICHAS TÉCNICAS (NOVO) ---
+        // --- CADASTRO DE FICHAS ---
         function processImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -256,7 +256,7 @@
                     img.src = e.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 600; // Mesma compressão do App
+                        const MAX_WIDTH = 600; 
                         const scaleSize = MAX_WIDTH / img.width;
                         canvas.width = MAX_WIDTH;
                         canvas.height = img.height * scaleSize;
@@ -281,13 +281,9 @@
             if(!owner || !name || !currentUploadImg) return alert("Preencha Dono (Zap), Nome e Foto!");
 
             db.ref(`meus_barcos_cadastrados/${owner}`).push({
-                nome: name,
-                img: currentUploadImg,
-                tel1: tel1,
-                tel2: tel2
+                nome: name, img: currentUploadImg, tel1: tel1, tel2: tel2
             }).then(() => {
                 alert("Ficha técnica cadastrada com sucesso!");
-                // Limpar campos
                 document.getElementById('reg-name').value = "";
                 document.getElementById('preview-img').style.display = 'none';
                 document.getElementById('upload-text').style.display = 'block';
@@ -322,41 +318,27 @@
         }
 
         function deleteFixedBoat(owner, key) {
-            if(confirm("Excluir esta ficha técnica? O usuário não verá mais este barco na lista.")) {
-                db.ref(`meus_barcos_cadastrados/${owner}/${key}`).remove();
-            }
+            if(confirm("Excluir esta ficha técnica?")) db.ref(`meus_barcos_cadastrados/${owner}/${key}`).remove();
         }
 
-        // --- SISTEMAS EXISTENTES ---
-        function calculateUserStats(barcos, usuarios) {
-            let stats = {};
-            for(let id in usuarios) { stats[id] = { nome: usuarios[id].nome, saldo: 0 }; }
-            if(barcos) {
-                for(let dia in barcos) {
-                    for(let key in barcos[dia]) {
-                        const b = barcos[dia][key];
-                        if(b.registeredBy && stats[b.registeredBy]) {
-                            const saldoBarco = (b.likes || 0) - (b.dislikes || 0);
-                            stats[b.registeredBy].saldo += saldoBarco;
-                        }
-                    }
-                }
-            }
-            return stats;
-        }
-
-        function renderUsers(users, stats) {
+        // --- GESTÃO DE USUÁRIOS (Lendo saldo_likes direto) ---
+        function renderUsers(users) {
             const list = document.getElementById('users-list');
             list.innerHTML = ""; let count = 0;
+            if(!users) return;
+            
             for(let id in users) {
                 count++;
-                const saldo = stats[id] ? stats[id].saldo : 0;
+                const u = users[id];
+                // Agora lemos direto do perfil do usuário, não calculamos mais na hora
+                const saldo = u.saldo_likes || 0; 
+                
                 list.innerHTML += `<tr>
-                    <td><b>${users[id].nome}</b></td>
-                    <td>${users[id].whatsapp}</td>
-                    <td><span style="color:${saldo >= 0 ? 'var(--primary)' : 'var(--danger)'}">${saldo}</span></td>
+                    <td><b>${u.nome}</b></td>
+                    <td>${u.whatsapp}</td>
+                    <td><span style="color:${saldo >= 0 ? 'var(--primary)' : 'var(--danger)'}">⭐ ${saldo}</span></td>
                     <td>
-                        <button class="btn btn-wa" onclick="window.open('https://wa.me/55${users[id].whatsapp}')"><i class="fab fa-whatsapp"></i></button>
+                        <button class="btn btn-wa" onclick="window.open('https://wa.me/55${u.whatsapp}')"><i class="fab fa-whatsapp"></i></button>
                         <button class="btn btn-del" onclick="deleteUser('${id}')"><i class="fas fa-user-slash"></i></button>
                     </td>
                 </tr>`;
@@ -364,22 +346,31 @@
             document.getElementById('total-users').innerText = count;
         }
 
+        // --- RENDERIZAÇÃO DE BARCOS (Com Média de Estrelas) ---
         function renderBoats(barcos) {
             const list = document.getElementById('boats-list');
-            list.innerHTML = ""; let bCount = 0; let totalSaldoGlobal = 0;
+            list.innerHTML = ""; let bCount = 0;
             if(barcos) {
                 for(let dia in barcos) {
                     for(let key in barcos[dia]) {
                         const b = barcos[dia][key];
                         bCount++; 
-                        const saldo = (b.likes || 0) - (b.dislikes || 0);
-                        totalSaldoGlobal += saldo;
+                        
+                        // Cálculo da Média de Estrelas
+                        let media = 0;
+                        if(b.ratingCount && b.ratingCount > 0) {
+                            media = (b.ratingSum / b.ratingCount).toFixed(1);
+                        } else {
+                            media = "N/A";
+                        }
+
                         list.innerHTML += `<tr>
                             <td>${b.name}</td>
                             <td><span class="tag-dia">${dia}</span></td>
                             <td>
-                                <span style="color:var(--success)">+${b.likes || 0}</span> / 
-                                <span style="color:var(--danger)">-${b.dislikes || 0}</span>
+                                <span class="star-rating"><i class="fas fa-star"></i> ${media}</span> 
+                                <small style="color:#64748b">(${b.ratingCount || 0} votos)</small><br>
+                                <small style="color:var(--success)">${b.likes || 0} Likes</small>
                             </td>
                             <td><button class="btn btn-del" onclick="deleteBoat('${dia}','${key}')">Remover</button></td>
                         </tr>`;
@@ -416,16 +407,23 @@
             });
         }
 
-        function deleteSlide(key) { if(confirm("Remover imagem do carrossel?")) db.ref(`config/carrossel/${key}`).remove(); }
+        function deleteSlide(key) { if(confirm("Remover?")) db.ref(`config/carrossel/${key}`).remove(); }
 
-        function renderRanking(stats) {
+        // --- RANKING (Baseado no saldo_likes) ---
+        function renderRanking(users) {
             const div = document.getElementById('ranking-list');
-            let arr = Object.values(stats);
-            arr.sort((a,b) => b.saldo - a.saldo);
+            if(!users) return;
+            
+            // Converte objeto users em array para ordenar
+            let arr = Object.values(users);
+            
+            // Ordena pelo saldo_likes
+            arr.sort((a,b) => (b.saldo_likes || 0) - (a.saldo_likes || 0));
+            
             div.innerHTML = arr.slice(0,5).map((u, i) => `
                 <div class="rank-row">
                     <span>${i+1}º ${u.nome}</span>
-                    <span class="tag-dia">${u.saldo} LIKES</span>
+                    <span class="tag-dia">${u.saldo_likes || 0} LIKES</span>
                 </div>`).join('');
         }
 
