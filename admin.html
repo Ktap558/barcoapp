@@ -35,7 +35,7 @@
             min-height: 100vh;
         }
 
-        /* Sidebar que você gosta */
+        /* Sidebar */
         .sidebar { 
             width: var(--sidebar-width); 
             background: #010409; 
@@ -45,6 +45,7 @@
             padding: 30px 20px;
             display: flex;
             flex-direction: column;
+            overflow-y: auto;
         }
 
         .sidebar h1 { 
@@ -81,19 +82,23 @@
 
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 15px 12px; color: var(--text-dim); font-size: 0.65rem; text-transform: uppercase; border-bottom: 1px solid var(--border); }
-        td { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; }
+        td { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; vertical-align: middle; }
 
-        input { width: 100%; background: #020617; border: 1px solid var(--border); padding: 14px; border-radius: 12px; color: white; margin-bottom: 12px; outline: none; box-sizing: border-box; }
+        input, select { width: 100%; background: #020617; border: 1px solid var(--border); padding: 14px; border-radius: 12px; color: white; margin-bottom: 12px; outline: none; box-sizing: border-box; }
         
         .btn { padding: 12px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; transition: 0.3s; font-size: 0.85rem; }
         .btn-add { background: var(--primary); color: #000; width: 100%; text-transform: uppercase; }
         .btn-del { background: rgba(244, 63, 94, 0.1); color: var(--danger); padding: 8px 12px; }
         .btn-wa { background: #10b981; color: white; padding: 8px 12px; margin-right: 5px; }
 
-        /* Estilo do Carrossel */
+        /* Estilo do Carrossel e Listas */
         .rank-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #020617; border-radius: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
         .img-preview { width: 60px; height: 35px; border-radius: 6px; object-fit: cover; background: #000; border: 1px solid var(--border); }
         .tag-dia { background: var(--primary-glow); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; }
+        
+        /* Upload Preview */
+        .upload-area { width: 100%; height: 100px; border: 2px dashed var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; cursor: pointer; overflow: hidden; }
+        .upload-area:hover { border-color: var(--primary); }
         
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
@@ -104,7 +109,8 @@
     <div class="sidebar">
         <h1><i class="fas fa-ship"></i> BARCOAPP</h1>
         <a href="#" class="nav-item active"><i class="fas fa-th-large"></i> Dashboard</a>
-        <a href="#boats-section" class="nav-item"><i class="fas fa-anchor"></i> Escalas</a>
+        <a href="#register-boat-section" class="nav-item" style="color: var(--success);"><i class="fas fa-plus-circle"></i> Cadastrar Barco</a>
+        <a href="#boats-section" class="nav-item"><i class="fas fa-anchor"></i> Escalas Ativas</a>
         <a href="#users-section" class="nav-item"><i class="fas fa-users"></i> Usuários</a>
         <a href="#carousel-section" class="nav-item"><i class="fas fa-image"></i> Carrossel</a>
     </div>
@@ -112,13 +118,48 @@
     <div class="main">
         <div class="stats-row">
             <div class="stat-card"><small>Total Usuários</small><h2 id="total-users">0</h2></div>
-            <div class="stat-card"><small>Barcos Ativos</small><h2 id="total-boats">0</h2></div>
-            <div class="stat-card"><small>Saldo de Likes</small><h2 id="total-likes">0</h2></div>
+            <div class="stat-card"><small>Fichas Cadastradas</small><h2 id="total-fixed-boats">0</h2></div>
+            <div class="stat-card"><small>Escalas Ativas</small><h2 id="total-boats">0</h2></div>
             <div class="stat-card"><small>Status</small><h2 style="color: var(--success); font-size: 1.5rem;">ONLINE</h2></div>
         </div>
 
         <div class="dashboard-grid">
             <div class="left-side">
+                
+                <div class="panel" id="register-boat-section" style="border-color: var(--success);">
+                    <div class="panel-header">
+                        <h3 style="color: var(--success);"><i class="fas fa-file-signature"></i> Cadastrar Ficha de Embarcação</h3>
+                    </div>
+                    <div class="panel-body" style="padding: 25px;">
+                        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+                            <div>
+                                <input type="file" id="file-input" accept="image/*" style="display:none" onchange="processImage(this)">
+                                <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                                    <img id="preview-img" style="width:100%; height:100%; object-fit:cover; display:none;">
+                                    <span id="upload-text" style="font-size: 0.7rem; color: var(--text-dim);">+ FOTO</span>
+                                </div>
+                            </div>
+                            <div>
+                                <input type="tel" id="reg-owner" placeholder="WhatsApp do Dono (Ex: 97999999999)">
+                                <input type="text" id="reg-name" placeholder="Nome da Embarcação">
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <input type="tel" id="reg-tel1" placeholder="WhatsApp Contato 1">
+                            <input type="tel" id="reg-tel2" placeholder="WhatsApp Contato 2">
+                        </div>
+                        <button class="btn btn-add" style="background: var(--success); color: #fff;" onclick="saveFixedBoat()">Salvar Ficha Técnica</button>
+                        
+                        <div style="margin-top: 30px;">
+                            <h4 style="color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 10px;">Fichas Cadastradas</h4>
+                            <table style="margin-top: 10px;">
+                                <thead><tr><th>Dono</th><th>Barco</th><th>Ações</th></tr></thead>
+                                <tbody id="fixed-boats-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="panel" id="users-section">
                     <div class="panel-header"><h3><i class="fas fa-users"></i> Gestão de Usuários</h3></div>
                     <div class="panel-body">
@@ -130,7 +171,7 @@
                 </div>
 
                 <div class="panel" id="boats-section">
-                    <div class="panel-header"><h3><i class="fas fa-calendar-day"></i> Escalas Ativas</h3></div>
+                    <div class="panel-header"><h3><i class="fas fa-calendar-day"></i> Escalas Ativas (Viagens)</h3></div>
                     <div class="panel-body">
                         <table>
                             <thead><tr><th>Embarcação</th><th>Dia</th><th>Likes / Desl.</th><th>Gestão</th></tr></thead>
@@ -143,9 +184,8 @@
             <div class="right-side">
                 <div class="panel" id="carousel-section" style="border-color: var(--primary);">
                     <div class="panel-header"><h3><i class="fas fa-images"></i> Banners Ativos</h3></div>
-                    <div class="panel-body">
-                        <div id="carousel-manager" style="max-height: 350px; overflow-y: auto; margin-bottom: 20px;">
-                            </div>
+                    <div class="panel-body" style="padding: 20px;">
+                        <div id="carousel-manager" style="max-height: 350px; overflow-y: auto; margin-bottom: 20px;"></div>
                         <small style="color:var(--primary); font-weight: 800;">ADICIONAR NOVO SLIDE</small>
                         <input type="text" id="car-img" placeholder="URL da Imagem">
                         <input type="text" id="car-link" placeholder="Link do botão (URL)">
@@ -155,18 +195,18 @@
 
                 <div class="panel">
                     <div class="panel-header"><h3><i class="fas fa-broadcast-tower"></i> Alerta no App</h3></div>
-                    <div class="panel-body">
+                    <div class="panel-body" style="padding: 20px;">
                         <input type="text" id="alert-msg" placeholder="Texto que aparece no topo...">
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn" style="background: var(--warning); color: #000; flex: 2; font-weight: 800;" onclick="pushAlert()">ATUALIZAR ALERTA</button>
-                            <button class="btn" style="background: var(--danger); color: #fff; flex: 1; font-weight: 800;" onclick="removeAlert()">REMOVER</button>
+                            <button class="btn" style="background: var(--warning); color: #000; flex: 2; font-weight: 800;" onclick="pushAlert()">ATUALIZAR</button>
+                            <button class="btn" style="background: var(--danger); color: #fff; flex: 1; font-weight: 800;" onclick="removeAlert()">X</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="panel">
-                    <div class="panel-header"><h3><i class="fas fa-trophy"></i> Ranking de Popularidade</h3></div>
-                    <div class="panel-body" id="ranking-list"></div>
+                    <div class="panel-header"><h3><i class="fas fa-trophy"></i> Ranking</h3></div>
+                    <div class="panel-body" id="ranking-list" style="padding: 20px;"></div>
                 </div>
             </div>
         </div>
@@ -184,13 +224,14 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        
+        let currentUploadImg = "";
 
         function startApp() {
             db.ref().on('value', snapshot => {
                 const data = snapshot.val();
                 if(!data) return;
                 
-                // Carregar texto do alerta atual no input para conveniência
                 if(data.config && data.config.alerta && data.config.alerta.active) {
                     document.getElementById('alert-msg').value = data.config.alerta.text;
                 }
@@ -200,9 +241,93 @@
                 renderBoats(data.barcos);
                 renderCarousel(data.config ? data.config.carrossel : null);
                 renderRanking(userStats);
+                
+                // Renderizar Fichas de Barcos (Nova Função)
+                renderFixedBoats(data.meus_barcos_cadastrados);
             });
         }
 
+        // --- SISTEMA DE CADASTRO DE FICHAS TÉCNICAS (NOVO) ---
+        function processImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 600; // Mesma compressão do App
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        currentUploadImg = canvas.toDataURL('image/jpeg', 0.5);
+                        document.getElementById('preview-img').src = currentUploadImg;
+                        document.getElementById('preview-img').style.display = 'block';
+                        document.getElementById('upload-text').style.display = 'none';
+                    };
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveFixedBoat() {
+            const owner = document.getElementById('reg-owner').value.replace(/\D/g,'');
+            const name = document.getElementById('reg-name').value;
+            const tel1 = document.getElementById('reg-tel1').value;
+            const tel2 = document.getElementById('reg-tel2').value;
+
+            if(!owner || !name || !currentUploadImg) return alert("Preencha Dono (Zap), Nome e Foto!");
+
+            db.ref(`meus_barcos_cadastrados/${owner}`).push({
+                nome: name,
+                img: currentUploadImg,
+                tel1: tel1,
+                tel2: tel2
+            }).then(() => {
+                alert("Ficha técnica cadastrada com sucesso!");
+                // Limpar campos
+                document.getElementById('reg-name').value = "";
+                document.getElementById('preview-img').style.display = 'none';
+                document.getElementById('upload-text').style.display = 'block';
+                currentUploadImg = "";
+            });
+        }
+
+        function renderFixedBoats(allBoats) {
+            const list = document.getElementById('fixed-boats-list');
+            list.innerHTML = "";
+            let count = 0;
+            if(allBoats) {
+                for(let owner in allBoats) {
+                    const userBoats = allBoats[owner];
+                    for(let key in userBoats) {
+                        count++;
+                        const b = userBoats[key];
+                        list.innerHTML += `
+                            <tr>
+                                <td>${owner}</td>
+                                <td style="display:flex; align-items:center; gap:10px;">
+                                    <img src="${b.img}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+                                    ${b.nome}
+                                </td>
+                                <td><button class="btn btn-del" onclick="deleteFixedBoat('${owner}', '${key}')"><i class="fas fa-trash"></i></button></td>
+                            </tr>
+                        `;
+                    }
+                }
+            }
+            document.getElementById('total-fixed-boats').innerText = count;
+        }
+
+        function deleteFixedBoat(owner, key) {
+            if(confirm("Excluir esta ficha técnica? O usuário não verá mais este barco na lista.")) {
+                db.ref(`meus_barcos_cadastrados/${owner}/${key}`).remove();
+            }
+        }
+
+        // --- SISTEMAS EXISTENTES ---
         function calculateUserStats(barcos, usuarios) {
             let stats = {};
             for(let id in usuarios) { stats[id] = { nome: usuarios[id].nome, saldo: 0 }; }
@@ -262,7 +387,6 @@
                 }
             }
             document.getElementById('total-boats').innerText = bCount;
-            document.getElementById('total-likes').innerText = totalSaldoGlobal;
         }
 
         function renderCarousel(slides) {
@@ -292,9 +416,7 @@
             });
         }
 
-        function deleteSlide(key) {
-            if(confirm("Remover imagem do carrossel?")) db.ref(`config/carrossel/${key}`).remove();
-        }
+        function deleteSlide(key) { if(confirm("Remover imagem do carrossel?")) db.ref(`config/carrossel/${key}`).remove(); }
 
         function renderRanking(stats) {
             const div = document.getElementById('ranking-list');
@@ -307,18 +429,17 @@
                 </div>`).join('');
         }
 
-        // FUNÇÕES DE ALERTA ATUALIZADAS
         function pushAlert() {
             const text = document.getElementById('alert-msg').value;
-            if(!text) return alert("Digite uma mensagem antes de atualizar!");
-            db.ref('config/alerta').set({ text, active: true }).then(() => alert("Alerta Ativado no App!"));
+            if(!text) return alert("Digite uma mensagem!");
+            db.ref('config/alerta').set({ text, active: true }).then(() => alert("Alerta Ativado!"));
         }
 
         function removeAlert() {
-            if(confirm("Deseja remover o alerta de todos os usuários?")) {
+            if(confirm("Remover alerta?")) {
                 db.ref('config/alerta').set({ text: "", active: false }).then(() => {
                     document.getElementById('alert-msg').value = "";
-                    alert("Alerta removido com sucesso!");
+                    alert("Alerta removido!");
                 });
             }
         }
