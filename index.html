@@ -549,45 +549,57 @@
             });
         }
 
-        // --- NOVA LÓGICA DE GRID E ORDENAÇÃO ---
+        // --- FUNÇÃO DE GRID ATUALIZADA (ORDENAÇÃO POR DATA) ---
         function listenDynamicShowcase() {
             rtdb.ref('barcos').on('value', snapshot => {
                 const wrapper = document.getElementById('dynamic-showcase-wrapper');
                 wrapper.innerHTML = "";
                 allBoatsLocal = [];
                 const allDays = snapshot.val();
-                if(!allDays) return;
                 
-                // 1. Flatten Data
+                if(!allDays) {
+                    wrapper.innerHTML = '<p style="color:gray; grid-column:1/-1; text-align:center;">Nenhuma viagem encontrada.</p>';
+                    return;
+                }
+                
+                // 1. Achatar dados (Flatten)
                 Object.keys(allDays).forEach(dayName => {
                     const boats = allDays[dayName];
                     Object.keys(boats).forEach(boatId => {
-                        const b = boats[boatId]; b.id = boatId; b.dia = dayName;
-                        if (!verificarValidade(b.date, b.time)) allBoatsLocal.push(b);
+                        const b = boats[boatId]; 
+                        b.id = boatId; 
+                        b.dia = dayName;
+                        if (!verificarValidade(b.date, b.time)) {
+                            allBoatsLocal.push(b);
+                        }
                     });
                 });
 
-                // 2. Sort Data (Data mais próxima primeiro)
+                // 2. ORDENAÇÃO: Data mais próxima (menor) primeiro
                 allBoatsLocal.sort((a, b) => {
-                    const dateA = new Date(a.date + 'T' + a.time);
-                    const dateB = new Date(b.date + 'T' + b.time);
-                    return dateA - dateB;
+                    const dataObjA = new Date(`${a.date}T${a.time}:00`);
+                    const dataObjB = new Date(`${b.date}T${b.time}:00`);
+                    return dataObjA - dataObjB;
                 });
 
-                // 3. Render Grid
+                // 3. Renderizar Grid
                 allBoatsLocal.forEach(b => {
+                    // Formatar data DD/MM
+                    const dataPartes = b.date.split('-');
+                    const dataFormatada = `${dataPartes[2]}/${dataPartes[1]}`;
+
                     const div = document.createElement('div');
                     div.className = 'grid-boat-card';
                     div.onclick = () => openDirectDetails(b.dia, b.id);
                     div.innerHTML = `
-                        <div class="grid-day-tag">${b.dia}</div>
+                        <div class="grid-day-tag" style="background:var(--accent-cyan); color:#000;">${dataFormatada} • ${b.dia}</div>
                         <img src="${b.img || 'https://via.placeholder.com/150'}" class="grid-boat-img">
                         <div class="grid-boat-info">
                             <div class="grid-boat-name">${b.name}</div>
                             <div class="grid-boat-route">
                                 <span>${b.origin}</span> <i class="fas fa-arrow-right" style="font-size:0.6rem;"></i> <span>${b.destiny}</span>
                             </div>
-                            <div class="grid-boat-time">${b.time}</div>
+                            <div class="grid-boat-time"><i class="far fa-clock"></i> ${b.time}</div>
                         </div>
                     `;
                     wrapper.appendChild(div);
